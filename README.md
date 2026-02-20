@@ -74,17 +74,4 @@ This app focuses on six tickers: **Apple (AAPL), Tesla (TSLA), Meta (META), NVID
 | `.env` | API keys (do not commit) |
 | `data/` | Cached daily prices and overview (created on first refresh; gitignored) |
 
----
-
----
-
-## 交作业 / Submission (学校提交)
-
-- **不要提交**：`.env` 文件（含真实 API key）、`data/` 缓存。它们已在 `.gitignore` 中，提交代码时不会包含。
-- **提交代码**：把整个仓库（或 `02_productivity/shiny_app/` 等作业要求的部分）通过 Git 提交，并在 Canvas 的 .docx 里附上**仓库链接**和**具体文件链接**（如 `app.R`、README）。
-- **批改者运行方式**：复制 `.env.example` 为 `.env`，在 `.env` 里填入自己的 `ALPHAVANTAGE_API_KEY` 和（可选）`OLLAMA_API_KEY`，然后按 README 的 Setup 安装依赖并运行即可。
-- **.docx 内容**：按 HOMEWORK 要求写清：软件说明、Git 链接、截图、使用说明（含“复制 .env.example 为 .env 并填 key”）。
-
----
-
 ← [Back to 02_productivity](../README.md)
