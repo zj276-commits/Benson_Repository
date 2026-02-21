@@ -36,6 +36,7 @@ if (file.exists(env_path)) {
 }
 
 TICKERS = c("AAPL", "TSLA", "META", "NVDA", "GOOGL", "KO")
+MARKET_TICKER = "SPY"
 TICKER_NAMES = c("Apple" = "AAPL", "Tesla" = "TSLA", "Meta" = "META", "NVIDIA" = "NVDA", "Google" = "GOOGL", "Coca-Cola" = "KO")
 `%||%` = function(x, y) if (is.null(x) || length(x) == 0) y else x
 
@@ -100,10 +101,11 @@ fetch_av_overview = function(symbol, api_key) {
 }
 
 fetch_all_daily = function(api_key) {
+  all_tickers = c(TICKERS, MARKET_TICKER)
   all_df = list()
-  for (i in seq_along(TICKERS)) {
+  for (i in seq_along(all_tickers)) {
     Sys.sleep(13)
-    df = fetch_av_daily(TICKERS[i], api_key)
+    df = fetch_av_daily(all_tickers[i], api_key)
     if (!is.null(df)) all_df[[length(all_df) + 1]] = df
   }
   if (length(all_df) == 0) return(NULL)
@@ -166,13 +168,40 @@ build_summary_for_llm = function(daily_df, overview_df) {
     latest$DividendYield = NA
     latest$PERatio = NA
   }
+
+  sim_all = compute_all_sim(daily_df)
+  mkt = daily_df[daily_df$Symbol == MARKET_TICKER, ]
+  mkt = if (nrow(mkt) > 0) mkt[order(mkt$Date), ] else NULL
+
+  model_lines = vapply(TICKERS, function(sym) {
+    sub = daily_df[daily_df$Symbol == sym, ]
+    sub = sub[order(sub$Date), ]
+    if (nrow(sub) < 10) return("")
+    vol = compute_volatility(sub$Close)
+    gbm = estimate_gbm_params(sub$Close)
+    lp = estimate_lattice_params(sub$Close)
+    T_fwd = 30
+    lattice_stats = tryCatch(compute_lattice_stats(tail(sub$Close, 1), lp$u, lp$d, lp$p, T_fwd), error = function(e) NULL)
+    lattice_E30 = if (!is.null(lattice_stats)) tail(lattice_stats$expected, 1) else NA
+    sim_txt = ""
+    if (!is.null(sim_all)) {
+      row = sim_all[sim_all$Symbol == sym, ]
+      if (nrow(row) == 1) sim_txt = sprintf(", SIM(alpha=%.5f, beta=%.3f, R2=%.3f)", row$Alpha, row$Beta, row$R_squared)
+    }
+    sprintf("%s: Volatility=%.2f%%, GBM drift(mu)=%.4f, Lattice(u=%.4f,d=%.4f,p=%.2f%%), 30d Lattice E[S]=$%.2f%s",
+            sym, vol * 100, gbm$mu, lp$u, lp$d, lp$p * 100,
+            ifelse(is.na(lattice_E30), 0, lattice_E30), sim_txt)
+  }, character(1))
+
   paste0(
     "Latest data per symbol:\n",
     paste(sprintf("%s: Close=%.2f, 5d%%=%.2f, DivYield=%s, P/E=%s",
                   latest$Symbol, latest$Close, latest$Change5dPct,
                   ifelse(is.na(latest$DividendYield), "N/A", latest$DividendYield),
                   ifelse(is.na(latest$PERatio), "N/A", latest$PERatio)),
-          collapse = "\n")
+          collapse = "\n"),
+    "\n\nModel analysis per symbol:\n",
+    paste(model_lines[nzchar(model_lines)], collapse = "\n")
   )
 }
 
@@ -315,6 +344,61 @@ compute_lattice_stats = function(S0, u, d, p, T_steps) {
   data.frame(level = 0:T_steps, expected = ev, std_dev = sd_v)
 }
 
+# 4b. SINGLE INDEX MODEL (SIM) ###############################################
+
+estimate_sim_params = function(stock_close, market_close) {
+  n = min(length(stock_close), length(market_close))
+  if (n < 10) return(list(alpha = NA_real_, beta = NA_real_, r_squared = NA_real_,
+                           alpha_se = NA_real_, beta_se = NA_real_))
+  stock_close = tail(stock_close, n)
+  market_close = tail(market_close, n)
+  R_stock = diff(log(stock_close))
+  R_market = diff(log(market_close))
+  T_obs = length(R_stock)
+  X = cbind(1, R_market)
+  theta = solve(t(X) %*% X) %*% t(X) %*% R_stock
+  alpha = theta[1]
+  beta = theta[2]
+  y_hat = X %*% theta
+  residuals = R_stock - y_hat
+  SS_res = sum(residuals^2)
+  SS_tot = sum((R_stock - mean(R_stock))^2)
+  r_squared = 1 - SS_res / SS_tot
+  sigma2 = SS_res / (T_obs - 2)
+  se = sqrt(diag(solve(t(X) %*% X)) * sigma2)
+  list(alpha = alpha, beta = beta, r_squared = r_squared,
+       alpha_se = se[1], beta_se = se[2])
+}
+
+compute_all_sim = function(daily_df) {
+  if (is.null(daily_df) || nrow(daily_df) == 0) return(NULL)
+  mkt = daily_df[daily_df$Symbol == MARKET_TICKER, ]
+  if (nrow(mkt) == 0) return(NULL)
+  mkt = mkt[order(mkt$Date), ]
+  sim_list = list()
+  for (sym in TICKERS) {
+    sub = daily_df[daily_df$Symbol == sym, ]
+    if (nrow(sub) == 0) next
+    sub = sub[order(sub$Date), ]
+    common_dates = intersect(as.character(sub$Date), as.character(mkt$Date))
+    if (length(common_dates) < 10) next
+    s = sub[as.character(sub$Date) %in% common_dates, ]
+    m = mkt[as.character(mkt$Date) %in% common_dates, ]
+    s = s[order(s$Date), ]
+    m = m[order(m$Date), ]
+    params = estimate_sim_params(s$Close, m$Close)
+    sim_list[[length(sim_list) + 1]] = data.frame(
+      Symbol = sym,
+      Alpha = round(params$alpha, 6),
+      Beta = round(params$beta, 4),
+      R_squared = round(params$r_squared, 4),
+      stringsAsFactors = FALSE
+    )
+  }
+  if (length(sim_list) == 0) return(NULL)
+  dplyr::bind_rows(sim_list)
+}
+
 # 5. UI ######################################################################
 
 ui = fluidPage(
@@ -356,14 +440,16 @@ ui = fluidPage(
     tabPanel(
       "Price & dividend data",
       fluidRow(
-        column(8, actionButton("fetch_data", "Refresh data (fetch from API, ~2-3 min)", class = "btn-primary")),
+        column(4, actionButton("fetch_data", "Refresh data (fetch from API, ~2-3 min)", class = "btn-primary")),
+        column(4, selectInput("data_ticker", "Filter by Stock:",
+                              choices = c("All" = "ALL", TICKER_NAMES), selected = "ALL")),
         column(4, uiOutput("last_updated"))
       ),
       fluidRow(column(12, uiOutput("data_error"))),
       fluidRow(column(12, helpText("Data is cached locally. On startup the app loads the last saved data so you don't need to click every time.", style = "color: #8b949e;"))),
       fluidRow(column(12, h4("Daily price (last ~100 trading days)"))),
       fluidRow(column(12, DTOutput("price_table"))),
-      fluidRow(column(12, h4("Dividend & company summary (with Volatility)", style = "margin-top: 20px;"))),
+      fluidRow(column(12, h4("Dividend & company summary (Volatility & \u03b2)", style = "margin-top: 20px;"))),
       fluidRow(column(12, DTOutput("overview_table"))),
       helpText("Stocks: Apple, Tesla, Meta, NVIDIA, Google, Coca-Cola. Data: Alpha Vantage (daily).", style = "color: #8b949e;")
     ),
@@ -398,35 +484,37 @@ ui = fluidPage(
         h4("Binomial Lattice Model (RWPM)"),
         plotlyOutput("lattice_plot", height = "550px")
       )),
+
+      fluidRow(column(12, h4("Single Index Model (SIM) — vs SPY"))),
+      fluidRow(column(12, DTOutput("sim_table"))),
+      fluidRow(column(12,
+        plotlyOutput("sim_regression_plot", height = "500px")
+      )),
+      fluidRow(column(12,
+        plotlyOutput("sim_beta_bar_plot", height = "400px")
+      )),
+
       fluidRow(column(12, uiOutput("model_params_info")))
     ),
 
-    # --- Tab 3: Trading hint (Ollama) ---
+    # --- Tab 3: AI Assistant (OpenAI gpt-4o-mini) ---
     tabPanel(
-      "Trading hint (Ollama)",
+      "AI Assistant",
+      fluidRow(column(12, helpText(
+        "Powered by OpenAI gpt-4o-mini. AI sees current price data, dividends, volatility, GBM drift, and Lattice model predictions.",
+        style = "color: #8b949e;"))),
       fluidRow(
-        column(12, actionButton("ask_suggestion", "Get buy-sell suggestion", class = "btn-primary"))
+        column(4, actionButton("ask_suggestion", "Buy / Sell / Hold Analysis", class = "btn-primary")),
+        column(4, actionButton("gen_report", "Generate Full Report", class = "btn-primary")),
+        column(4, uiOutput("download_report_ui"))
       ),
       fluidRow(
-        column(8, textAreaInput("user_prompt", "Or ask your own question (e.g. risk summary)", value = "", rows = 3, width = "100%")),
-        column(4, actionButton("ask_ollama", "Send custom prompt", class = "btn-primary"))
+        column(9, textAreaInput("user_prompt", "Or ask your own question (e.g. risk analysis, volatility comparison, model outlook)",
+                                value = "", rows = 3, width = "100%")),
+        column(3, actionButton("ask_custom", "Send", class = "btn-primary", style = "margin-top: 25px;"))
       ),
-      fluidRow(column(12, uiOutput("ollama_error"))),
-      fluidRow(column(12, uiOutput("ollama_reply")))
-    ),
-
-    # --- Tab 4: Report (.txt) ---
-    tabPanel(
-      "Report (.txt)",
-      fluidRow(
-        column(12, helpText("Generate a short report from current stock data (Summary, Key findings, Recommendations). Uses OpenAI gpt-4o-mini if OPENAI_API_KEY is set, otherwise Ollama.", style = "color: #8b949e;"))
-      ),
-      fluidRow(
-        column(6, actionButton("gen_report", "Generate report", class = "btn-primary")),
-        column(6, uiOutput("download_report_ui"))
-      ),
-      fluidRow(column(12, uiOutput("report_error"))),
-      fluidRow(column(12, uiOutput("report_preview")))
+      fluidRow(column(12, uiOutput("ai_error"))),
+      fluidRow(column(12, uiOutput("ai_reply")))
     )
   )
 )
@@ -477,7 +565,11 @@ server = function(input, output, session) {
   output$price_table = renderDT({
     d = stock_data()
     if (is.null(d) || is.null(d$daily)) return(NULL)
-    d$daily
+    df = d$daily[d$daily$Symbol %in% TICKERS, ]
+    if (!is.null(input$data_ticker) && input$data_ticker != "ALL") {
+      df = df[df$Symbol == input$data_ticker, ]
+    }
+    df
   }, options = list(pageLength = 20, dom = "tip", ordering = TRUE), rownames = FALSE)
 
   output$overview_table = renderDT({
@@ -485,8 +577,15 @@ server = function(input, output, session) {
     if (is.null(d) || is.null(d$overview)) return(NULL)
     ov = d$overview
     vol = compute_all_volatility(d$daily)
-    if (!is.null(vol)) {
-      ov = merge(ov, vol, by = "Symbol", all.x = TRUE)
+    if (!is.null(vol)) ov = merge(ov, vol, by = "Symbol", all.x = TRUE)
+    sim_df = compute_all_sim(d$daily)
+    if (!is.null(sim_df)) {
+      beta_df = sim_df[, c("Symbol", "Beta")]
+      colnames(beta_df) = c("Symbol", "\u03b2 (vs SPY)")
+      ov = merge(ov, beta_df, by = "Symbol", all.x = TRUE)
+    }
+    if (!is.null(input$data_ticker) && input$data_ticker != "ALL") {
+      ov = ov[ov$Symbol == input$data_ticker, ]
     }
     ov
   }, options = list(pageLength = 10, dom = "tip"), rownames = FALSE)
@@ -667,6 +766,92 @@ server = function(input, output, session) {
     p
   })
 
+  output$sim_table = renderDT({
+    d = stock_data()
+    if (is.null(d) || is.null(d$daily)) return(NULL)
+    sim_df = compute_all_sim(d$daily)
+    if (is.null(sim_df)) return(NULL)
+    colnames(sim_df) = c("Symbol", "\u03b1 (Alpha)", "\u03b2 (Beta)", "R\u00b2")
+    datatable(sim_df, selection = "none",
+      style = "bootstrap", class = "table-dark table-sm",
+      options = list(dom = "t", pageLength = 10, ordering = TRUE)) |>
+      formatStyle(columns = names(sim_df), color = "#e6edf3", backgroundColor = "#0d1117")
+  })
+
+  output$sim_regression_plot = renderPlotly({
+    d = stock_data()
+    if (is.null(d) || is.null(d$daily)) return(NULL)
+    sym = input$analysis_ticker
+    mkt = d$daily[d$daily$Symbol == MARKET_TICKER, ]
+    sub = d$daily[d$daily$Symbol == sym, ]
+    if (nrow(mkt) == 0 || nrow(sub) == 0) return(NULL)
+    mkt = mkt[order(mkt$Date), ]
+    sub = sub[order(sub$Date), ]
+    common_dates = intersect(as.character(sub$Date), as.character(mkt$Date))
+    if (length(common_dates) < 10) return(NULL)
+    s = sub[as.character(sub$Date) %in% common_dates, ]
+    m = mkt[as.character(mkt$Date) %in% common_dates, ]
+    s = s[order(s$Date), ]
+    m = m[order(m$Date), ]
+    R_stock = diff(log(s$Close))
+    R_market = diff(log(m$Close))
+    params = estimate_sim_params(s$Close, m$Close)
+
+    fit_x = seq(min(R_market), max(R_market), length.out = 200)
+    fit_y = params$alpha + params$beta * fit_x
+
+    p = plot_ly() |>
+      add_trace(x = R_market, y = R_stock, type = "scatter", mode = "markers",
+        marker = list(color = "#58a6ff", size = 3, opacity = 0.4),
+        name = "Daily returns",
+        hovertemplate = paste0("R_", sym, ": %{y:.4f}<br>R_SPY: %{x:.4f}<extra></extra>")) |>
+      add_trace(x = fit_x, y = fit_y, type = "scatter", mode = "lines",
+        line = list(color = "#f0883e", width = 2),
+        name = sprintf("\u03b1=%.5f  \u03b2=%.3f  R\u00b2=%.3f",
+                       params$alpha, params$beta, params$r_squared)) |>
+      layout(
+        title = list(text = paste0("SIM Regression: ", sym, " vs SPY"), font = list(color = "#e6edf3")),
+        xaxis = list(title = "SPY Daily Log Return", color = "#8b949e",
+          gridcolor = "#21262d", zerolinecolor = "#30363d"),
+        yaxis = list(title = paste0(sym, " Daily Log Return"), color = "#8b949e",
+          gridcolor = "#21262d", zerolinecolor = "#30363d"),
+        paper_bgcolor = "#0d1117", plot_bgcolor = "#0d1117",
+        legend = list(font = list(color = "#e6edf3"), x = 0.02, y = 0.98),
+        margin = list(t = 60)
+      )
+    p
+  })
+
+  output$sim_beta_bar_plot = renderPlotly({
+    d = stock_data()
+    if (is.null(d) || is.null(d$daily)) return(NULL)
+    sim_df = compute_all_sim(d$daily)
+    if (is.null(sim_df)) return(NULL)
+
+    colors = ifelse(sim_df$Beta > 1, "#f85149",
+              ifelse(sim_df$Beta < 1, "#3fb950", "#58a6ff"))
+    p = plot_ly() |>
+      add_trace(x = sim_df$Symbol, y = sim_df$Beta, type = "bar",
+        marker = list(color = colors),
+        text = sprintf("\u03b2=%.3f  R\u00b2=%.3f", sim_df$Beta, sim_df$R_squared),
+        hovertemplate = "%{x}<br>%{text}<extra></extra>") |>
+      add_trace(x = sim_df$Symbol, y = rep(1, nrow(sim_df)),
+        type = "scatter", mode = "lines",
+        line = list(color = "#8b949e", dash = "dash", width = 1),
+        name = "\u03b2 = 1 (market)", showlegend = TRUE) |>
+      layout(
+        title = list(text = "\u03b2 Comparison Across Stocks (vs SPY)", font = list(color = "#e6edf3")),
+        xaxis = list(title = "", color = "#8b949e", gridcolor = "#21262d"),
+        yaxis = list(title = "\u03b2 (Beta)", color = "#8b949e",
+          gridcolor = "#21262d", zerolinecolor = "#30363d"),
+        paper_bgcolor = "#0d1117", plot_bgcolor = "#0d1117",
+        legend = list(font = list(color = "#e6edf3")),
+        margin = list(t = 60),
+        showlegend = TRUE
+      )
+    p
+  })
+
   output$model_params_info = renderUI({
     sub = selected_stock_prices()
     if (is.null(sub) || nrow(sub) < 10) return(NULL)
@@ -677,87 +862,121 @@ server = function(input, output, session) {
     lp = estimate_lattice_params(close_prices)
     vol = compute_volatility(close_prices)
 
+    d = stock_data()
+    sim_txt = ""
+    if (!is.null(d) && !is.null(d$daily)) {
+      mkt = d$daily[d$daily$Symbol == MARKET_TICKER, ]
+      stk = d$daily[d$daily$Symbol == sym, ]
+      if (nrow(mkt) > 0 && nrow(stk) > 0) {
+        mkt = mkt[order(mkt$Date), ]
+        stk = stk[order(stk$Date), ]
+        cd = intersect(as.character(stk$Date), as.character(mkt$Date))
+        if (length(cd) >= 10) {
+          sp = estimate_sim_params(
+            stk[as.character(stk$Date) %in% cd, ][order(stk[as.character(stk$Date) %in% cd, ]$Date), ]$Close,
+            mkt[as.character(mkt$Date) %in% cd, ][order(mkt[as.character(mkt$Date) %in% cd, ]$Date), ]$Close
+          )
+          sim_txt = sprintf(", \u03b1 = %.5f, \u03b2 = %.3f, R\u00b2 = %.3f", sp$alpha, sp$beta, sp$r_squared)
+        }
+      }
+    }
+
     div(
       style = "color: #e6edf3; margin-top: 15px; padding: 12px 16px; background: #161b22; border: 1px solid #30363d; border-radius: 6px;",
       span(style = "font-weight: 600;", paste0(sym, ": ")),
-      span(sprintf("\u03bc = %.4f, \u03c3 = %.2f%%, u = %.4f, d = %.4f, p = %.2f%%",
-                   gbm$mu, vol * 100, lp$u, lp$d, lp$p * 100))
+      span(sprintf("\u03bc = %.4f, \u03c3 = %.2f%%, u = %.4f, d = %.4f, p = %.2f%%%s",
+                   gbm$mu, vol * 100, lp$u, lp$d, lp$p * 100, sim_txt))
     )
   })
 
-  # --- Trading hint (Ollama) tab ---
+  # --- AI Assistant tab (unified OpenAI) ---
 
-  observeEvent(input$ask_suggestion, {
-    output$ollama_error = renderUI(NULL)
-    output$ollama_reply = renderUI(NULL)
-    api_key = Sys.getenv("OLLAMA_API_KEY")
-    d = stock_data()
-    summary_txt = build_summary_for_llm(d$daily, d$overview)
-    prompt = paste0(
-      "You are a concise trading assistant. Based ONLY on the following data, give a short suggestion for each stock: BUY / SELL / HOLD. One line per symbol with brief reason. Reply in English ONLY.\n\n",
-      summary_txt,
-      "\n\nFormat: SYMBOL: BUY/SELL/HOLD - reason."
-    )
-    withProgress(message = "Getting buy/sell suggestion...", value = 0.5, {
-      result = ollama_chat(prompt, api_key)
-      setProgress(1)
-    })
-    if (!result$ok) {
-      output$ollama_error = renderUI(div(class = "alert alert-danger", result$error))
-    } else {
-      output$ollama_reply = renderUI(div(class = "alert alert-info", style = "white-space: pre-wrap;", result$text))
-    }
-  })
-
-  observeEvent(input$ask_ollama, {
-    output$ollama_error = renderUI(NULL)
-    output$ollama_reply = renderUI(NULL)
-    api_key = Sys.getenv("OLLAMA_API_KEY")
-    d = stock_data()
-    context = build_summary_for_llm(d$daily, d$overview)
-    user_text = paste0(context, "\n\nUser question: ", input$user_prompt)
-    withProgress(message = "Calling Ollama...", value = 0.5, {
-      result = ollama_chat(user_text, api_key)
-      setProgress(1)
-    })
-    if (!result$ok) {
-      output$ollama_error = renderUI(div(class = "alert alert-danger", result$error))
-    } else {
-      output$ollama_reply = renderUI(div(class = "alert alert-info", style = "white-space: pre-wrap;", result$text))
-    }
-  })
-
-  # --- Report (.txt) tab ---
+  ai_call = function(prompt) {
+    openai_key = Sys.getenv("OPENAI_API_KEY")
+    if (nzchar(openai_key)) return(openai_chat(prompt, openai_key))
+    ollama_key = Sys.getenv("OLLAMA_API_KEY")
+    if (nzchar(ollama_key)) return(ollama_chat(prompt, ollama_key))
+    list(ok = FALSE, error = "No API key set. Add OPENAI_API_KEY or OLLAMA_API_KEY to .env.")
+  }
 
   report_text = reactiveVal(NULL)
 
-  observeEvent(input$gen_report, {
-    output$report_error = renderUI(NULL)
+  show_ai_result = function(result) {
+    if (!result$ok) {
+      output$ai_error = renderUI(div(class = "alert alert-danger", result$error))
+      output$ai_reply = renderUI(NULL)
+    } else {
+      output$ai_error = renderUI(NULL)
+      output$ai_reply = renderUI(div(class = "alert alert-info",
+        style = "white-space: pre-wrap; max-height: 500px; overflow-y: auto;", result$text))
+    }
+  }
+
+  observeEvent(input$ask_suggestion, {
+    output$ai_error = renderUI(NULL)
+    output$ai_reply = renderUI(NULL)
     report_text(NULL)
     d = stock_data()
     summary_txt = build_summary_for_llm(d$daily, d$overview)
     prompt = paste0(
-      "Based ONLY on the following stock data, write a short plain-text report (no markdown). Use this structure:\n\n",
-      "Summary\n(2-3 sentences overall.)\n\n",
-      "Key Findings\n(Bullet points, one per symbol or theme.)\n\n",
-      "Recommendations\n(1-2 sentences.)\n\n",
+      "You are an expert trading analyst. Based ONLY on the data below (prices, 5-day change, dividends, P/E, volatility, GBM drift, Lattice model predictions, and Single Index Model alpha/beta/R2), provide:\n\n",
+      "1. A BUY / SELL / HOLD recommendation for each stock with a brief reason.\n",
+      "2. A short risk note per stock based on volatility, beta (systematic risk), and model outlook.\n",
+      "3. Note which stocks have beta>1 (aggressive) vs beta<1 (defensive).\n\n",
+      "Reply in English. Be concise.\n\n",
+      summary_txt,
+      "\n\nFormat:\nSYMBOL: BUY/SELL/HOLD - reason (Risk: ...)"
+    )
+    withProgress(message = "Analyzing stocks...", value = 0.5, {
+      result = ai_call(prompt)
+      setProgress(1)
+    })
+    show_ai_result(result)
+  })
+
+  observeEvent(input$ask_custom, {
+    output$ai_error = renderUI(NULL)
+    output$ai_reply = renderUI(NULL)
+    report_text(NULL)
+    d = stock_data()
+    context = build_summary_for_llm(d$daily, d$overview)
+    user_text = paste0(
+      "You are an expert stock analyst. Here is the current data including price, dividends, volatility, GBM model drift, Lattice model predictions, and Single Index Model (alpha, beta, R-squared vs SPY):\n\n",
+      context,
+      "\n\nUser question: ", input$user_prompt
+    )
+    withProgress(message = "Thinking...", value = 0.5, {
+      result = ai_call(user_text)
+      setProgress(1)
+    })
+    show_ai_result(result)
+  })
+
+  observeEvent(input$gen_report, {
+    output$ai_error = renderUI(NULL)
+    output$ai_reply = renderUI(NULL)
+    report_text(NULL)
+    d = stock_data()
+    summary_txt = build_summary_for_llm(d$daily, d$overview)
+    prompt = paste0(
+      "You are an expert financial analyst. Based ONLY on the data below (prices, dividends, P/E, volatility, GBM drift, Lattice model predictions, and Single Index Model alpha/beta/R2 vs SPY), write a concise plain-text report (no markdown). Structure:\n\n",
+      "Summary\n(2-3 sentences on overall market picture.)\n\n",
+      "Volatility & Risk\n(Compare volatility across stocks, highlight highest/lowest risk. Note beta values — beta>1 means more volatile than market, beta<1 means defensive.)\n\n",
+      "Model Outlook\n(Comment on GBM drift direction, Lattice 30-day expected price vs current, and alpha for excess returns.)\n\n",
+      "Recommendations\n(BUY/SELL/HOLD per stock with 1-line reason.)\n\n",
       "Data:\n", summary_txt
     )
-    openai_key = Sys.getenv("OPENAI_API_KEY")
-    ollama_key = Sys.getenv("OLLAMA_API_KEY")
     withProgress(message = "Generating report...", value = 0.5, {
-      if (nzchar(openai_key)) {
-        result = openai_chat(prompt, openai_key)
-      } else {
-        result = ollama_chat(prompt, ollama_key)
-      }
+      result = ai_call(prompt)
       setProgress(1)
     })
     if (!result$ok) {
-      output$report_error = renderUI(div(class = "alert alert-danger", result$error))
+      output$ai_error = renderUI(div(class = "alert alert-danger", result$error))
     } else {
       report_text(result$text)
-      output$report_error = renderUI(NULL)
+      output$ai_error = renderUI(NULL)
+      output$ai_reply = renderUI(div(class = "alert alert-info",
+        style = "white-space: pre-wrap; max-height: 500px; overflow-y: auto;", result$text))
     }
   })
 
@@ -770,15 +989,6 @@ server = function(input, output, session) {
     filename = function() paste0("report_", format(Sys.time(), "%Y%m%d_%H%M"), ".txt"),
     content = function(file) writeLines(report_text(), file)
   )
-
-  output$report_preview = renderUI({
-    if (is.null(report_text()) || !nzchar(report_text())) return(NULL)
-    div(
-      class = "alert alert-info",
-      style = "white-space: pre-wrap; max-height: 300px; overflow-y: auto;",
-      report_text()
-    )
-  })
 }
 
 shinyApp(ui = ui, server = server)
