@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN R -e "install.packages(c('httr2', 'DT', 'dplyr'), repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('httr2', 'DT', 'dplyr', 'plotly'), repos='https://cloud.r-project.org/')"
 
 COPY app.R /app/app.R
 
