@@ -562,7 +562,7 @@ build_news_snapshot <- function(symbol, news_df, max_rows = 5) {
   items <- paste0(
     seq_len(nrow(top)), ". ",
     top$Symbol, ": ", top$Title,
-    " (", format(as.POSIXct(top$Published, origin = "1970-01-01", tz = "UTC"), "%m-%d %H:%M"), ")"
+    " (", format(as.POSIXct(top$Published, origin = "1970-01-01", tz = "UTC"), "%m-%d %H:%M", tz = "America/New_York"), " ET)"
   )
   paste(items, collapse = "\n")
 }
@@ -632,8 +632,8 @@ compute_news_bias <- function(news_df, max_items = 20) {
     w <- exp(-age_days / 7)
     contrib <- polarity * w
 
-    pub_hm <- format(published, "%H:%M")
-    pub_str <- if (pub_hm == "00:00") format(published, "%Y-%m-%d") else format(published, "%Y-%m-%d %H:%M")
+    pub_hm <- format(published, "%H:%M", tz = "America/New_York")
+    pub_str <- if (pub_hm == "00:00") format(published, "%Y-%m-%d", tz = "America/New_York") else paste0(format(published, "%Y-%m-%d %H:%M", tz = "America/New_York"), " ET")
     data.frame(
       Published = pub_str,
       Source = sub$Source[[i]] %||% "",
@@ -1404,8 +1404,9 @@ server <- function(input, output, session) {
 
     shown <- news_df[order(news_df$Published, decreasing = TRUE), ]
     ts <- shown$Published
-    hm <- format(ts, "%H:%M")
-    shown$Published <- ifelse(hm == "00:00", format(ts, "%Y-%m-%d"), format(ts, "%Y-%m-%d %H:%M"))
+    local_ts <- format(ts, "%Y-%m-%d %H:%M", tz = "America/New_York")
+    local_hm <- format(ts, "%H:%M", tz = "America/New_York")
+    shown$Published <- ifelse(local_hm == "00:00", format(ts, "%Y-%m-%d", tz = "America/New_York"), paste0(local_ts, " ET"))
     # Some Finnhub plans return a non-public URL; fall back to a News search link.
     url <- as.character(shown$Url)
     needs_search <- grepl("^https?://finnhub\\.io/api/news\\?id=", url)

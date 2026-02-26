@@ -14,4 +14,4 @@ RUN mkdir -p /app/data && chmod 777 /app/data
 
 EXPOSE 8080
 
-CMD ["R", "-e", "shiny::runApp('/app/app.R', host='0.0.0.0', port=8080)"]
+CMD ["R", "-e", "message('ENV FINNHUB=', nchar(Sys.getenv('FINNHUB_API_KEY')), ' chars'); shiny::runApp('/app/app.R', host='0.0.0.0', port=8080)"]
