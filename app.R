@@ -1354,8 +1354,6 @@ server <- function(input, output, session) {
         fluidRow(
           column(12,
             h3("Historical Prices", class = "section-title"),
-            selectInput("analytics_ticker", "Select Stock",
-                        choices = TICKERS, selected = "AAPL", width = "200px"),
             DTOutput("analytics_price_table")
           )
         )
@@ -1777,14 +1775,15 @@ server <- function(input, output, session) {
   output$rag_table <- renderDT({
     rag <- rag_history()
     if (is.null(rag) || nrow(rag) == 0) return(NULL)
-    display <- rag[order(rag$snapshot_date, rag$ticker, decreasing = TRUE), ]
+    display <- rag
     drop_cols <- c("sector", "factor_notes", "model_fit_notes",
                    "data_source_prices", "data_source_fundamentals",
                    "risk_free_source", "risk_free_tenor", "sim_index_ticker",
                    "turnover_20d", "lattice_method")
     for (col in drop_cols) if (col %in% names(display)) display[[col]] <- NULL
+    display <- display[order(display$snapshot_date, display$ticker, decreasing = TRUE), ]
     datatable(display, rownames = FALSE,
-              options = list(dom = "tip", pageLength = 14, scrollX = TRUE, autoWidth = FALSE,
+              options = list(dom = "tip", pageLength = 20, scrollX = TRUE, autoWidth = FALSE,
                              columnDefs = list(list(className = "dt-center dt-nowrap", targets = "_all"))),
               selection = "none")
   })
@@ -1792,22 +1791,20 @@ server <- function(input, output, session) {
   output$analytics_price_table <- renderDT({
     d <- stock_data()
     if (is.null(d) || is.null(d$daily)) return(NULL)
-    sub <- d$daily[d$daily$Symbol == input$analytics_ticker, ]
-    if (nrow(sub) == 0) return(NULL)
-    sub <- sub[order(sub$Date, decreasing = TRUE), ]
-    datatable(sub[, c("Date", "Open", "High", "Low", "Close", "Volume")],
-              rownames = FALSE, options = list(dom = "tip", pageLength = 20, ordering = TRUE))
+    display <- d$daily[order(d$daily$Date, decreasing = TRUE), ]
+    datatable(display, rownames = FALSE,
+              options = list(dom = "tip", pageLength = 20, scrollX = TRUE, autoWidth = FALSE,
+                             columnDefs = list(list(className = "dt-center dt-nowrap", targets = "_all"))),
+              selection = "none")
   })
 
   output$download_rag_csv <- downloadHandler(
-    filename = function() paste0("rag_stock_features_", Sys.Date(), ".csv"),
+    filename = function() paste0("rag_data_", Sys.Date(), ".csv"),
     content = function(file) {
       rag <- rag_history()
-      if (is.null(rag)) {
-        d <- stock_data()
-        if (!is.null(d) && !is.null(d$daily)) rag <- update_rag_history(d$daily)
+      if (!is.null(rag) && nrow(rag) > 0) {
+        write.csv(rag, file, row.names = FALSE)
       }
-      if (!is.null(rag)) write.csv(rag, file, row.names = FALSE)
     }
   )
 }
