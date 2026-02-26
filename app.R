@@ -509,6 +509,16 @@ save_cached_data <- function(daily_df, news_df = NULL) {
     write.csv(save_news, cache_path("news.csv"), row.names = FALSE)
   }
   writeLines(safe_now(), cache_path("cache_updated.txt"))
+  app_dir <- if (nzchar(Sys.getenv("SHINY_APP_DIR"))) Sys.getenv("SHINY_APP_DIR") else getwd()
+  tryCatch(write.csv(daily_df, file.path(app_dir, "historical_prices.csv"), row.names = FALSE),
+           error = function(e) message("Could not export historical_prices.csv: ", e$message))
+}
+
+export_rag_csv <- function(rag_df) {
+  if (is.null(rag_df) || nrow(rag_df) == 0) return()
+  app_dir <- if (nzchar(Sys.getenv("SHINY_APP_DIR"))) Sys.getenv("SHINY_APP_DIR") else getwd()
+  tryCatch(write.csv(rag_df, file.path(app_dir, "model_parameters.csv"), row.names = FALSE),
+           error = function(e) message("Could not export model_parameters.csv: ", e$message))
 }
 
 # ----------------------------
@@ -1172,7 +1182,9 @@ server <- function(input, output, session) {
       news_data(news_df)
       save_cached_data(hist_df, news_df)
       setProgress(0.9, detail = "Computing RAG parameters...")
-      rag_history(update_rag_history(hist_df))
+      rag_result <- update_rag_history(hist_df)
+      rag_history(rag_result)
+      export_rag_csv(rag_result)
       last_updated(safe_now())
       setProgress(1)
       showNotification("Data refreshed.", type = "message")
@@ -1257,7 +1269,9 @@ server <- function(input, output, session) {
     d <- stock_data()
     if (!is.null(d) && !is.null(d$daily) && is.null(rag_history())) {
       withProgress(message = "Computing model parameters...", value = 0.5, {
-        rag_history(update_rag_history(d$daily))
+        rag_result <- update_rag_history(d$daily)
+        rag_history(rag_result)
+        export_rag_csv(rag_result)
       })
     }
     data_view("analytics")
