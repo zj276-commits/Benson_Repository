@@ -509,16 +509,64 @@ save_cached_data <- function(daily_df, news_df = NULL) {
     write.csv(save_news, cache_path("news.csv"), row.names = FALSE)
   }
   writeLines(safe_now(), cache_path("cache_updated.txt"))
-  app_dir <- if (nzchar(Sys.getenv("SHINY_APP_DIR"))) Sys.getenv("SHINY_APP_DIR") else getwd()
-  tryCatch(write.csv(daily_df, file.path(app_dir, "historical_prices.csv"), row.names = FALSE),
-           error = function(e) message("Could not export historical_prices.csv: ", e$message))
 }
 
-export_rag_csv <- function(rag_df) {
-  if (is.null(rag_df) || nrow(rag_df) == 0) return()
-  app_dir <- if (nzchar(Sys.getenv("SHINY_APP_DIR"))) Sys.getenv("SHINY_APP_DIR") else getwd()
-  tryCatch(write.csv(rag_df, file.path(app_dir, "model_parameters.csv"), row.names = FALSE),
-           error = function(e) message("Could not export model_parameters.csv: ", e$message))
+get_export_dir <- function() {
+  if (nzchar(Sys.getenv("SHINY_APP_DIR"))) Sys.getenv("SHINY_APP_DIR") else getwd()
+}
+
+export_combined_csv <- function(daily_df, rag_df) {
+  if (is.null(daily_df) || nrow(daily_df) == 0) return()
+  app_dir <- get_export_dir()
+  tryCatch({
+    prices <- daily_df
+    prices$Date <- as.character(prices$Date)
+    names(prices)[names(prices) == "Symbol"] <- "ticker"
+    names(prices)[names(prices) == "Date"] <- "date"
+    names(prices)[names(prices) == "Open"] <- "open"
+    names(prices)[names(prices) == "High"] <- "high"
+    names(prices)[names(prices) == "Low"] <- "low"
+    names(prices)[names(prices) == "Close"] <- "close"
+    names(prices)[names(prices) == "Volume"] <- "volume"
+    if (!is.null(rag_df) && nrow(rag_df) > 0 && "snapshot_date" %in% names(rag_df)) {
+      rag <- rag_df
+      rag$date <- rag$snapshot_date
+      drop <- c("snapshot_date", "asof_date", "est_window_start", "est_window_end")
+      for (col in drop) if (col %in% names(rag)) rag[[col]] <- NULL
+      combined <- merge(prices, rag, by = c("ticker", "date"), all.x = TRUE)
+    } else {
+      combined <- prices
+    }
+    combined <- combined[order(combined$ticker, combined$date), ]
+    write.csv(combined, file.path(app_dir, "rag_data.csv"), row.names = FALSE)
+    message("[Export] rag_data.csv: ", nrow(combined), " rows")
+  }, error = function(e) message("Could not export rag_data.csv: ", e$message))
+}
+
+export_news_csv <- function(news_df) {
+  if (is.null(news_df) || nrow(news_df) == 0) return()
+  app_dir <- get_export_dir()
+  news_file <- file.path(app_dir, "news_archive.csv")
+  tryCatch({
+    export <- news_df
+    export$Published <- as.numeric(export$Published)
+    export$published_et <- format(
+      as.POSIXct(export$Published, origin = "1970-01-01", tz = "UTC"),
+      "%Y-%m-%d %H:%M", tz = "America/New_York"
+    )
+    existing <- if (file.exists(news_file)) {
+      tryCatch(read.csv(news_file, stringsAsFactors = FALSE), error = function(e) NULL)
+    } else NULL
+    if (!is.null(existing) && nrow(existing) > 0) {
+      combined <- dplyr::bind_rows(existing, export)
+      combined <- combined[!duplicated(combined$Title), ]
+    } else {
+      combined <- export
+    }
+    combined <- combined[order(combined$Published, decreasing = TRUE), ]
+    write.csv(combined, news_file, row.names = FALSE)
+    message("[Export] news_archive.csv: ", nrow(combined), " rows")
+  }, error = function(e) message("Could not export news_archive.csv: ", e$message))
 }
 
 # ----------------------------
@@ -1177,14 +1225,16 @@ server <- function(input, output, session) {
         return(NULL)
       }
       setProgress(0.75, detail = "Fetching news")
-      news_df <- gather_all_news(30)
+      news_df <- gather_all_news(90)
       stock_data(list(daily = hist_df, news = news_df))
       news_data(news_df)
       save_cached_data(hist_df, news_df)
-      setProgress(0.9, detail = "Computing RAG parameters...")
+      setProgress(0.85, detail = "Computing RAG parameters...")
       rag_result <- update_rag_history(hist_df)
       rag_history(rag_result)
-      export_rag_csv(rag_result)
+      setProgress(0.95, detail = "Exporting CSVs...")
+      export_combined_csv(hist_df, rag_result)
+      export_news_csv(news_df)
       last_updated(safe_now())
       setProgress(1)
       showNotification("Data refreshed.", type = "message")
@@ -1211,6 +1261,7 @@ server <- function(input, output, session) {
     if (!is.null(d) && !is.null(d$daily)) {
       save_cached_data(d$daily, news_df)
     }
+    export_news_csv(news_df)
     output$news_error <- renderUI(NULL)
   }, ignoreInit = TRUE)
 
@@ -1271,7 +1322,7 @@ server <- function(input, output, session) {
       withProgress(message = "Computing model parameters...", value = 0.5, {
         rag_result <- update_rag_history(d$daily)
         rag_history(rag_result)
-        export_rag_csv(rag_result)
+        export_combined_csv(d$daily, rag_result)
       })
     }
     data_view("analytics")
