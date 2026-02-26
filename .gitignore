@@ -1,0 +1,5 @@
+.env
+.env.*
+all_api
+data/
+.DS_Store
