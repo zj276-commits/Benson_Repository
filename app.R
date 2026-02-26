@@ -515,32 +515,24 @@ get_export_dir <- function() {
   if (nzchar(Sys.getenv("SHINY_APP_DIR"))) Sys.getenv("SHINY_APP_DIR") else getwd()
 }
 
-export_combined_csv <- function(daily_df, rag_df) {
-  if (is.null(daily_df) || nrow(daily_df) == 0) return()
+export_csv_files <- function(daily_df, rag_df) {
   app_dir <- get_export_dir()
-  tryCatch({
-    prices <- daily_df
-    prices$Date <- as.character(prices$Date)
-    names(prices)[names(prices) == "Symbol"] <- "ticker"
-    names(prices)[names(prices) == "Date"] <- "date"
-    names(prices)[names(prices) == "Open"] <- "open"
-    names(prices)[names(prices) == "High"] <- "high"
-    names(prices)[names(prices) == "Low"] <- "low"
-    names(prices)[names(prices) == "Close"] <- "close"
-    names(prices)[names(prices) == "Volume"] <- "volume"
-    if (!is.null(rag_df) && nrow(rag_df) > 0 && "snapshot_date" %in% names(rag_df)) {
-      rag <- rag_df
-      rag$date <- rag$snapshot_date
-      drop <- c("snapshot_date", "asof_date", "est_window_start", "est_window_end")
-      for (col in drop) if (col %in% names(rag)) rag[[col]] <- NULL
-      combined <- merge(prices, rag, by = c("ticker", "date"), all.x = TRUE)
-    } else {
-      combined <- prices
-    }
-    combined <- combined[order(combined$ticker, combined$date), ]
-    write.csv(combined, file.path(app_dir, "rag_data.csv"), row.names = FALSE)
-    message("[Export] rag_data.csv: ", nrow(combined), " rows")
-  }, error = function(e) message("Could not export rag_data.csv: ", e$message))
+  if (!is.null(daily_df) && nrow(daily_df) > 0) {
+    tryCatch({
+      prices <- daily_df
+      prices$Date <- as.character(prices$Date)
+      prices <- prices[order(prices$Symbol, prices$Date), ]
+      write.csv(prices, file.path(app_dir, "historical_prices.csv"), row.names = FALSE)
+      message("[Export] historical_prices.csv: ", nrow(prices), " rows")
+    }, error = function(e) message("Could not export historical_prices.csv: ", e$message))
+  }
+  if (!is.null(rag_df) && nrow(rag_df) > 0) {
+    tryCatch({
+      params <- rag_df[order(rag_df$snapshot_date, rag_df$ticker), ]
+      write.csv(params, file.path(app_dir, "model_parameters.csv"), row.names = FALSE)
+      message("[Export] model_parameters.csv: ", nrow(params), " rows")
+    }, error = function(e) message("Could not export model_parameters.csv: ", e$message))
+  }
 }
 
 export_news_csv <- function(news_df) {
@@ -1233,7 +1225,7 @@ server <- function(input, output, session) {
       rag_result <- update_rag_history(hist_df)
       rag_history(rag_result)
       setProgress(0.95, detail = "Exporting CSVs...")
-      export_combined_csv(hist_df, rag_result)
+      export_csv_files(hist_df, rag_result)
       export_news_csv(news_df)
       last_updated(safe_now())
       setProgress(1)
@@ -1322,7 +1314,7 @@ server <- function(input, output, session) {
       withProgress(message = "Computing model parameters...", value = 0.5, {
         rag_result <- update_rag_history(d$daily)
         rag_history(rag_result)
-        export_combined_csv(d$daily, rag_result)
+        export_csv_files(d$daily, rag_result)
       })
     }
     data_view("analytics")
