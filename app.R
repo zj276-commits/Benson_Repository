@@ -850,7 +850,6 @@ compute_rag_table <- function(daily_df) {
     vol_down <- sqrt(mean(r_below^2)) * sqrt(252)
     vol_20 <- if (n >= 20) sd(tail(r, 20)) * sqrt(252) else vol_a
     avg_vol_20 <- if (nrow(sdf) >= 20) round(mean(tail(sdf$Volume, 20), na.rm = TRUE)) else NA_real_
-    turnover_20 <- NA_real_
     gbm <- estimate_gbm_params(sdf, 252)
     mu_se <- sg * 252 / sqrt(n); sig_se <- vol_a / sqrt(2 * n)
     tc_v <- qt(0.975, df = n - 1)
@@ -866,7 +865,6 @@ compute_rag_table <- function(daily_df) {
       if (!is.na(kurt) && kurt > 4) "heavy_tails",
       if (div_y == 0) "no_dividend"
     ), collapse = ";")
-    fn <- sprintf("dividend_yield=TTM approx; rf=10Y UST %.1f%%; vol=realized from daily log returns; asof_date=last trading day in window; snapshot_date=target computation date", RISK_FREE_RATE * 100)
     mfn <- paste0(
       if (!is_normal) "Shapiro-Wilk rejects normality; " else "Normality not rejected; ",
       if (!is.na(kurt) && kurt > 4) "heavy tails (consider t-innovations/GARCH); " else "",
@@ -874,16 +872,9 @@ compute_rag_table <- function(daily_df) {
     )
     data.frame(
       ticker = sym, company_name = TICKER_LABELS[[sym]],
-      sector = SECTOR_MAP[[sym]] %||% "",
       asof_date = as.character(max(sdf$Date)),
-      price_frequency = "daily", annualization_factor = 252L,
       est_window_start = as.character(min(sdf$Date)),
-      est_window_end = as.character(max(sdf$Date)),
-      n_obs = n, adj_price_used = TRUE,
-      data_source_prices = "Finnhub+Yahoo Finance",
-      data_source_fundamentals = "hardcoded TTM approx",
-      risk_free_source = "US Treasury (constant)",
-      risk_free_tenor = "10Y",
+      n_obs = n,
       spot_price = round(tail(cl, 1), 4),
       log_return_mean = round(mu, 8), log_return_std = round(sg, 8),
       vol_annual_realized = round(vol_a, 6),
@@ -893,8 +884,6 @@ compute_rag_table <- function(daily_df) {
       max_drawdown = round(max(dd, na.rm = TRUE), 6),
       return_annual = round(ret_a, 6),
       avg_daily_volume_20d = avg_vol_20,
-      turnover_20d = turnover_20,
-      normality_test_name = nt$nm,
       normality_n = n_test,
       normality_pvalue = round(nt$pv, 6),
       normality_log10_pvalue = round(log10_pv, 4),
@@ -906,20 +895,13 @@ compute_rag_table <- function(daily_df) {
       gbm_mu_ci95_high = round((gbm$mu_annual %||% NA_real_) + tc_v * mu_se, 6),
       gbm_sigma_ci95_low = round((gbm$sigma_annual %||% NA_real_) - tc_v * sig_se, 6),
       gbm_sigma_ci95_high = round((gbm$sigma_annual %||% NA_real_) + tc_v * sig_se, 6),
-      risk_free_rate = RISK_FREE_RATE,
       dividend_yield = div_y,
       carry_r_minus_q = RISK_FREE_RATE - div_y,
-      lattice_T_years = lat$T_years %||% NA_real_,
-      lattice_N_steps = as.integer(lat$N_steps %||% NA_integer_),
-      lattice_dt = round(lat$dt %||% NA_real_, 8),
       lattice_u = round(lat$u %||% NA_real_, 8),
       lattice_d = round(lat$d %||% NA_real_, 8),
       lattice_p_real = round(lat$p_real %||% NA_real_, 8),
       lattice_p_rn = round(lat$p_rn %||% NA_real_, 8),
-      lattice_method = lat$method %||% "",
       lattice_implied_sigma = round(lat$sigma_annual %||% NA_real_, 6),
-      sim_index = MARKET_TICKER,
-      sim_index_ticker = "SPY (SPDR S&P 500 ETF)",
       sim_alpha_annual = round(sim$alpha_annual %||% NA_real_, 8),
       sim_beta = round(sim$beta %||% NA_real_, 6),
       sim_alpha_se = round(sim$alpha_se %||% NA_real_, 8),
@@ -930,7 +912,6 @@ compute_rag_table <- function(daily_df) {
       sim_beta_ci95_high = round(sim$beta_ci95_high %||% NA_real_, 6),
       sim_r_squared = round(sim$r_squared %||% NA_real_, 6),
       sim_resid_std = round(sim$resid_std %||% NA_real_, 8),
-      factor_notes = fn,
       model_fit_notes = mfn,
       tags = tags_v,
       stringsAsFactors = FALSE
@@ -942,8 +923,8 @@ compute_rag_table <- function(daily_df) {
 update_rag_history <- function(daily_df, start_date = "2026-02-01") {
   if (is.null(daily_df) || nrow(daily_df) < 5) return(NULL)
   history_file <- cache_path("rag_history.csv")
-  expected_cols <- c("data_source_prices", "normality_n", "normality_log10_pvalue",
-                     "vol_annual_realized", "vol_annual_downside", "factor_notes", "tags")
+  expected_cols <- c("normality_n", "normality_log10_pvalue",
+                     "vol_annual_realized", "vol_annual_downside", "tags")
   existing <- if (file.exists(history_file)) {
     tryCatch(read.csv(history_file, stringsAsFactors = FALSE), error = function(e) NULL)
   } else NULL
@@ -1767,13 +1748,7 @@ server <- function(input, output, session) {
   output$rag_table <- renderDT({
     rag <- rag_history()
     if (is.null(rag) || nrow(rag) == 0) return(NULL)
-    display <- rag
-    drop_cols <- c("sector", "factor_notes", "model_fit_notes",
-                   "data_source_prices", "data_source_fundamentals",
-                   "risk_free_source", "risk_free_tenor", "sim_index_ticker",
-                   "turnover_20d", "lattice_method")
-    for (col in drop_cols) if (col %in% names(display)) display[[col]] <- NULL
-    display <- display[order(display$snapshot_date, display$ticker, decreasing = TRUE), ]
+    display <- rag[order(rag$snapshot_date, rag$ticker, decreasing = TRUE), ]
     datatable(display, rownames = FALSE,
               options = list(dom = "tip", pageLength = 20, scrollX = TRUE, autoWidth = FALSE,
                              columnDefs = list(list(className = "dt-center dt-nowrap", targets = "_all"))),
