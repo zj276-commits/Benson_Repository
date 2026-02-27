@@ -1,112 +1,170 @@
-# Trading Hint Shiny App
+# Market Insight Studio
 
-*Uses Alpha Vantage for daily price and dividend/company data (6 stocks), Finnhub for company news, and Ollama Cloud / OpenAI for LLM trading hints.*
+A real-time financial analysis and AI prediction dashboard built with R/Shiny, tracking 7 major tech stocks with live quotes, news aggregation, and quantitative model forecasting.
+
+**Live App:** [market-insight-studio on DigitalOcean](https://your-app-url.ondigitalocean.app)
 
 ---
 
-## Overview
+## Tracked Stocks
 
-This app focuses on six tickers: **Apple (AAPL), Tesla (TSLA), Meta (META), NVIDIA (NVDA), Google (GOOGL), Coca-Cola (KO)**.
+| Ticker | Company |
+|--------|---------|
+| AAPL | Apple |
+| TSLA | Tesla |
+| META | Meta |
+| NVDA | NVIDIA |
+| GOOGL | Alphabet |
+| AMZN | Amazon |
+| MSFT | Microsoft |
 
-- **Data**: Daily price (~100 trading days) and dividend/company summary from Alpha Vantage. Data is **cached locally** in `data/` so the app loads the last saved dataset on startup—no need to click “fetch” every time. Use **Refresh data** to pull the latest from the API (~2–3 min, rate limit 5/min).
-- **Trading hint**: **Get buy/sell suggestion** asks the LLM for 买入/卖出/观望 per symbol with a short reason. You can also send a custom prompt with current data as context.
+Benchmark index: **SPY** (S&P 500 ETF)
+
+---
+
+## Features
+
+### Data Tab
+- **Live stock quotes** with auto-refresh (Finnhub real-time API)
+- Price cards showing current price, daily change, and volume
+- **Analytics sub-page** with:
+  - Model Parameters table (GBM, Binomial Lattice, Single Index Model)
+  - Historical Prices table (OHLCV)
+  - Downloadable CSV export
+
+### News Tab
+- Company news from Finnhub (filterable by stock, 7/30/90 day range)
+- Timestamps in US Eastern Time
+- Clickable article links
+
+### AI Prediction Tab
+- **Geometric Brownian Motion (GBM)** forecast with confidence bands
+- **Binomial Lattice (CRR)** price tree projection
+- **Single Index Model (SIM)** regression against SPY
+- AI-generated trading analysis via OpenAI GPT-4o-mini (fallback: Ollama)
+- News sentiment bias panel
+
+---
+
+## Quantitative Models
+
+| Model | Description |
+|-------|-------------|
+| GBM | Estimates annualized drift (mu) and volatility (sigma) from log returns; projects expected price path with 5-95% confidence interval |
+| Binomial Lattice | CRR parameterization with risk-neutral and real-world up-probabilities; 22-step tree over 1-month horizon |
+| Single Index Model | OLS regression of stock returns vs SPY; produces alpha, beta, R-squared, and confidence intervals |
+
+Additional statistics: Shapiro-Wilk normality test, skewness, kurtosis, max drawdown, realized/downside/20-day volatility, outlier fraction.
+
+---
+
+## RAG Data Files
+
+These CSV files are auto-exported on each data refresh for downstream RAG pipelines:
+
+| File | Description |
+|------|-------------|
+| `historical_prices.csv` | Daily OHLCV prices for all 7 stocks + SPY |
+| `model_parameters.csv` | Daily snapshots of computed model parameters (from 2026-02-01 onward) |
+| `news_archive.csv` | Accumulated company news with timestamps |
+| `rag_data_column_dictionary.csv` | Column definitions for the model parameters |
 
 ---
 
 ## Setup
 
-1. **Install R packages** (run once):
+### Prerequisites
 
-   ```bash
-   Rscript install_packages.R
-   ```
+- R >= 4.1 (required for native pipe `|>`)
+- API keys for Finnhub, OpenAI, and optionally Ollama
 
-2. **Configure `.env`** in this directory (or project root):
-
-   ```
-   ALPHAVANTAGE_API_KEY=your_alpha_vantage_key
-   FINNHUB_API_KEY=your_finnhub_key
-   OLLAMA_API_KEY=your_ollama_cloud_key
-   ```
-
-   Get an Alpha Vantage key at [alphavantage.co](https://www.alphavantage.co/support/#api-key).  
-   Get a Finnhub key at [finnhub.io](https://finnhub.io/register) (free tier: 60 req/min, no daily limit).  
-   **LLM (Ollama):** Use **local Ollama** (no key): leave `OLLAMA_API_KEY` empty or set to `local`; start Ollama (`ollama serve`), pull a model (`ollama pull gemma3:latest`). Or set `OLLAMA_API_KEY` to your Ollama Cloud key for cloud inference.
-
-3. **Run the app**:
-
-   ```bash
-   R -e "shiny::runApp('.', port = 3838)"
-   ```
-
-   Or from R: `shiny::runApp("02_productivity/shiny_app")`.
-
----
-
-## Using local Ollama (no API key)
-
-1. **Start the Ollama server** (in a terminal):  
-   `ollama serve`  
-   Or run `01_ollama.sh` from the repo root to start it in the background.
-2. **Pull a model**:  
-   `ollama pull gemma3:latest`  
-   (Or use the model name in `03_query_ai/02_ollama.R`; the app uses `OLLAMA_MODEL` from `.env`, default `gemma3:latest`.)
-3. **Test**: from repo root,  
-   `Rscript 03_query_ai/02_ollama.R`  
-   You should see a short reply from the model. If it fails, check that Ollama is running on **port 11434**.
-4. In the app’s `.env`, leave `OLLAMA_API_KEY=` empty (or set to `local`). The Trading hint tab will then use local Ollama.
-
----
-
-## API notes
-
-- **Alpha Vantage** free tier: 5 requests/minute, 25/day. The app throttles requests (~13 s between calls). A full refresh takes about 2–3 minutes.
-- **Finnhub** free tier: 60 requests/minute, **no daily limit**. Company news covers the past 7 days per stock.
-  - Important: some API keys only have quote/news permissions and return 403/404 for candle history. If this happens, the app now falls back to Yahoo Finance for historical OHLC data so charts and metrics still render.
-- **Cache**: Fetched data is saved under `data/` (daily_prices.csv, overview.csv, news.csv). On startup the app loads this cache so tables and LLM hints work without re-fetching. Refresh when you want up-to-date numbers.
-- **Daily data**: Free keys get `outputsize=compact` (last 100 data points). For 2+ years of history you need a premium key with `outputsize=full`.
-- **Dividend**: Summary comes from `OVERVIEW`. Full dividend history may require a premium endpoint.
-
----
-
-## Files
-
-| File | Purpose |
-|------|--------|
-| `app.R` | Shiny UI and server; Alpha Vantage, Finnhub, cache, AI |
-| `install_packages.R` | One-time install of `shiny`, `httr2`, `DT`, `dplyr`, `plotly`, `jsonlite` |
-| `.env` | API keys (do not commit) |
-| `data/` | Cached daily prices, overview, and news (created on first refresh; gitignored) |
-
-← [Back to 02_productivity](../README.md)
-## 快速重启（Windows/Mac/Linux）
-
-### 1) 一键重启 Shiny（杀旧进程 + 重启）
+### 1. Install R packages
 
 ```bash
-# 停掉旧进程并重启（默认 3838）
-./restart_app.sh
-
-# 指定端口重启（比如 8080）
-./restart_app.sh 8080
-
-# 重启并自动打开浏览器
-./restart_app.sh 3838 --open
-
-# 前台启动（可直接看到实时日志，适合排查“什么都没有返回”）
-./restart_app.sh 3838 --foreground
-
-# 前台+浏览器
-./restart_app.sh 3838 --foreground --open
-
-# 后台启动但实时查看终端日志
-./restart_app.sh 3838 --tail
+Rscript install_packages.R
 ```
 
-说明：
-- 脚本会先杀掉当前监听该端口的进程（含老的 Shiny 进程）
-- 重新启动 `app.R`
-- 如果页面很久没变，刷新浏览器（建议使用 `Cmd/Ctrl + Shift + R`）
-- 如果你执行后页面还是空白，先看日志：
-  `tail -f logs/app_3838.log`
-- 再确认服务是否起好：`curl -I http://localhost:3838`
+### 2. Configure API keys
+
+Create a `.env` file in this directory:
+
+```
+FINNHUB_API_KEY=your_finnhub_key
+OPENAI_API_KEY=your_openai_key
+OLLAMA_API_KEY=your_ollama_key_or_leave_empty
+```
+
+- **Finnhub** (free, 60 req/min): [finnhub.io](https://finnhub.io/register) — real-time quotes, historical candles, company news
+- **OpenAI** — GPT-4o-mini for AI predictions and reports
+- **Ollama** (optional) — leave empty or set to `local` for local Ollama; or set cloud key
+
+### 3. Run locally
+
+```bash
+R -e "shiny::runApp('.', port = 3838)"
+```
+
+Or use the restart script:
+
+```bash
+./restart_app.sh 3838 --open
+```
+
+---
+
+## Docker Deployment
+
+```bash
+docker build -t market-insight .
+docker run -p 8080:8080 \
+  -e FINNHUB_API_KEY=your_key \
+  -e OPENAI_API_KEY=your_key \
+  -e OLLAMA_API_KEY=your_key \
+  market-insight
+```
+
+The app is configured for DigitalOcean App Platform with environment variables set in the dashboard.
+
+---
+
+## Project Structure
+
+```
+.
+├── app.R                           # Main Shiny application
+├── Dockerfile                      # Docker config (rocker/shiny:4.4.0)
+├── install_packages.R              # R package installer
+├── .env                            # API keys (gitignored)
+├── .gitignore
+├── restart_app.sh                  # Local restart helper script
+├── historical_prices.csv           # Exported price data for RAG
+├── model_parameters.csv            # Exported model params for RAG
+├── news_archive.csv                # Exported news archive for RAG
+├── rag_data_column_dictionary.csv  # Column dictionary
+└── data/                           # Local cache (gitignored)
+    ├── daily_prices.csv
+    ├── news.csv
+    └── rag_history.csv
+```
+
+---
+
+## API Rate Limits
+
+| API | Limit | Usage |
+|-----|-------|-------|
+| Finnhub | 60 req/min (free) | Quotes, candles, news |
+| Yahoo Finance | Unofficial, no key | Fallback for historical data |
+| OpenAI | Per-plan | AI predictions, reports |
+| Ollama | Unlimited (local) | Fallback LLM |
+
+---
+
+## Tech Stack
+
+- **R / Shiny** — reactive web framework
+- **Plotly** — interactive charts
+- **DT** — data tables
+- **httr2** — HTTP client for API calls
+- **Docker** — containerized deployment
+- **DigitalOcean App Platform** — cloud hosting
