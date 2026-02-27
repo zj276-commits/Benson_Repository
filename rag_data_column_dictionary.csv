@@ -1,0 +1,49 @@
+column_name,description,unit_or_scale
+ticker,Stock ticker symbol (unique equity identifier),string
+company_name,Company name / display name,string
+asof_date,End date (as-of) for which all statistics/parameters are computed,YYYY-MM-DD
+est_window_start,Start date of the estimation window used for returns/parameter estimation,YYYY-MM-DD
+n_obs,Number of return observations used in the estimation window (after cleaning),count
+spot_price,Spot price at asof_date (S0) from the price feed,quote currency
+log_return_mean,Mean of per-period log returns over the estimation window,"per period (e.g., daily log return)"
+log_return_std,Std. dev. of per-period log returns over the estimation window,"per period (e.g., daily volatility)"
+vol_annual_realized,Annualized realized volatility from log returns (typically scaled by sqrt(annualization_factor)),annual volatility (decimal)
+vol_annual_downside,Annualized downside volatility using only negative returns,annual volatility (decimal)
+vol_annual_20d,Rolling 20-day annualized volatility (most recent 20 trading days),annual volatility (decimal)
+skewness,Skewness of log-return distribution,dimensionless
+kurtosis,Kurtosis of log-return distribution (dimensionless; confirm raw vs excess in your implementation),dimensionless
+max_drawdown,Maximum peak-to-trough drawdown over the window (stored as a fraction),0–1 fraction
+return_annual,Annualized compounded (geometric) return implied by the window’s average log return,annual return (decimal)
+avg_daily_volume_20d,Average daily trading volume over the most recent 20 trading days,shares/day
+normality_n,Sample size used for the normality test (may differ from n_obs),count
+normality_pvalue,"p-value from the chosen normality test on the target series (e.g., Shapiro-Wilk / Jarque-Bera / Anderson-Darling)",probability
+normality_log10_pvalue,"log10(normality_pvalue), used to avoid underflow showing p=0",log10(probability)
+outlier_fraction,Fraction of observations flagged as outliers under your outlier rule,0–1 fraction
+gbm_mu_annual,"Estimated GBM drift μ (annualized, real-world measure)",annual return (decimal)
+gbm_sigma_annual,Estimated GBM volatility σ (annualized),annual volatility (decimal)
+gbm_mu_se,Standard error of GBM μ estimate,annual return SE
+gbm_sigma_se,Standard error of GBM σ estimate,annual volatility SE
+gbm_mu_ci95_low,Lower bound of 95% confidence interval for GBM μ,annual return (decimal)
+gbm_mu_ci95_high,Upper bound of 95% confidence interval for GBM μ,annual return (decimal)
+gbm_sigma_ci95_low,Lower bound of 95% confidence interval for GBM σ,annual volatility (decimal)
+gbm_sigma_ci95_high,Upper bound of 95% confidence interval for GBM σ,annual volatility (decimal)
+dividend_yield,"Annual dividend yield q as a decimal fraction (e.g., 0.004 = 0.4%)",annual fraction (decimal)
+carry_r_minus_q,"Cost of carry (r - q), annualized, used for risk-neutral drift in many models",annual rate (decimal)
+lattice_u,Up factor per step in the binomial/lattice model,multiplicative factor
+lattice_d,Down factor per step in the binomial/lattice model,multiplicative factor
+lattice_p_real,Real-world (historical) probability of an up move per step,probability
+lattice_p_rn,Risk-neutral probability of an up move per step,probability
+lattice_implied_sigma,"Volatility implied by lattice parameters (u, d, Δt), annualized",annual volatility (decimal)
+sim_alpha_annual,"Single Index Model (SIM) alpha, annualized (intercept)",annual return (decimal)
+sim_beta,SIM beta relative to the chosen market index,dimensionless
+sim_alpha_se,Standard error of SIM alpha estimate,annual return SE
+sim_beta_se,Standard error of SIM beta estimate,dimensionless SE
+sim_alpha_ci95_low,Lower bound of 95% CI for SIM alpha,annual return (decimal)
+sim_alpha_ci95_high,Upper bound of 95% CI for SIM alpha,annual return (decimal)
+sim_beta_ci95_low,Lower bound of 95% CI for SIM beta,dimensionless
+sim_beta_ci95_high,Upper bound of 95% CI for SIM beta,dimensionless
+sim_r_squared,R² of the SIM regression (variance explained by the index),0–1 ratio
+sim_resid_std,Std. dev. of SIM regression residuals (idiosyncratic volatility) at the data frequency,"per period (e.g., daily std)"
+model_fit_notes,Free-text diagnostics/warnings for this row,string
+tags,Semicolon-delimited tags for retrieval/filtering,string
+snapshot_date,Date the row was exported/generated for the RAG dataset,YYYY-MM-DD
