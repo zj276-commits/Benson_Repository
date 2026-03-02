@@ -3,3 +3,6 @@
 all_api
 data/
 .DS_Store
+company_financials.csv
+key_financials.csv
+valuation_metrics.csv
