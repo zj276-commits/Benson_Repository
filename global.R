@@ -145,3 +145,46 @@ message("---------------------")
 source("api.R", local = FALSE)
 source("models.R", local = FALSE)
 source("report.R", local = FALSE)
+
+# ----------------------------
+# Startup auto-refresh of financial CSVs
+# ----------------------------
+
+refresh_financials_if_stale <- function(max_age_hours = 24) {
+  kf_path <- file.path(getwd(), "key_financials.csv")
+  needs_refresh <- FALSE
+
+  if (!file.exists(kf_path)) {
+    message("[Startup] key_financials.csv not found - will fetch")
+    needs_refresh <- TRUE
+  } else {
+    kf <- tryCatch(read.csv(kf_path, stringsAsFactors = FALSE), error = function(e) NULL)
+    if (!is.null(kf) && "fetch_date" %in% names(kf) && nrow(kf) > 0) {
+      fetch_date <- tryCatch(as.Date(kf$fetch_date[1]), error = function(e) NA)
+      if (!is.na(fetch_date)) {
+        age_hours <- as.numeric(difftime(Sys.time(), as.POSIXct(fetch_date), units = "hours"))
+        message("[Startup] key_financials.csv age: ", round(age_hours, 1), " hours")
+        if (age_hours > max_age_hours) needs_refresh <- TRUE
+      } else {
+        needs_refresh <- TRUE
+      }
+    } else {
+      needs_refresh <- TRUE
+    }
+  }
+
+  if (needs_refresh) {
+    message("[Startup] Refreshing financial CSVs from Yahoo Finance...")
+    tryCatch({
+      source("fetch_financials.R", local = TRUE)
+      message("[Startup] Financial CSVs refreshed at ", Sys.time())
+    }, error = function(e) {
+      message("[Startup] Could not refresh CSVs: ", e$message)
+      message("[Startup] Using existing CSV files as fallback")
+    })
+  } else {
+    message("[Startup] Financial CSVs are fresh - skipping refresh")
+  }
+}
+
+refresh_financials_if_stale(max_age_hours = 24)

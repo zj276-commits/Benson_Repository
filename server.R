@@ -516,4 +516,29 @@ server <- function(input, output, session) {
       if (!is.null(rag) && nrow(rag) > 0) write.csv(rag, file, row.names = FALSE)
     }
   )
+
+  # ----------------------------
+  # Protected refresh endpoint for external cron
+  # Usage: https://YOUR_APP/?action=refresh-financials&token=SECRET
+  # ----------------------------
+
+  observe({
+    query <- parseQueryString(session$clientData$url_search)
+    if (identical(query$action, "refresh-financials")) {
+      expected_token <- Sys.getenv("REFRESH_TOKEN")
+      if (!nzchar(expected_token) || !identical(query$token, expected_token)) {
+        message("[Refresh] Unauthorized attempt")
+        return()
+      }
+      message("[Refresh] Cron triggered - refreshing financial CSVs...")
+      result <- tryCatch({
+        source("fetch_financials.R", local = TRUE)
+        message("[Refresh] Financial CSVs updated successfully at ", Sys.time())
+        TRUE
+      }, error = function(e) {
+        message("[Refresh] Error: ", e$message)
+        FALSE
+      })
+    }
+  })
 }

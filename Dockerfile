@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN R -e "install.packages(c('httr2', 'DT', 'dplyr', 'plotly', 'jsonlite', 'quantmod'), repos='https://cloud.r-project.org/')"
 
-COPY app.R global.R api.R models.R report.R ui.R server.R /app/
+COPY *.R *.csv /app/
 
 WORKDIR /app
 RUN mkdir -p /app/data && chmod 777 /app/data
