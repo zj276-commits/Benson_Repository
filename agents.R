@@ -1,5 +1,13 @@
 # agents.R
-# Parallel multi-agent orchestration for equity research reports
+# Multi-agent orchestration for equity research reports
+#
+# This file handles:
+#   - Agent role definitions and system prompts
+#   - Portfolio Manager (PM) synthesis prompt
+#   - OpenAI API request building and response parsing
+#   - Two-phase parallel orchestration (6 analysts → PM synthesis)
+#
+# Depends on: rag.R (rag_retrieve), global.R (TICKER_LABELS, SECTOR_MAP, etc.)
 
 # ----------------------------
 # Date-aware preamble injected into every agent prompt
@@ -8,12 +16,14 @@
 agent_date_preamble <- function() {
   paste0(
     "TODAY'S DATE: ", format(Sys.Date(), "%B %d, %Y"), ".\n",
-    "CRITICAL RULES:\n",
-    "- ALL financial data provided is HISTORICAL (already reported). Treat every number as a PAST result, not a forecast.\n",
-    "- When referencing fiscal years, use PAST TENSE (e.g., 'FY2025 revenue was $X', NOT 'FY2025 revenue is projected').\n",
-    "- Do NOT fabricate forward-looking projections. You may describe the TRAJECTORY implied by historical trends, but label it clearly as a trend extrapolation.\n",
-    "- Do NOT invent numbers, targets, or events not present in the data.\n",
-    "- Cite data exactly as given. If the data shows weakness, acknowledge it honestly.\n"
+    "GROUNDING RULES — VIOLATIONS WILL INVALIDATE YOUR ANALYSIS:\n",
+    "1. You may ONLY reference numbers, facts, and events that appear verbatim in the === DATA === sections below.\n",
+    "2. Do NOT use your training knowledge for ANY financial figures, revenue numbers, earnings, prices, or events.\n",
+    "3. If a data field is missing or shows ' — ', say 'data not available' — do NOT estimate, guess, or fill in.\n",
+    "4. Every number you cite MUST appear in the provided data. If you cannot find it below, do not mention it.\n",
+    "5. ALL financial data is HISTORICAL (already reported). Use PAST TENSE (e.g., 'FY2025 revenue was $X').\n",
+    "6. Do NOT fabricate forward projections. You may describe the trajectory implied by historical trends.\n",
+    "7. Cite data exactly as given. If the data shows weakness, acknowledge it honestly.\n"
   )
 }
 
@@ -26,16 +36,16 @@ AGENT_ROLES <- list(
     name = "Fundamentals Analyst",
     system = paste0(
       "You are a senior equity fundamentals analyst at a top-tier investment bank.\n\n",
-      "Analyze the historical financial data provided. ",
+      "Analyze ONLY the financial data provided in the === DATA === sections. Do NOT use your training knowledge for any figures.\n\n",
       "Evaluate: P/E vs forward P/E (expansion or compression), P/B, ROE trends across fiscal years, ",
       "revenue growth trajectory and whether it is accelerating or decelerating, ",
       "gross/EBITDA/net margin expansion or compression year-over-year, ",
       "balance sheet strength (debt-to-equity trend, net debt position), FCF generation and capex intensity, ",
       "and dividend sustainability.\n",
-      "Also consider any recent company or macro news provided and how it may affect the fundamental outlook.\n\n",
-      "All fiscal year data is HISTORICAL. Reference years in past tense.\n\n",
+      "Also consider any recent news provided and how it may affect the fundamental outlook.\n\n",
+      "IMPORTANT: Every number you cite must come from the provided data tables. If a metric shows ' — ' (not available), state it is unavailable.\n\n",
       "Return JSON with EXACTLY these keys:\n",
-      "- fundamentals_summary: 8-12 sentences of substantive analysis citing specific numbers from the data\n",
+      "- fundamentals_summary: 8-12 sentences of substantive analysis citing specific numbers FROM THE PROVIDED DATA ONLY\n",
       "- valuation_assessment: one of 'Significantly Undervalued', 'Undervalued', 'Fair Value', 'Overvalued', 'Significantly Overvalued' followed by 3-4 sentences of reasoning\n",
       "- financial_health_score: integer 0-100 (100 = pristine balance sheet, strong margins, high ROE)"
     )
@@ -45,14 +55,14 @@ AGENT_ROLES <- list(
     name = "News Analyst",
     system = paste0(
       "You are a senior news and macro analyst at a global investment research firm.\n\n",
-      "You receive two types of news: company-specific headlines and MACRO/geopolitical headlines (marked Symbol='MACRO').\n",
+      "You receive two types of news: company-specific headlines (tagged with ticker) and MACRO/geopolitical headlines (tagged [MACRO]).\n",
       "Analyze both. For company news: identify earnings, guidance, M&A, product launches, regulatory actions.\n",
       "For macro news: identify tariff policies, interest rate changes, trade wars, geopolitical tensions, inflation data, ",
-      "and assess how these macro factors specifically impact this company (e.g., supply chain exposure, revenue geography, cost structure).\n\n",
-      "Only reference events that appear in the provided news data. Do not invent news.\n\n",
+      "and assess how these macro factors specifically impact this company.\n\n",
+      "STRICT: ONLY reference events that appear in the provided news headlines. Do NOT invent, recall, or fabricate any news events from your training data. If you cannot find a relevant event in the data, do not mention it.\n\n",
       "Return JSON with EXACTLY these keys:\n",
       "- news_sentiment: one of 'Very Positive', 'Positive', 'Mixed', 'Negative', 'Very Negative'\n",
-      "- key_events: JSON array of 3-5 most impactful events (each 1-2 sentences)\n",
+      "- key_events: JSON array of 3-5 most impactful events (each 1-2 sentences, referencing actual headlines from the data)\n",
       "- macro_impact: 4-6 sentences on how macro environment affects this stock specifically"
     )
   ),
@@ -61,17 +71,18 @@ AGENT_ROLES <- list(
     name = "Technical / Quantitative Analyst",
     system = paste0(
       "You are a senior quantitative analyst specializing in statistical modeling of equity returns.\n\n",
-      "Interpret the model outputs provided:\n",
+      "Interpret ONLY the model outputs provided in the === DATA === sections. Do NOT reference external indicators or data.\n\n",
+      "The data includes:\n",
       "- GBM: drift mu (annualized expected return), sigma (annualized volatility), and their confidence intervals\n",
       "- Binomial Lattice (RWPM): up factor u, down factor d, real-world probability p_real, risk-neutral probability p_rn\n",
       "- Single Index Model vs SPY: beta (systematic risk), alpha (excess return), R-squared (market dependence), residual std (idiosyncratic risk)\n",
-      "- Volatility: realized vs downside vs 20-day, skewness, kurtosis, max drawdown, normality test results\n",
-      "Also interpret price momentum from the recent price changes provided.\n\n",
-      "These are all computed from HISTORICAL data. State observations in past/present tense, not as predictions.\n\n",
+      "- Volatility & Distribution: realized vs downside vs 20-day vol, skewness, kurtosis, max drawdown, normality test\n",
+      "- Recent daily OHLCV prices for momentum analysis\n\n",
+      "IMPORTANT: Cite the EXACT parameter values from the data (e.g., 'beta was 1.68', 'sigma was 41.6%'). Do NOT round or modify values.\n\n",
       "Return JSON with EXACTLY these keys:\n",
       "- technical_signal: one of 'Strong Bullish', 'Bullish', 'Neutral', 'Bearish', 'Strong Bearish'\n",
-      "- model_interpretation: 8-12 sentences interpreting the quant models, citing specific parameter values\n",
-      "- momentum_summary: 3-5 sentences on price momentum and volatility regime"
+      "- model_interpretation: 8-12 sentences interpreting the quant models, citing specific parameter values FROM THE DATA\n",
+      "- momentum_summary: 3-5 sentences on price momentum and volatility regime based on the provided prices"
     )
   ),
 
@@ -80,13 +91,14 @@ AGENT_ROLES <- list(
     system = paste0(
       "You are a bull researcher building the optimistic investment case.\n\n",
       "STRICT RULES:\n",
-      "- Base your thesis ONLY on the historical data provided. Do NOT fabricate future projections or invent revenue/earnings numbers.\n",
-      "- If the data shows deteriorating metrics (declining revenue, shrinking margins, rising debt), you MUST acknowledge these realities. Do not pretend weakness is strength.\n",
-      "- You may highlight genuine positives: improving trends, strong margins vs peers, healthy FCF, low debt, growth acceleration, positive news catalysts from the provided data.\n",
-      "- For upside_target, derive it from the CURRENT price and the historical growth/momentum data \u2014 do not invent a number.\n",
-      "- All fiscal year references must be in PAST TENSE (this data is historical).\n\n",
+      "- Base your thesis ONLY on the data provided in the === DATA === sections. Every number you cite must appear in the data.\n",
+      "- Do NOT fabricate future projections, invent revenue/earnings numbers, or use your training knowledge for any figures.\n",
+      "- If the data shows deteriorating metrics, you MUST acknowledge them. Do not pretend weakness is strength.\n",
+      "- You may highlight genuine positives: improving trends, strong margins, healthy FCF, low debt, growth acceleration, positive news from the data.\n",
+      "- For upside_target, derive it from the CURRENT share price and the historical growth/momentum data — do not invent a number.\n",
+      "- All fiscal year references must be in PAST TENSE.\n\n",
       "Return JSON with EXACTLY these keys:\n",
-      "- bull_thesis: 5-7 sentences building the optimistic case, citing specific historical data points\n",
+      "- bull_thesis: 5-7 sentences building the optimistic case, citing specific data points FROM THE PROVIDED DATA ONLY\n",
       "- catalysts: JSON array of 3-4 specific catalysts grounded in the provided data or news\n",
       "- upside_target: a number (bull-case price target derived from data)"
     )
@@ -97,14 +109,15 @@ AGENT_ROLES <- list(
     system = paste0(
       "You are a bear researcher building the pessimistic investment case.\n\n",
       "STRICT RULES:\n",
-      "- Base your thesis ONLY on the historical data and news provided. Do NOT fabricate scenarios not supported by data.\n",
-      "- If the data shows strong metrics (growing revenue, expanding margins, low debt), you MUST acknowledge these realities. Focus on genuine vulnerabilities: valuation stretch, decelerating growth, margin compression, rising capex, competitive threats implied by the data.\n",
-      "- Consider macro/geopolitical risks from the news (tariffs, trade policy, regulation) and how they specifically threaten this company.\n",
-      "- For downside_target, derive it from the CURRENT price and historical risk metrics \u2014 do not invent a number.\n",
-      "- All fiscal year references must be in PAST TENSE (this data is historical).\n\n",
+      "- Base your thesis ONLY on the data and news provided in the === DATA === sections. Every number must come from the data.\n",
+      "- Do NOT fabricate scenarios, invent figures, or use your training knowledge for any financial numbers.\n",
+      "- If the data shows strong metrics, you MUST acknowledge them. Focus on genuine vulnerabilities: valuation stretch, decelerating growth, margin compression, rising capex, competitive threats implied by the data.\n",
+      "- Consider macro/geopolitical risks from the provided news and how they specifically threaten this company.\n",
+      "- For downside_target, derive it from the CURRENT share price and historical risk metrics — do not invent a number.\n",
+      "- All fiscal year references must be in PAST TENSE.\n\n",
       "Return JSON with EXACTLY these keys:\n",
-      "- bear_thesis: 5-7 sentences building the pessimistic case, citing specific historical data points\n",
-      "- risks: JSON array of 3-4 specific risk factors (each 1-2 sentences) grounded in the data\n",
+      "- bear_thesis: 5-7 sentences building the pessimistic case, citing specific data points FROM THE PROVIDED DATA ONLY\n",
+      "- risks: JSON array of 3-4 specific risk factors (each 1-2 sentences) grounded in the provided data\n",
       "- downside_target: a number (bear-case price target derived from data)"
     )
   ),
@@ -113,15 +126,17 @@ AGENT_ROLES <- list(
     name = "Risk Manager",
     system = paste0(
       "You are the Chief Risk Officer evaluating this equity position.\n\n",
-      "Assess using the HISTORICAL data provided: systematic risk (beta exposure to SPY), ",
-      "volatility regime (realized vs 20-day \u2014 is vol expanding or contracting?), ",
-      "tail risk (kurtosis, max drawdown, non-normality), ",
-      "liquidity risk (average volume), leverage risk (debt-to-equity, net debt), ",
-      "concentration risk, and idiosyncratic risk (SIM residual std, R-squared).\n",
-      "Also assess geopolitical/macro risks from the news provided (tariffs, trade wars, regulatory changes) and how they affect this specific company.\n\n",
+      "Assess using ONLY the data provided in the === DATA === sections:\n",
+      "- Systematic risk: beta exposure to SPY\n",
+      "- Volatility regime: realized vs 20-day — is vol expanding or contracting?\n",
+      "- Tail risk: kurtosis, max drawdown, non-normality\n",
+      "- Leverage risk: debt-to-equity trend, net debt, interest coverage\n",
+      "- Idiosyncratic risk: SIM residual std, R-squared\n",
+      "- Macro risks: from the provided news (tariffs, trade wars, regulatory changes)\n\n",
+      "IMPORTANT: Cite the EXACT numbers from the data. Do NOT use your training knowledge for any risk metrics or financial figures.\n\n",
       "Return JSON with EXACTLY these keys:\n",
       "- risk_level: one of 'Low', 'Medium', 'High', 'Very High'\n",
-      "- risk_factors: JSON array of 5-6 specific risk factors (each 2-3 sentences with numbers from the data)\n",
+      "- risk_factors: JSON array of 5-6 specific risk factors (each 2-3 sentences citing EXACT numbers from the provided data)\n",
       "- risk_score: integer 0-100 (100 = extreme risk)"
     )
   )
@@ -135,10 +150,13 @@ PM_SYSTEM_PROMPT <- paste0(
   "the technical analyst's model signals, the bull and bear researchers' opposing cases, ",
   "and the risk manager's risk assessment. Resolve contradictions with reasoning.\n\n",
   "CRITICAL RULES:\n",
+  "- You may ONLY reference numbers, facts, and events that appear in the analyst outputs provided below.\n",
+  "- Do NOT use your training knowledge for any financial figures, prices, revenue, or events.\n",
   "- Write at institutional quality. Every paragraph must be SUBSTANTIVE with SPECIFIC data references from the analyst outputs.\n",
   "- Do NOT write generic filler.\n",
   "- All financial data referenced is HISTORICAL. Use past tense for fiscal year results.\n",
-  "- Do NOT fabricate forward projections. You may describe implied trends.\n\n",
+  "- Do NOT fabricate forward projections. You may describe implied trends.\n",
+  "- If an analyst's report is unavailable, state it is unavailable — do NOT fill in with guesses.\n\n",
   "Return JSON with EXACTLY these keys:\n",
   "- purchase_rating: one of 'Strong Buy', 'Buy', 'Hold', 'Sell', 'Fully Valued'\n",
   "- confidence: integer 0-100\n",
@@ -155,146 +173,6 @@ PM_SYSTEM_PROMPT <- paste0(
   "- risk_level: one of 'Low', 'Medium', 'High', 'Very High'\n",
   "- forecast_trend: one of 'UP', 'DOWN', 'NEUTRAL'"
 )
-
-# ----------------------------
-# Retrieve relevant CSV data for each agent
-# ----------------------------
-
-rag_retrieve <- function(symbol, agent_type) {
-  app_dir <- get_export_dir()
-  read_csv_safe <- function(filename) {
-    path <- file.path(app_dir, filename)
-    if (!file.exists(path)) return(NULL)
-    tryCatch(read.csv(path, stringsAsFactors = FALSE), error = function(e) NULL)
-  }
-
-  filter_ticker <- function(df, col = "ticker") {
-    if (is.null(df) || nrow(df) == 0) return(NULL)
-    if (col %in% names(df)) df[df[[col]] == symbol, , drop = FALSE]
-    else if ("Symbol" %in% names(df)) df[df$Symbol == symbol, , drop = FALSE]
-    else df
-  }
-
-  get_news <- function(n_company = 10, n_macro = 8) {
-    all_news <- read_csv_safe("news_archive.csv")
-    if (is.null(all_news) || !("Symbol" %in% names(all_news))) return(NULL)
-    cols <- intersect(c("Symbol", "Title", "Source", "Published", "Summary"), names(all_news))
-    if ("Published" %in% names(all_news)) all_news <- all_news[order(all_news$Published, decreasing = TRUE), ]
-
-    company_news <- all_news[all_news$Symbol == symbol, cols, drop = FALSE]
-    company_news <- head(company_news, n_company)
-
-    macro_news <- all_news[all_news$Symbol == "MACRO", cols, drop = FALSE]
-    macro_news <- head(macro_news, n_macro)
-
-    combined <- dplyr::bind_rows(company_news, macro_news)
-    if (nrow(combined) == 0) return(NULL)
-    combined
-  }
-
-  switch(agent_type,
-    fundamentals = {
-      kf <- filter_ticker(read_csv_safe("key_financials.csv"))
-      cf <- filter_ticker(read_csv_safe("company_financials.csv"))
-      vm <- filter_ticker(read_csv_safe("valuation_metrics.csv"))
-      if (!is.null(cf)) {
-        cf <- cf[order(cf$fiscal_year_end), ]
-        n <- nrow(cf)
-        if (n > 4) cf <- cf[(n - 3):n, ]
-      }
-      if (!is.null(vm) && nrow(vm) > 4) {
-        vm <- vm[order(vm$fiscal_year), ]
-        vm <- vm[(nrow(vm) - 3):nrow(vm), ]
-      }
-      news <- get_news(8, 5)
-      jsonlite::toJSON(list(
-        key_financials = kf, company_financials = cf, valuation_metrics = vm,
-        recent_news = news
-      ), auto_unbox = TRUE, na = "null")
-    },
-
-    news = {
-      news <- get_news(15, 10)
-      if (is.null(news)) return("{\"news\": \"No recent news available.\"}")
-      jsonlite::toJSON(list(news_headlines = news), auto_unbox = TRUE, na = "null")
-    },
-
-    technical = {
-      mp <- filter_ticker(read_csv_safe("model_parameters.csv"))
-      if (!is.null(mp) && nrow(mp) > 0) {
-        mp <- mp[order(mp$snapshot_date, decreasing = TRUE), ]
-        mp <- mp[1, , drop = FALSE]
-      }
-      hp <- filter_ticker(read_csv_safe("historical_prices.csv"), col = "Symbol")
-      if (!is.null(hp) && nrow(hp) > 0) {
-        hp <- hp[order(hp$Date, decreasing = TRUE), ]
-        hp <- head(hp, 30)
-      }
-      dict <- read_csv_safe("rag_data_column_dictionary.csv")
-      jsonlite::toJSON(list(
-        model_parameters = mp, recent_prices = hp, column_dictionary = dict
-      ), auto_unbox = TRUE, na = "null")
-    },
-
-    bull = {
-      kf <- filter_ticker(read_csv_safe("key_financials.csv"))
-      cf <- filter_ticker(read_csv_safe("company_financials.csv"))
-      if (!is.null(cf)) {
-        cf <- cf[order(cf$fiscal_year_end), ]
-        n <- nrow(cf)
-        if (n > 4) cf <- cf[(n - 3):n, ]
-      }
-      news <- get_news(10, 5)
-      jsonlite::toJSON(list(
-        key_financials = kf, company_financials = cf, recent_news = news
-      ), auto_unbox = TRUE, na = "null")
-    },
-
-    bear = {
-      kf <- filter_ticker(read_csv_safe("key_financials.csv"))
-      cf <- filter_ticker(read_csv_safe("company_financials.csv"))
-      if (!is.null(cf)) {
-        cf <- cf[order(cf$fiscal_year_end), ]
-        n <- nrow(cf)
-        if (n > 4) cf <- cf[(n - 3):n, ]
-      }
-      mp <- filter_ticker(read_csv_safe("model_parameters.csv"))
-      if (!is.null(mp) && nrow(mp) > 0) {
-        mp <- mp[order(mp$snapshot_date, decreasing = TRUE), ]
-        mp <- mp[1, , drop = FALSE]
-        mp <- mp[, intersect(c("ticker", "vol_annual_realized", "max_drawdown",
-                                "kurtosis", "sim_beta", "gbm_sigma_annual"), names(mp)), drop = FALSE]
-      }
-      news <- get_news(10, 8)
-      jsonlite::toJSON(list(
-        key_financials = kf, company_financials = cf, risk_indicators = mp,
-        recent_news = news
-      ), auto_unbox = TRUE, na = "null")
-    },
-
-    risk = {
-      mp <- filter_ticker(read_csv_safe("model_parameters.csv"))
-      if (!is.null(mp) && nrow(mp) > 0) {
-        mp <- mp[order(mp$snapshot_date, decreasing = TRUE), ]
-        mp <- mp[1, , drop = FALSE]
-      }
-      cf <- filter_ticker(read_csv_safe("company_financials.csv"))
-      if (!is.null(cf)) {
-        cf <- cf[order(cf$fiscal_year_end), ]
-        n <- nrow(cf)
-        if (n > 4) cf <- cf[(n - 3):n, ]
-        cf <- cf[, intersect(c("fiscal_year", "debt_equity_pct", "net_debt_equity_pct",
-                                "debt_assets_pct", "ebitda_int_exp", "debt_ebitda"), names(cf)), drop = FALSE]
-      }
-      news <- get_news(5, 8)
-      jsonlite::toJSON(list(
-        model_parameters = mp, credit_metrics = cf, recent_news = news
-      ), auto_unbox = TRUE, na = "null")
-    },
-
-    "{}"
-  )
-}
 
 # ----------------------------
 # Build a single agent HTTP request (OpenAI)
@@ -356,17 +234,20 @@ parse_agent_response <- function(resp) {
 # Phase 1: Run 6 analyst agents in parallel
 # ----------------------------
 
-run_phase1_parallel <- function(symbol, company_name, sector, trend_text, api_key) {
+run_phase1_parallel <- function(symbol, company_name, sector, trend_text, api_key,
+                                use_semantic = TRUE, broad = FALSE) {
   agent_types <- names(AGENT_ROLES)
   preamble <- agent_date_preamble()
 
   user_prompts <- lapply(agent_types, function(atype) {
-    rag_context <- rag_retrieve(symbol, atype)
+    rag_context <- rag_retrieve(symbol, atype, use_semantic = use_semantic, broad = broad)
     paste0(
       preamble, "\n",
       "Analyze ", symbol, " (", company_name, "), sector: ", sector, ".\n\n",
-      if (nzchar(trend_text)) paste0("=== PRICE CONTEXT ===\n", trend_text, "\n\n") else "",
-      "=== HISTORICAL DATA ===\n", rag_context
+      "REMINDER: You may ONLY cite numbers and facts from the === DATA === sections below. ",
+      "Do NOT use any external knowledge or memorized financial data.\n\n",
+      if (nzchar(trend_text)) paste0("=== CURRENT PRICE DATA ===\n", trend_text, "\n\n") else "",
+      "=== DATA (Your ONLY source of truth) ===\n", rag_context
     )
   })
   names(user_prompts) <- agent_types
@@ -399,6 +280,77 @@ run_phase1_parallel <- function(symbol, company_name, sector, trend_text, api_ke
   ok_count <- sum(!vapply(outputs, is.null, logical(1)))
   message("[Phase1] ", ok_count, "/", length(agent_types), " analysts returned valid responses")
   outputs
+}
+
+# ----------------------------
+# Enhancement 5: Multi-round RAG — detect data gaps and retry
+# ----------------------------
+
+detect_data_gaps <- function(agent_output) {
+  if (is.null(agent_output)) return(TRUE)
+  text <- tolower(paste(unlist(agent_output), collapse = " "))
+  gap_phrases <- c("data not available", "no data provided", "data unavailable",
+                   "insufficient data", "no relevant data", "not provided in the data",
+                   "no news available", "analysis unavailable")
+  gap_count <- sum(vapply(gap_phrases, function(p) grepl(p, text, fixed = TRUE), logical(1)))
+  gap_count >= 2
+}
+
+retry_weak_agents <- function(symbol, company_name, sector, trend_text, api_key,
+                              agent_outputs) {
+  gaps <- vapply(agent_outputs, detect_data_gaps, logical(1))
+  failed <- vapply(agent_outputs, is.null, logical(1))
+  needs_retry <- names(agent_outputs)[gaps | failed]
+
+  if (length(needs_retry) == 0) {
+    message("[Multi-RAG] All agents have sufficient data, no retry needed")
+    return(agent_outputs)
+  }
+
+  message("[Multi-RAG] Retrying ", length(needs_retry), " agent(s) with broader context: ",
+          paste(needs_retry, collapse = ", "))
+  preamble <- agent_date_preamble()
+
+  retry_reqs <- lapply(needs_retry, function(atype) {
+    rag_context <- rag_retrieve(symbol, atype, use_semantic = FALSE,
+                                token_budget = 4500L, broad = TRUE)
+    user_prompt <- paste0(
+      preamble, "\n",
+      "Analyze ", symbol, " (", company_name, "), sector: ", sector, ".\n\n",
+      "NOTE: This is a RETRY with EXPANDED data context. Please use ALL available data thoroughly.\n\n",
+      "REMINDER: You may ONLY cite numbers and facts from the === DATA === sections below.\n\n",
+      if (nzchar(trend_text)) paste0("=== CURRENT PRICE DATA ===\n", trend_text, "\n\n") else "",
+      "=== DATA (Your ONLY source of truth — EXPANDED) ===\n", rag_context
+    )
+    build_agent_request(
+      system_prompt = AGENT_ROLES[[atype]]$system,
+      user_content  = user_prompt,
+      api_key       = api_key,
+      max_tokens    = 1500
+    )
+  })
+
+  retry_resps <- tryCatch(
+    req_perform_parallel(retry_reqs, on_error = "continue"),
+    error = function(e) {
+      message("[Multi-RAG] Retry request failed: ", e$message)
+      NULL
+    }
+  )
+
+  if (!is.null(retry_resps)) {
+    retry_outputs <- setNames(lapply(retry_resps, parse_agent_response), needs_retry)
+    improved <- 0L
+    for (atype in needs_retry) {
+      if (!is.null(retry_outputs[[atype]])) {
+        agent_outputs[[atype]] <- retry_outputs[[atype]]
+        improved <- improved + 1L
+      }
+    }
+    message("[Multi-RAG] ", improved, "/", length(needs_retry), " agents improved on retry")
+  }
+
+  agent_outputs
 }
 
 # ----------------------------
@@ -468,12 +420,20 @@ run_parallel_agents <- function(symbol, stock_data_val, news_data_df,
     )
   }
 
+  rag_clear_cache()
+
+  if (is.function(on_progress)) on_progress(0.15, "Running semantic search on news data...")
   if (is.function(on_progress)) on_progress(0.20, "Running 6 specialist analysts in parallel...")
-  agent_outputs <- run_phase1_parallel(symbol, company_name, sector, trend_text, api_key)
+  agent_outputs <- run_phase1_parallel(symbol, company_name, sector, trend_text, api_key,
+                                        use_semantic = TRUE)
   if (is.null(agent_outputs) || all(vapply(agent_outputs, is.null, logical(1)))) {
     message("[Agents] Phase 1 failed, falling back to single-call approach")
     return(NULL)
   }
+
+  if (is.function(on_progress)) on_progress(0.50, "Checking for data gaps...")
+  agent_outputs <- retry_weak_agents(symbol, company_name, sector, trend_text, api_key,
+                                      agent_outputs)
 
   total_tokens <- list(prompt = 0L, completion = 0L, total = 0L)
   for (out in agent_outputs) {

@@ -142,8 +142,10 @@ message("all_api exists in cwd: ", file.exists("all_api"))
 message("---------------------")
 
 # Source dependent modules (Shiny auto-sources global.R before ui.R/server.R)
-source("api.R", local = FALSE)
+# Order matters: api → models → rag → agents → report
+source("api.R",    local = FALSE)
 source("models.R", local = FALSE)
+source("rag.R",    local = FALSE)
 source("agents.R", local = FALSE)
 source("report.R", local = FALSE)
 
