@@ -1,0 +1,20 @@
+{
+  "status": "success",
+  "started_at": "2026-04-11T19:37:30Z",
+  "ended_at": "2026-04-11T19:37:36Z",
+  "historical_price_rows": 2000,
+  "historical_latest_date": "2026-04-10",
+  "news_rows": 1495,
+  "rag_rows": 336,
+  "price_source_counts": {
+    "tiingo_fallback": 8
+  },
+  "news_source_counts": {
+    "finnhub_company": 1732,
+    "marketaux": 21,
+    "alpha_vantage": 150,
+    "finnhub_macro": 100
+  },
+  "financial_refresh_ok": true,
+  "financial_refresh_error": {}
+}

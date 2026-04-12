@@ -1,0 +1,224 @@
+{
+  "generated_at": "2026-04-11T19:37:36Z",
+  "total_articles": 2878,
+  "counts_by_symbol": [
+    {
+      "symbol": "AAPL",
+      "count": 434
+    },
+    {
+      "symbol": "AMZN",
+      "count": 249
+    },
+    {
+      "symbol": "GOOGL",
+      "count": 254
+    },
+    {
+      "symbol": "MACRO",
+      "count": 179
+    },
+    {
+      "symbol": "META",
+      "count": 381
+    },
+    {
+      "symbol": "MSFT",
+      "count": 237
+    },
+    {
+      "symbol": "NVDA",
+      "count": 832
+    },
+    {
+      "symbol": "TSLA",
+      "count": 312
+    }
+  ],
+  "top_headlines": [
+    {
+      "symbol": "AAPL",
+      "headlines": [
+        {
+          "title": "Micron Technology, Inc. Trade Ideas — BSESOF:MTE",
+          "source": "Alpha Vantage",
+          "published": "2026-04-11T16:08:03Z",
+          "url": "https://www.tradingview.com/symbols/BSESOF-MTE/ideas/page-13/"
+        },
+        {
+          "title": "Westend Capital Management LLC Increases Position in Apple Inc. $AAPL",
+          "source": "Alpha Vantage",
+          "published": "2026-04-11T11:38:58Z",
+          "url": "https://www.marketbeat.com/instant-alerts/filing-westend-capital-management-llc-increases-position-in-apple-inc-aapl-2026-04-11/"
+        },
+        {
+          "title": "Japan Bets $16 Billion to Propel Rapidus in Global AI Chip Race",
+          "source": "Yahoo",
+          "published": "2026-04-11T11:25:06Z",
+          "url": "https://finnhub.io/api/news?id=933352638ba0a53cc4a4e341c217e99d55c64eca77277bde1a0b9bdfe578e3ec"
+        }
+      ]
+    },
+    {
+      "symbol": "AMZN",
+      "headlines": [
+        {
+          "title": "Jim Cramer Says for Buy Now, Pay Later Play He’d “Rather Own a Pure Play Like Affirm”",
+          "source": "Yahoo",
+          "published": "2026-04-11T15:34:42Z",
+          "url": "https://finnhub.io/api/news?id=c0c9d8b4c2a9a9885e8242d15ea0094dee9c53549ca4a80540aa2e3c74ea8152"
+        },
+        {
+          "title": "Amazon vs. Walmart: The Retail War Just Picked a Winner",
+          "source": "Yahoo",
+          "published": "2026-04-11T13:39:13Z",
+          "url": "https://finnhub.io/api/news?id=2df735525aa34b9834d09a05e106738cc46c637129a8a9037b9cbd72a8022581"
+        },
+        {
+          "title": "Rigetti’s 108 Qubit Launch Tests Quantum Ambitions And Valuation Gap",
+          "source": "Yahoo",
+          "published": "2026-04-11T12:12:24Z",
+          "url": "https://finnhub.io/api/news?id=0b5d2a1a43464d528e5135f1a15210d44dfc0a9b065c8950e7a1380ebc7f6624"
+        }
+      ]
+    },
+    {
+      "symbol": "GOOGL",
+      "headlines": [
+        {
+          "title": "Google (GOOGL), Intel (INTC) Partner to Advance AI Cloud Infrastructure",
+          "source": "Yahoo",
+          "published": "2026-04-11T17:34:35Z",
+          "url": "https://finnhub.io/api/news?id=22288566ed12f72426053e4addd1a4b5e2616f8064e387c6cb4736ad8193c4a6"
+        },
+        {
+          "title": "Alphabet’s SpaceX Windfall Could Recast Funding For AI And Cloud Growth",
+          "source": "Yahoo",
+          "published": "2026-04-11T17:12:04Z",
+          "url": "https://finnhub.io/api/news?id=4439a06886d068cc79fec9eda380c7ee8cfdb25ce638c3b2a10a226275db43eb"
+        },
+        {
+          "title": "Reddit (RDDT) Trades $84 Below Average Price Target Following 37% 2026 Decline",
+          "source": "Yahoo",
+          "published": "2026-04-11T16:10:26Z",
+          "url": "https://finnhub.io/api/news?id=e35e5f3d704f0ab8c60a78b75ac29ded0f2dee390dd4e6f36a4b44ae53290284"
+        }
+      ]
+    },
+    {
+      "symbol": "MACRO",
+      "headlines": [
+        {
+          "title": "Pope Leo urges end to 'madness of war' as US, Iran start talks - Reuters",
+          "source": "Reuters",
+          "published": "2026-04-11T17:14:47Z",
+          "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOZXpPT0NLSDVfcjcxQTBGUTB6M3Q2VEhhYmtKa0w1Y2NTSlBaVWEwdEJoLWJCYVJuV0tzaEFnb0VwUXNuWVZlZmpTR2xOTHVHMllPeFZHNmkwVVJfaFFuSWNMT0NuLVV3S2J3VG13X0VQd1J5aFN2NWp0REVxalM1b2Nsb2Zad0Q0N1BZZ25pbkJhM096SjhR?oc=5"
+        },
+        {
+          "title": "US military 'setting conditions' to clear mines from Strait of Hormuz - Reuters",
+          "source": "Reuters",
+          "published": "2026-04-11T16:58:11Z",
+          "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxQN3hnbUZSX2gtVDBXNFhtRndieXlMUDhHd2tTQVZ4NnU0Z01fZnloY3R1bWZGeHZuRGVQUGlFRzZmcUkxVEx5OW83SDVyN2prOXRtb0RRRl9nbFZrWWNKWWs0dGU0TnZQSVBHTHNtNDlaWmVTckdNekJJekZiUWtnUFVoYTJudlUzZnZaNnVhdmotQnJwTEdTQWY1UDdMbUJIUWU0Zw?oc=5"
+        },
+        {
+          "title": "Stocks gain on Iran ceasefire, plus 3 more things that drove last week's market",
+          "source": "CNBC",
+          "published": "2026-04-11T15:34:20Z",
+          "url": "https://www.cnbc.com/2026/04/11/stocks-gain-on-iran-ceasefire-plus-3-things-that-drove-last-weeks-market.html"
+        }
+      ]
+    },
+    {
+      "symbol": "META",
+      "headlines": [
+        {
+          "title": "After Reaching a Deal With Anthropic, Is CoreWeave Proving to Be the Ultimate Artificial Intelligence (AI) Stock to Own?",
+          "source": "Yahoo",
+          "published": "2026-04-11T16:20:00Z",
+          "url": "https://finnhub.io/api/news?id=348c7a8256c0455c68f88e2648ef565e1c497ef2da0b93c01949dbbb9a011be3"
+        },
+        {
+          "title": "Nvidia Just Posted Its Longest Winning Streak Since 2023. Is This Time for Real?",
+          "source": "Yahoo",
+          "published": "2026-04-11T13:43:21Z",
+          "url": "https://finnhub.io/api/news?id=8dc7c0495ab750335a9700c8ce7d6d69c1bfc96c5683e23358cf5dc6f37a3d0c"
+        },
+        {
+          "title": "Meta Stock Needs to Show How Much Cash It Can Squeeze Out of Its New AI Tools before Q1; Barclays Reiterates Buy Forecast",
+          "source": "Yahoo",
+          "published": "2026-04-11T13:34:14Z",
+          "url": "https://finnhub.io/api/news?id=236146412b7a2044a2ec5ac6c83746f515360aa8036bfe68364f7d3341927e59"
+        }
+      ]
+    },
+    {
+      "symbol": "MSFT",
+      "headlines": [
+        {
+          "title": "Microsoft's 'Copilot Code Red': CEO Nadella Deploys Emergency Overhaul To Crush AI Rivals",
+          "source": "Yahoo",
+          "published": "2026-04-11T17:31:04Z",
+          "url": "https://finnhub.io/api/news?id=ae4f26b5f12a7dc918b12fc41ba5d699d5cfcd7e2638d6fd8426d2fcd3e88043"
+        },
+        {
+          "title": "Goldman Sachs drops a bombshell on software stocks",
+          "source": "Yahoo",
+          "published": "2026-04-11T16:33:00Z",
+          "url": "https://finnhub.io/api/news?id=ab526e6f91bf4fb8eea41fd480989c7bdc8c56bf31af826366f1975141a8c763"
+        },
+        {
+          "title": "Jim Cramer Vindicated After Advising To Sell Nano Nuclear (NNE)",
+          "source": "Alpha Vantage",
+          "published": "2026-04-11T14:39:10Z",
+          "url": "https://www.insidermonkey.com/blog/jim-cramer-vindicated-after-advising-to-sell-nano-nuclear-nne-1736135/"
+        }
+      ]
+    },
+    {
+      "symbol": "NVDA",
+      "headlines": [
+        {
+          "title": "Prediction: Nvidia Stock Is a Buy Before May 20",
+          "source": "Yahoo",
+          "published": "2026-04-11T17:50:00Z",
+          "url": "https://finnhub.io/api/news?id=9d557940f32e9f624a9907dc2c38d7bc7a0477bddafc80b782637ce4f8257805"
+        },
+        {
+          "title": "Cadence (CDNS), Nvidia (NVDA) Expand Agentic AI Collaboration",
+          "source": "Alpha Vantage",
+          "published": "2026-04-11T17:42:13Z",
+          "url": "https://www.insidermonkey.com/blog/cadence-cdns-nvidia-nvda-expand-agentic-ai-collaboration-1736294/"
+        },
+        {
+          "title": "Synopsys Stock (SNPS) Opinions on AI Chip Design Tailwinds",
+          "source": "Alpha Vantage",
+          "published": "2026-04-11T17:38:22Z",
+          "url": "https://www.quiverquant.com/news/Synopsys+Stock+%28SNPS%29+Opinions+on+AI+Chip+Design+Tailwinds"
+        }
+      ]
+    },
+    {
+      "symbol": "TSLA",
+      "headlines": [
+        {
+          "title": "Anthony Scaramucci Says He Owns SpaceX Stock And Won't Miss Out On The IPO Despite Elon Musk's 'Cult Of Personality' Premium",
+          "source": "Yahoo",
+          "published": "2026-04-11T14:31:05Z",
+          "url": "https://finnhub.io/api/news?id=f7a72e01eebb1aa28577c36723cebf3e303afc7ad5d0aa66d5179709f317824e"
+        },
+        {
+          "title": "Is It Too Late to Buy Tesla Stock?",
+          "source": "Yahoo",
+          "published": "2026-04-11T13:35:00Z",
+          "url": "https://finnhub.io/api/news?id=ec1430c154c1129bc8ac0ad833f325f8f5fe7559d19fa2116f9176e98738fd7b"
+        },
+        {
+          "title": "JPMorgan Chase's Continued Success Will Hinge On How Quickly It Can Integrate Blockchain, AI, CEO Jamie Dimon Says",
+          "source": "Yahoo",
+          "published": "2026-04-11T12:01:13Z",
+          "url": "https://finnhub.io/api/news?id=8d6ec5962ab3b181eef06ea6a99adac130a3af82936aab22c104f92cc471448f"
+        }
+      ]
+    }
+  ]
+}

@@ -3,3 +3,5 @@
 all_api
 data/
 .DS_Store
+logs/
+.shiny_app_*.pid

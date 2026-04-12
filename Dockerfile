@@ -5,9 +5,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN R -e "install.packages(c('httr2', 'DT', 'dplyr', 'plotly', 'jsonlite', 'quantmod'), repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('httr2', 'DT', 'dplyr', 'plotly', 'jsonlite', 'quantmod', 'digest'), repos='https://cloud.r-project.org/')"
 
 COPY *.R *.csv /app/
+COPY R /app/R
 
 WORKDIR /app
 RUN mkdir -p /app/data && chmod 777 /app/data

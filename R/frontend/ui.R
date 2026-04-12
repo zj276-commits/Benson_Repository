@@ -223,24 +223,7 @@ ui <- navbarPage(
   position = "fixed-top",
   header = tags$head(
     tags$style(app_css),
-    tags$link(rel = "stylesheet", href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"),
-    tags$script(HTML("
-      function fixSelectize(id) {
-        var el = document.getElementById(id);
-        if (el && el.selectize) {
-          el.selectize.settings.dropdownParent = 'body';
-          el.selectize.$dropdown.detach().appendTo('body');
-        }
-      }
-      $(document).on('shiny:connected', function() {
-        setTimeout(function() { fixSelectize('ai_ticker'); fixSelectize('news_ticker'); }, 500);
-      });
-      $(document).on('shiny:value', function(e) {
-        if (e.name === 'data_page_content') {
-          setTimeout(function() { fixSelectize('data_ticker'); }, 300);
-        }
-      });
-    "))
+    tags$link(rel = "stylesheet", href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css")
   ),
 
   # ---- Tab 1: Data ----
@@ -253,6 +236,7 @@ ui <- navbarPage(
   tabPanel(
     tags$span(icon("newspaper", style = "margin-right:4px;"), "News"),
     fluidPage(
+      uiOutput("news_summary_ui"),
       tags$div(
         class = "panel-card", style = "margin-top:4px; padding:16px 20px;",
         fluidRow(
@@ -275,7 +259,60 @@ ui <- navbarPage(
     )
   ),
 
-  # ---- Tab 3: Reporting (chart + full analyst report) ----
+  # ---- Tab 3: Backtest ----
+  tabPanel(
+    tags$span(icon("chart-area", style = "margin-right:4px;"), "Backtest"),
+    fluidPage(
+      tags$div(
+        class = "panel-card", style = "margin-top:4px; padding:16px 20px;",
+        fluidRow(
+          column(3, selectInput("backtest_ticker", "Select Stock",
+                                choices = setNames(TICKERS, paste0(TICKERS, " - ", TICKER_LABELS[TICKERS])),
+                                selected = "NVDA")),
+          column(3, selectInput("backtest_model", "Decision Model",
+                                choices = BACKTEST_MODEL_CHOICES,
+                                selected = unname(BACKTEST_MODEL_CHOICES[[1]]))),
+          column(3, selectInput("backtest_strategy_mode", "Strategy Mode",
+                                choices = BACKTEST_STRATEGY_MODES,
+                                selected = unname(BACKTEST_STRATEGY_MODES[[1]]))),
+          column(3, dateRangeInput("backtest_custom_range", "Custom Range",
+                                   start = Sys.Date() - 7, end = Sys.Date(),
+                                   startview = "month", separator = "to"))
+        ),
+        fluidRow(
+          column(6, tags$div(style = "padding-top:24px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;",
+            actionButton("run_backtest_action", tags$span(icon("play"), " Run Agent Backtest"), class = "btn-success"),
+            actionButton("load_latest_backtest_action", tags$span(icon("folder-open"), " Load Latest"), class = "btn-info")
+          )),
+          column(6, tags$div(style = "padding-top:28px; color:#64748b; font-size:12px; text-align:right;",
+            icon("shield-halved", style = "margin-right:4px;"),
+            "$10,000 borrowed capital simulation. Fixed masked lookback: 90 trading days. Each decision is mask-safe: no future data."))
+        )
+      ),
+      uiOutput("backtest_error_ui"),
+      uiOutput("backtest_header_ui"),
+      uiOutput("backtest_metrics_ui"),
+      tags$div(class = "panel-card", plotlyOutput("backtest_equity_chart", height = "520px")),
+      fluidRow(
+        column(8, tags$div(class = "panel-card",
+          h3("LLM Decision Rationale", class = "section-title"),
+          uiOutput("backtest_explanation_ui"))),
+        column(4, tags$div(class = "panel-card",
+          h3("Run Setup", class = "section-title"),
+          uiOutput("backtest_setup_ui")))
+      ),
+      tags$div(class = "panel-card",
+        h3("Executed Trades", class = "section-title"),
+        DTOutput("backtest_trades_table")),
+      fluidRow(
+        column(4, tags$div(class = "panel-card",
+          h3("Quality Check", class = "section-title"),
+          uiOutput("backtest_quality_card_ui")))
+      )
+    )
+  ),
+
+  # ---- Tab 4: Reporting (chart + full analyst report) ----
   tabPanel(
     tags$span(icon("chart-bar", style = "margin-right:4px;"), "Reporting"),
     fluidPage(

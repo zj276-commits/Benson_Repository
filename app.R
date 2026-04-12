@@ -2,19 +2,15 @@
 # Market Insight Studio - Entry Point
 #
 # File structure:
-#   global.R  - Constants, libraries, utilities, API keys; sources api.R, models.R, agents.R, report.R
-#   api.R     - API functions (Finnhub, Yahoo Finance, OpenAI, Ollama)
-#   models.R  - Financial models (GBM, Lattice, SIM), RAG table computation, caching, export
-#   agents.R  - RAG retrieval, parallel multi-agent orchestration (6 analysts + PM)
-#   report.R  - Report generation (multi-agent pipeline with single-call fallback), HTML rendering
-#   ui.R      - Shiny UI definition
-#   server.R  - Shiny server logic
+#   global.R            - Thin compatibility shim that loads R/shared/global.R
+#   R/shared/global.R   - Constants, libraries, utilities, API keys, module loading
+#   R/backend/          - API clients, models, RAG, reporting, backtesting, data refresh
+#   R/frontend/         - Shiny UI and server orchestration
 #
-# Shiny auto-detects global.R + ui.R + server.R, so this file is only needed
-# for explicit shiny::runApp() or direct Rscript execution.
+# app.R remains the explicit entry point for local runs, Docker, and deployment.
 
 source("global.R")
-source("ui.R")
-source("server.R")
+source(file.path("R", "frontend", "ui.R"))
+source(file.path("R", "frontend", "server.R"))
 
 shinyApp(ui = ui, server = server)

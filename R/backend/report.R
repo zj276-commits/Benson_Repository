@@ -34,7 +34,7 @@ fmt_vol <- function(x) {
 # ----------------------------
 
 load_financial_tables <- function(symbol) {
-  app_dir <- getwd()
+  app_dir <- get_export_dir()
   message("[Tables] Loading for ", symbol, " from ", app_dir)
 
   kf <- tryCatch(read.csv(file.path(app_dir, "key_financials.csv"), stringsAsFactors=FALSE),
