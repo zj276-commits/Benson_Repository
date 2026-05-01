@@ -764,6 +764,7 @@ server <- function(input, output, session) {
 
   output$backtest_equity_chart <- renderPlotly({
     result <- backtest_result()
+    result <- ensure_forward_outlook(result)
     eq_df <- coerce_record_df(result$equity_curve)
     if (is.null(eq_df) || nrow(eq_df) == 0) return(NULL)
     eq_df$date <- as.Date(eq_df$date)
@@ -805,6 +806,64 @@ server <- function(input, output, session) {
           hovertemplate = "%{text}<extra></extra>"
         )
       }
+    }
+
+    # ---- Forward-looking GBM cone (extends both equity and buy & hold trajectories) ----
+    outlook <- result$forward_outlook
+    if (!is.null(outlook) && !is.null(outlook$forecast_path) && nrow(outlook$forecast_path) >= 2) {
+      fp <- outlook$forecast_path
+      fp$Date <- as.Date(fp$Date)
+
+      # Anchor: last actual equity value & last buy-and-hold value
+      last_eq <- tail(eq_df$equity, 1)
+      last_bh <- if (!is.null(baseline_df) && nrow(baseline_df) > 0) tail(baseline_df$equity, 1) else NA_real_
+      s0 <- as.numeric(fp$Median[[1]])
+
+      # Convert price ratios to equity trajectories. Agent line: project at GBM median return.
+      # Buy & Hold line: continues with full price exposure.
+      ratio_med <- as.numeric(fp$Median) / s0
+      ratio_lo  <- as.numeric(fp$Lo) / s0
+      ratio_hi  <- as.numeric(fp$Hi) / s0
+
+      eq_med <- last_eq * ratio_med
+      eq_lo  <- last_eq * ratio_lo
+      eq_hi  <- last_eq * ratio_hi
+
+      # Lower bound trace (invisible line, anchor for fill)
+      p <- p |> add_trace(x = fp$Date, y = eq_lo, type = "scatter", mode = "lines",
+                          line = list(color = "rgba(0,0,0,0)"),
+                          showlegend = FALSE, hoverinfo = "skip", name = "fcst_lo")
+      # Upper bound + fill to lower → forms the 90% cone
+      p <- p |> add_trace(x = fp$Date, y = eq_hi, type = "scatter", mode = "lines",
+                          fill = "tonexty", fillcolor = "rgba(167,139,250,0.18)",
+                          line = list(color = "rgba(0,0,0,0)"),
+                          name = "Forecast 90% Cone",
+                          hovertemplate = "%{x}: 90%% upper $%{y:.2f}<extra></extra>")
+      # Median forecast line
+      p <- p |> add_trace(x = fp$Date, y = eq_med, type = "scatter", mode = "lines",
+                          line = list(color = "#a78bfa", width = 2.5, dash = "dot"),
+                          name = "Forecast Median (GBM)",
+                          hovertemplate = "%{x}: median $%{y:.2f}<extra></extra>")
+
+      # Buy & Hold projection (dashed, lighter)
+      if (is.finite(last_bh)) {
+        bh_proj <- last_bh * ratio_med
+        p <- p |> add_trace(x = fp$Date, y = bh_proj, type = "scatter", mode = "lines",
+                            line = list(color = "#64748b", width = 1.5, dash = "dot"),
+                            name = "Buy & Hold (projected)",
+                            hovertemplate = "%{x}: B&H $%{y:.2f}<extra></extra>")
+      }
+
+      # Vertical "today" separator
+      p <- p |> add_trace(
+        x = c(tail(eq_df$date, 1), tail(eq_df$date, 1)),
+        y = c(min(c(eq_df$equity, eq_lo), na.rm = TRUE),
+              max(c(eq_df$equity, eq_hi), na.rm = TRUE)),
+        type = "scatter", mode = "lines",
+        line = list(color = "rgba(167,139,250,0.45)", width = 1, dash = "dash"),
+        name = "Backtest end",
+        hoverinfo = "skip", showlegend = FALSE
+      )
     }
 
     p |> layout(
@@ -872,9 +931,29 @@ server <- function(input, output, session) {
     )
   })
 
+  # Lazily compute forward outlook for old cached results that pre-date this feature
+  ensure_forward_outlook <- function(result) {
+    if (is.null(result)) return(result)
+    if (!is.null(result$forward_outlook)) return(result)
+    sym <- result$ticker
+    if (is.null(sym)) return(result)
+    d <- stock_data()
+    if (is.null(d) || is.null(d$daily)) return(result)
+    hist <- d$daily[d$daily$Symbol == sym, , drop = FALSE]
+    if (nrow(hist) == 0) return(result)
+    hist <- data.frame(Date = as.Date(hist$Date), Close = as.numeric(hist$Close),
+                       stringsAsFactors = FALSE)
+    result$forward_outlook <- tryCatch(
+      build_forward_outlook(result, hist_prices = hist, horizon_days = 30L),
+      error = function(e) NULL
+    )
+    result
+  }
+
   output$backtest_explanation_ui <- renderUI({
     result <- backtest_result()
     if (is.null(result)) return(NULL)
+    result <- ensure_forward_outlook(result)
     explanation <- result$llm_explanation %||% build_backtest_explanation_fallback(result)
     basis <- explanation$decision_basis %||% character(0)
     if (is.list(basis)) basis <- unlist(basis, use.names = FALSE)
@@ -911,12 +990,60 @@ server <- function(input, output, session) {
         tagList(
           tags$div(style = "color:#94a3b8; font-size:11px; text-transform:uppercase; font-weight:700; letter-spacing:.4px; margin-bottom:8px;",
             "What To Improve Next"),
-          tags$ul(style = "color:#d1d5db; padding-left:18px; line-height:1.8; margin:0;",
+          tags$ul(style = "color:#d1d5db; padding-left:18px; line-height:1.8; margin-bottom:16px;",
             lapply(improvements, tags$li))
         )
-      }
+      },
+      render_forward_outlook_ui(result$forward_outlook)
     )
   })
+
+  render_forward_outlook_ui <- function(outlook) {
+    if (is.null(outlook)) return(NULL)
+
+    scenario_card <- function(scn, accent_bg, accent_border, accent_text) {
+      tags$div(style = sprintf(
+        "padding:14px 16px; border-radius:14px; background:%s; border:1px solid %s; margin-bottom:10px;",
+        accent_bg, accent_border),
+        tags$div(style = sprintf("color:%s; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; margin-bottom:6px;", accent_text),
+          scn$label),
+        tags$div(style = "color:#e5e7eb; font-size:14px; line-height:1.7; margin-bottom:6px;",
+          scn$forecast),
+        if (!is.null(scn$return_band))
+          tags$div(style = "color:#cbd5e1; font-size:13px; margin-bottom:8px;", scn$return_band),
+        tags$div(style = "color:#94a3b8; font-size:11px; text-transform:uppercase; font-weight:600; letter-spacing:.3px; margin-bottom:4px;",
+          "Triggers to Watch"),
+        tags$ul(style = "color:#d1d5db; padding-left:18px; line-height:1.7; font-size:13px; margin:0 0 8px;",
+          lapply(scn$triggers, tags$li)),
+        tags$div(style = "color:#94a3b8; font-size:11px; text-transform:uppercase; font-weight:600; letter-spacing:.3px; margin-bottom:4px;",
+          "Recommended Actions"),
+        tags$ul(style = "color:#d1d5db; padding-left:18px; line-height:1.7; font-size:13px; margin:0;",
+          lapply(scn$actions, tags$li))
+      )
+    }
+
+    tagList(
+      tags$div(style = "border-top:1px dashed rgba(99,102,241,0.25); margin:18px 0 14px;"),
+      tags$div(style = "display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;",
+        tags$div(style = "color:#a78bfa; font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.5px;",
+          "Forward-Looking Outlook"),
+        tags$span(style = "background:rgba(167,139,250,0.15); color:#c4b5fd; border:1px solid rgba(167,139,250,0.3); padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600;",
+          outlook$horizon_label)
+      ),
+      tags$p(style = "color:#94a3b8; font-size:12px; line-height:1.6; margin:0 0 12px;",
+        outlook$method),
+      scenario_card(outlook$base_case,
+                    "rgba(99,102,241,0.10)", "rgba(99,102,241,0.30)", "#c7d2fe"),
+      scenario_card(outlook$bull_case,
+                    "rgba(34,197,94,0.10)", "rgba(34,197,94,0.30)", "#86efac"),
+      scenario_card(outlook$bear_case,
+                    "rgba(239,68,68,0.10)", "rgba(239,68,68,0.30)", "#fca5a5"),
+      tags$div(style = "color:#94a3b8; font-size:11px; text-transform:uppercase; font-weight:700; letter-spacing:.4px; margin:14px 0 6px;",
+        "Watch Signals"),
+      tags$ul(style = "color:#d1d5db; padding-left:18px; line-height:1.7; font-size:13px; margin:0;",
+        lapply(outlook$watch_signals, tags$li))
+    )
+  }
 
   output$backtest_quality_card_ui <- renderUI({
     result <- backtest_result()

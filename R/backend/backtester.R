@@ -873,6 +873,110 @@ build_backtest_quality_matrix <- function(backtest_result) {
   )
 }
 
+# ----------------------------
+# Forward-Looking Outlook
+# Uses GBM (already in models.R) to project price next N trading days,
+# then derives base/bull/bear scenario stats + actionable signals.
+# All numbers are deterministic and mask-safe (only uses hist <= end_date).
+# ----------------------------
+build_forward_outlook <- function(backtest_result, hist_prices = NULL, horizon_days = 30L) {
+  end_date <- as.Date(backtest_result$end_date %||% NA)
+  if (is.na(end_date)) return(NULL)
+
+  hist <- hist_prices
+  if (is.null(hist) || !"Close" %in% names(hist)) return(NULL)
+  if ("Date" %in% names(hist)) hist$Date <- as.Date(hist$Date)
+  hist <- hist[!is.na(hist$Date) & hist$Date <= end_date, , drop = FALSE]
+  hist <- hist[order(hist$Date), ]
+  if (nrow(hist) < 30L) return(NULL)
+
+  gbm <- tryCatch(estimate_gbm_params(hist, max_lookback = 252L), error = function(e) NULL)
+  if (is.null(gbm)) return(NULL)
+
+  forecast_path <- tryCatch(
+    gbm_forecast_path(gbm$s0, gbm$mu_annual, gbm$sigma_annual, horizon_days, gbm$last_date,
+                      p_lo = 0.05, p_hi = 0.95),
+    error = function(e) NULL
+  )
+  if (is.null(forecast_path) || nrow(forecast_path) < 2) return(NULL)
+
+  s0 <- gbm$s0
+  end_row <- forecast_path[nrow(forecast_path), , drop = FALSE]
+  median_ret <- (end_row$Median - s0) / s0
+  bull_ret <- (end_row$Hi - s0) / s0
+  bear_ret <- (end_row$Lo - s0) / s0
+  ann_vol <- gbm$sigma_annual
+  horizon_vol <- ann_vol * sqrt(horizon_days / 252)
+
+  pct <- function(x) sprintf("%+.1f%%", 100 * x)
+
+  base_case <- list(
+    label = "Base Case · Median path",
+    forecast = sprintf("Price drifts toward %s by %s (median GBM trajectory).",
+                       fmt_price(end_row$Median), format(end_row$Date, "%b %d")),
+    return_band = sprintf("Expected return %s · 90%% confidence cone [%s, %s]",
+                          pct(median_ret), pct(bear_ret), pct(bull_ret)),
+    triggers = c(
+      sprintf("Realized vol stays within %.1f%% (annualized).", 100 * ann_vol),
+      "No earnings or macro shock during the window."
+    ),
+    actions = c(
+      "Hold current allocation; rebalance only if drawdown breaches -7%.",
+      "Re-run backtest weekly; promote to live only after 3 consecutive WARN-free quality reports."
+    )
+  )
+
+  bull_case <- list(
+    label = "Bull Case · 95th percentile path",
+    forecast = sprintf("Tail-up path reaches %s (+%.1f%% vs today).",
+                       fmt_price(end_row$Hi), 100 * bull_ret),
+    triggers = c(
+      "Positive earnings surprise, accelerating sector momentum, or favorable macro print.",
+      sprintf("Confirmation: 5-day return > +%.1f%% AND streak >= 3 up-days.",
+              100 * max(0.02, bull_ret / 6))
+    ),
+    actions = c(
+      "Increase target position by +10pp (cap at 80% allocation).",
+      "Tighten stop-loss to -3% from latest high to lock in gains."
+    )
+  )
+
+  bear_case <- list(
+    label = "Bear Case · 5th percentile path",
+    forecast = sprintf("Tail-down path falls to %s (%.1f%% vs today).",
+                       fmt_price(end_row$Lo), 100 * bear_ret),
+    triggers = c(
+      "Earnings miss, regulatory headline, or VIX spike above 25.",
+      sprintf("Confirmation: 5-day return < %.1f%% OR streak >= 3 down-days.",
+              100 * min(-0.02, bear_ret / 6))
+    ),
+    actions = c(
+      "Cut position by 50% on first confirmation; rotate to cash.",
+      "Switch Strategy Mode to Defensive only and re-run backtest before re-entry."
+    )
+  )
+
+  watch_signals <- c(
+    sprintf("90D realized volatility (now %.1f%% annualized)", 100 * ann_vol),
+    "5-day return streak (sign + magnitude)",
+    "News sentiment: 7-day MACRO + ticker-specific count",
+    "Quality Check 'Performance vs Buy & Hold' validator (currently a leading indicator)"
+  )
+
+  list(
+    horizon_days = horizon_days,
+    horizon_label = sprintf("Next %d trading days (~%d weeks)", horizon_days, round(horizon_days / 5)),
+    annualized_vol = ann_vol,
+    horizon_vol = horizon_vol,
+    forecast_path = forecast_path,
+    base_case = base_case,
+    bull_case = bull_case,
+    bear_case = bear_case,
+    watch_signals = watch_signals,
+    method = "GBM (Geometric Brownian Motion) · 90% confidence cone · mask-safe (uses hist on/before end_date only)"
+  )
+}
+
 build_backtest_explanation_fallback <- function(backtest_result) {
   logs <- backtest_result$decision_log %||% list()
   trades <- backtest_result$trades %||% list()
@@ -1248,6 +1352,10 @@ run_backtest <- function(symbol, start_date, end_date = Sys.Date(),
   )
 
   result$quality_matrix <- build_backtest_quality_matrix(result)
+  result$forward_outlook <- tryCatch(
+    build_forward_outlook(result, hist_prices = all_prices, horizon_days = 30L),
+    error = function(e) NULL
+  )
   result$llm_explanation <- if (isTRUE(generate_explanation)) {
     if (is.function(on_progress)) on_progress(0.92, "Generating LLM explanation...")
     generate_backtest_explanation(result, model = llm_model)
