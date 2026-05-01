@@ -5,11 +5,12 @@ if (getRversion() < "4.1") {
   stop("This app requires R >= 4.1 (for native pipe |>).")
 }
 
-for (pkg in c("shiny", "httr2", "DT", "dplyr", "plotly", "jsonlite", "quantmod", "digest")) {
+for (pkg in c("shiny", "httr2", "DT", "dplyr", "plotly", "jsonlite", "quantmod", "digest",
+              "shinycssloaders", "shinyjs")) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
     stop(
       "Missing package: ", pkg,
-      ". Run: install.packages(c('shiny', 'httr2', 'DT', 'dplyr', 'plotly', 'jsonlite', 'quantmod', 'digest'))"
+      ". Run: install.packages(c('shiny', 'httr2', 'DT', 'dplyr', 'plotly', 'jsonlite', 'quantmod', 'digest', 'shinycssloaders', 'shinyjs'))"
     )
   }
 }
@@ -21,6 +22,8 @@ library(dplyr)
 library(quantmod)
 library(plotly)
 library(jsonlite)
+library(shinycssloaders)
+library(shinyjs)
 
 PROJECT_ROOT <- normalizePath(getwd(), winslash = "/", mustWork = FALSE)
 

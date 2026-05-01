@@ -1,0 +1,5 @@
+[warning] DEPRECATED: This filename doesn't follow the convention, use bootstrap-datepicker.en-CA.js instead.
+[warning] DEPRECATED: The language code "kh" is deprecated and will be removed in 2.0. For Khmer support use "km" instead.
+[warning] DEPRECATED: The language code "kr" is deprecated and will be removed in 2.0. For korean support use "ko" instead.
+[warning] DEPRECATED: This language code "rs-latin" is deprecated (invalid serbian language code) and will be removed in 2.0. For Serbian latin support use "sr-latin" instead.
+[warning] DEPRECATED: This language code "rs" is deprecated (invalid serbian language code) and will be removed in 2.0. For Serbian support use "sr" instead.

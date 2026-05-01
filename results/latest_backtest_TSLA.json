@@ -1,0 +1,2760 @@
+{
+  "ok": true,
+  "ticker": "TSLA",
+  "start_date": "2026-02-26",
+  "end_date": "2026-04-11",
+  "initial_capital": 10000,
+  "borrowed_capital": 10000,
+  "lookback_days": 90,
+  "llm_model": "gpt-4o",
+  "strategy_mode": "auto",
+  "trading_days": 31,
+  "trades": [
+    {
+      "date": "2026-03-03",
+      "action": "BUY",
+      "shares": 7,
+      "price": 392.43,
+      "confidence": 60,
+      "reasoning": "The mean_reversion strategy has the highest score at 0.37, indicating potential for a rebound given the oversold conditions. The RSI(5) is at 25.8, suggesting the stock is in oversold territory, which aligns with a mean reversion opportunity. Additionally, the price is significantly below the SMA10, further supporting a potential bounce back.",
+      "selected_strategy": "mean_reversion",
+      "target_position_pct": 30
+    },
+    {
+      "date": "2026-03-04",
+      "action": "SELL",
+      "shares": 7,
+      "price": 405.94,
+      "confidence": 70,
+      "reasoning": "The market conditions remain uncertain with low scores across most strategies. The defensive_risk_off strategy has the highest score at 0.30, suggesting a cautious approach is warranted. Additionally, the recent price volatility and lack of positive news sentiment indicate potential risks, supporting a conservative stance.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0
+    },
+    {
+      "date": "2026-03-20",
+      "action": "BUY",
+      "shares": 13,
+      "price": 367.96,
+      "confidence": 70,
+      "reasoning": "The mean_reversion strategy has the highest score at 0.62, indicating a potential opportunity for a rebound given the oversold conditions. The RSI(5) is at 17.8, suggesting the stock is significantly oversold. Additionally, the price is 6.32% below the SMA10, which often signals a potential for mean reversion. Despite the recent downtrend, the lack of negative news and the high volume suggest a possible reversal.",
+      "selected_strategy": "mean_reversion",
+      "target_position_pct": 50
+    },
+    {
+      "date": "2026-03-23",
+      "action": "SELL",
+      "shares": 13,
+      "price": 380.85,
+      "confidence": 70,
+      "reasoning": "The market conditions remain challenging with a negative drift and high volatility. Despite a recent price increase, the overall trend is still downward, and the RSI values indicate the stock is not yet oversold. The defensive_risk_off strategy has the highest score, suggesting a cautious approach is warranted.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0
+    },
+    {
+      "date": "2026-03-27",
+      "action": "BUY",
+      "shares": 14,
+      "price": 361.83,
+      "confidence": 60,
+      "reasoning": "The mean_reversion strategy has the highest score at 0.54, indicating potential for a rebound given the oversold conditions. The RSI(5) is at 24.8, suggesting the stock is oversold, and the price is significantly below the SMA10. Despite the recent downtrend, the lack of negative news and the potential for mean reversion suggest a moderate entry point.",
+      "selected_strategy": "mean_reversion",
+      "target_position_pct": 50
+    },
+    {
+      "date": "2026-03-30",
+      "action": "BUY",
+      "shares": 5,
+      "price": 355.28,
+      "confidence": 70,
+      "reasoning": "The mean_reversion strategy continues to have the highest score at 0.62, indicating a strong potential for a rebound given the oversold conditions. The RSI(5) is at 20.8, which is significantly below the typical oversold threshold, suggesting that the stock may be due for a bounce. Additionally, the price is 5.99% below the SMA10, further supporting a mean reversion opportunity.",
+      "selected_strategy": "mean_reversion",
+      "target_position_pct": 70
+    },
+    {
+      "date": "2026-03-31",
+      "action": "SELL",
+      "shares": 5,
+      "price": 371.75,
+      "confidence": 70,
+      "reasoning": "The defensive_risk_off strategy has the highest score at 0.51, indicating a cautious approach is warranted given the current market conditions. The market has experienced a significant drawdown from its 20-day high, and volatility remains elevated at 39%. Despite a positive 1-day return, the overall trend is negative with a GBM drift of -0.2355 annualized. Reducing exposure to 50% aligns with a more defensive posture while maintaining some market participation.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 50
+    },
+    {
+      "date": "2026-04-01",
+      "action": "SELL",
+      "shares": 1,
+      "price": 381.26,
+      "confidence": 60,
+      "reasoning": "The defensive_risk_off strategy has the highest score at 0.45, suggesting a cautious approach is still warranted. Despite a recent price increase, the market remains volatile with a 20-day annualized volatility of 38.04%. Additionally, there is no significant news or event momentum to drive a strong bullish case, and the GBM drift remains negative.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 50
+    },
+    {
+      "date": "2026-04-02",
+      "action": "SELL",
+      "shares": 2,
+      "price": 360.59,
+      "confidence": 70,
+      "reasoning": "The defensive_risk_off strategy continues to have the highest score at 0.60, indicating a cautious approach is warranted. The market has experienced a significant drop of 5.42% in the last day, and the RSI values are below 40, suggesting oversold conditions but also potential for further downside. Additionally, the volume is significantly higher than the 20-day average, indicating increased selling pressure.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 40
+    },
+    {
+      "date": "2026-04-06",
+      "action": "SELL",
+      "shares": 3,
+      "price": 352.82,
+      "confidence": 60,
+      "reasoning": "The defensive_risk_off strategy continues to have the highest score at 0.59, indicating a cautious approach is warranted. The market has experienced a significant decline with a 30-day drop of 11.76% and increased volatility. Additionally, the RSI levels are below 40, suggesting the stock is nearing oversold conditions, but not yet indicating a strong reversal signal.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 30
+    },
+    {
+      "date": "2026-04-07",
+      "action": "SELL",
+      "shares": 3,
+      "price": 346.65,
+      "confidence": 70,
+      "reasoning": "The defensive_risk_off strategy continues to have the highest score at 0.62, indicating a cautious approach is warranted. The market has experienced a significant decline with a 15.32% drop over the last 30 days and a high volatility of 42.33%. Despite some positive news sentiment and potential upside, the overall market conditions suggest maintaining a defensive stance.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 20
+    },
+    {
+      "date": "2026-04-08",
+      "action": "SELL",
+      "shares": 3,
+      "price": 343.25,
+      "confidence": 70,
+      "reasoning": "The defensive_risk_off strategy continues to have the highest score at 0.60, indicating a cautious approach is warranted. The market has experienced a significant drawdown with a 30-day decline of 17.76% and a bearish sentiment in recent news. Additionally, the RSI levels are indicating oversold conditions, but the overall market sentiment and high volatility suggest maintaining a defensive stance.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 10
+    },
+    {
+      "date": "2026-04-09",
+      "action": "SELL",
+      "shares": 1,
+      "price": 345.62,
+      "confidence": 60,
+      "reasoning": "The defensive_risk_off strategy continues to have the highest score at 0.56, indicating a cautious approach is warranted. Despite a slight improvement in sentiment, the market remains volatile with a high macro risk score of 0.79 and a significant drawdown from the 20-day high. Recent news highlights potential challenges for Tesla, including questions about its future plans and performance concerns.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 5
+    },
+    {
+      "date": "2026-04-10",
+      "action": "SELL",
+      "shares": 1,
+      "price": 348.95,
+      "confidence": 85,
+      "reasoning": "The defensive_risk_off strategy continues to have the highest score at 0.50, indicating a cautious approach is warranted. The market has experienced significant volatility with a 30-day decline of 13.31% and a high macro risk score of 0.71. Additionally, sentiment has turned negative, and the stock is in a drawdown of 12.60% from its 20-day high. These factors suggest maintaining a defensive stance.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0
+    }
+  ],
+  "decision_log": [
+    {
+      "date": "2026-02-26",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 408.58,
+      "confidence": 70,
+      "reasoning": "The market conditions indicate a lack of strong positive signals across all strategies. The trend_following and event_momentum scores are both at 0.00, suggesting no upward momentum or significant events to capitalize on. The mean_reversion score is low at 0.11, indicating limited potential for a bounce back. The defensive_risk_off strategy has the highest score at 0.30, reflecting a cautious market environment. Additionally, the RSI values are below 50, and the stock is trading below its SMA10, further supporting a risk-off stance.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0,
+        "mean_reversion": 0.11,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.3
+      },
+      "risk_flags": [],
+      "holding_horizon": "1-3 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10000,
+        "shares": 0,
+        "equity": 10000
+      },
+      "portfolio_after": {
+        "cash": 10000,
+        "shares": 0,
+        "equity": 10000
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-10-17",
+        "visible_price_end_date": "2026-02-26",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-02-26",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": -2.1131,
+        "return_3d_pct": 2.1884,
+        "return_5d_pct": -0.7602,
+        "return_10d_pct": -4.5976,
+        "rsi_5": 44.3921,
+        "rsi_14": 43.909,
+        "sma_5": 409.402,
+        "sma_10": 411.518,
+        "sma_20": 414.5525,
+        "price_vs_sma10_pct": -0.7139,
+        "volume_ratio_20d": 0.8714,
+        "volatility_20d_pct": 35.6439,
+        "volatility_change_5d_pct": -2.5885,
+        "streak_days": -1,
+        "drawdown_from_20d_high_pct": -5.0719
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0,
+        "mean_reversion": 0.1057,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.305
+      }
+    },
+    {
+      "date": "2026-02-27",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 402.51,
+      "confidence": 70,
+      "reasoning": "The market conditions continue to show weak signals across all strategies. The trend_following and event_momentum scores remain at 0.00, indicating no positive momentum or trend to capitalize on. The mean_reversion score is low at 0.22, and the RSI values suggest the stock is not yet oversold. Additionally, there are no news events to drive a change in sentiment or market direction.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0,
+        "mean_reversion": 0.22,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.35
+      },
+      "risk_flags": [],
+      "holding_horizon": "1-3 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10000,
+        "shares": 0,
+        "equity": 10000
+      },
+      "portfolio_after": {
+        "cash": 10000,
+        "shares": 0,
+        "equity": 10000
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-10-20",
+        "visible_price_end_date": "2026-02-27",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-02-27",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": -1.4856,
+        "return_3d_pct": -1.6781,
+        "return_5d_pct": -2.2607,
+        "return_10d_pct": -3.491,
+        "rsi_5": 36.4894,
+        "rsi_14": 41.2239,
+        "sma_5": 407.54,
+        "sma_10": 410.062,
+        "sma_20": 413.85,
+        "price_vs_sma10_pct": -1.8417,
+        "volume_ratio_20d": 0.9438,
+        "volatility_20d_pct": 33.886,
+        "volatility_change_5d_pct": 2.9541,
+        "streak_days": -2,
+        "drawdown_from_20d_high_pct": -6.4822
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0044,
+        "mean_reversion": 0.219,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.3499
+      }
+    },
+    {
+      "date": "2026-03-02",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 403.32,
+      "confidence": 70,
+      "reasoning": "The market conditions remain weak with no significant positive signals. The trend_following score is low at 0.08, and the event_momentum score is 0.00, indicating a lack of upward momentum. The mean_reversion score is slightly higher at 0.29, but not strong enough to justify a position. Additionally, the RSI values are below 50, suggesting the stock is not in an overbought condition.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0.08,
+        "mean_reversion": 0.29,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.3
+      },
+      "risk_flags": [],
+      "holding_horizon": "1-3 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10000,
+        "shares": 0,
+        "equity": 10000
+      },
+      "portfolio_after": {
+        "cash": 10000,
+        "shares": 0,
+        "equity": 10000
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-10-21",
+        "visible_price_end_date": "2026-03-02",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-02",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": 0.2012,
+        "return_3d_pct": -3.3733,
+        "return_5d_pct": 0.8729,
+        "return_10d_pct": -3.3825,
+        "rsi_5": 38.3209,
+        "rsi_14": 41.7436,
+        "sma_5": 408.238,
+        "sma_10": 408.65,
+        "sma_20": 412.4955,
+        "price_vs_sma10_pct": -1.3043,
+        "volume_ratio_20d": 0.9353,
+        "volatility_20d_pct": 31.4117,
+        "volatility_change_5d_pct": -7.7762,
+        "streak_days": 1,
+        "drawdown_from_20d_high_pct": -5.8258
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0792,
+        "mean_reversion": 0.29,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.3027
+      }
+    },
+    {
+      "date": "2026-03-03",
+      "action": "BUY",
+      "shares": 7,
+      "executed_shares": 7,
+      "price": 392.43,
+      "confidence": 60,
+      "reasoning": "The mean_reversion strategy has the highest score at 0.37, indicating potential for a rebound given the oversold conditions. The RSI(5) is at 25.8, suggesting the stock is in oversold territory, which aligns with a mean reversion opportunity. Additionally, the price is significantly below the SMA10, further supporting a potential bounce back.",
+      "selected_strategy": "mean_reversion",
+      "target_position_pct": 30,
+      "signal_scores": {
+        "trend_following": 0.02,
+        "mean_reversion": 0.37,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.37
+      },
+      "risk_flags": [],
+      "holding_horizon": "3-7 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10000,
+        "shares": 0,
+        "equity": 10000
+      },
+      "portfolio_after": {
+        "cash": 7250.24,
+        "shares": 7,
+        "equity": 9997.25
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-10-22",
+        "visible_price_end_date": "2026-03-03",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-03",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": -2.7001,
+        "return_3d_pct": -3.9527,
+        "return_5d_pct": -4.1404,
+        "return_10d_pct": -4.4322,
+        "rsi_5": 25.8115,
+        "rsi_14": 37.1035,
+        "sma_5": 404.848,
+        "sma_10": 406.83,
+        "sma_20": 411.0265,
+        "price_vs_sma10_pct": -3.5396,
+        "volume_ratio_20d": 1.0597,
+        "volatility_20d_pct": 32.0233,
+        "volatility_change_5d_pct": -6.3086,
+        "streak_days": -1,
+        "drawdown_from_20d_high_pct": -8.3686
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.016,
+        "mean_reversion": 0.372,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.3693
+      }
+    },
+    {
+      "date": "2026-03-04",
+      "action": "SELL",
+      "shares": 7,
+      "executed_shares": 7,
+      "price": 405.94,
+      "confidence": 70,
+      "reasoning": "The market conditions remain uncertain with low scores across most strategies. The defensive_risk_off strategy has the highest score at 0.30, suggesting a cautious approach is warranted. Additionally, the recent price volatility and lack of positive news sentiment indicate potential risks, supporting a conservative stance.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0.06,
+        "mean_reversion": 0.11,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.3
+      },
+      "risk_flags": [],
+      "holding_horizon": "1-3 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 7250.24,
+        "shares": 7,
+        "equity": 10091.82
+      },
+      "portfolio_after": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-10-23",
+        "visible_price_end_date": "2026-03-04",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-04",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": 3.4427,
+        "return_3d_pct": 0.8522,
+        "return_5d_pct": -2.7456,
+        "return_10d_pct": -1.308,
+        "rsi_5": 50.7452,
+        "rsi_14": 45.2353,
+        "sma_5": 402.556,
+        "sma_10": 406.292,
+        "sma_20": 410.2255,
+        "price_vs_sma10_pct": -0.0866,
+        "volume_ratio_20d": 1.1443,
+        "volatility_20d_pct": 34.6707,
+        "volatility_change_5d_pct": -0.8672,
+        "streak_days": 1,
+        "drawdown_from_20d_high_pct": -5.214
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0619,
+        "mean_reversion": 0.1086,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.3037
+      }
+    },
+    {
+      "date": "2026-03-05",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 405.55,
+      "confidence": 70,
+      "reasoning": "The market conditions continue to show weakness with a negative drift and high volatility. The trend_following and event_momentum scores remain at 0.00, indicating no strong upward trends or positive events. The defensive_risk_off strategy has the highest score at 0.29, suggesting a cautious approach is warranted. Additionally, there is no news or sentiment change to support a bullish position.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0,
+        "mean_reversion": 0.11,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.29
+      },
+      "risk_flags": [],
+      "holding_horizon": "1-3 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "portfolio_after": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-10-24",
+        "visible_price_end_date": "2026-03-05",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-05",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": -0.0961,
+        "return_3d_pct": 0.5529,
+        "return_5d_pct": -0.7416,
+        "return_10d_pct": -1.4962,
+        "rsi_5": 50.1371,
+        "rsi_14": 45.0813,
+        "sma_5": 401.95,
+        "sma_10": 405.676,
+        "sma_20": 410.2025,
+        "price_vs_sma10_pct": -0.0311,
+        "volume_ratio_20d": 0.8867,
+        "volatility_20d_pct": 31.8618,
+        "volatility_change_5d_pct": -10.6106,
+        "streak_days": -1,
+        "drawdown_from_20d_high_pct": -5.3051
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0,
+        "mean_reversion": 0.1105,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.2919
+      }
+    },
+    {
+      "date": "2026-03-06",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 396.73,
+      "confidence": 70,
+      "reasoning": "The market continues to exhibit weakness with a negative drift and high volatility. The defensive_risk_off strategy has the highest score at 0.34, indicating a cautious approach is warranted. Additionally, the RSI levels are below neutral, and there is no positive news or event momentum to suggest a reversal. Therefore, maintaining a cash position is prudent.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0.02,
+        "mean_reversion": 0.15,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.34
+      },
+      "risk_flags": [],
+      "holding_horizon": "1-3 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "portfolio_after": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-10-27",
+        "visible_price_end_date": "2026-03-06",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-06",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": -2.1748,
+        "return_3d_pct": 1.0957,
+        "return_5d_pct": -1.436,
+        "return_10d_pct": -3.6642,
+        "rsi_5": 37.4514,
+        "rsi_14": 41.0268,
+        "sma_5": 400.794,
+        "sma_10": 404.167,
+        "sma_20": 410.1785,
+        "price_vs_sma10_pct": -1.8401,
+        "volume_ratio_20d": 1.1021,
+        "volatility_20d_pct": 31.8687,
+        "volatility_change_5d_pct": -5.9532,
+        "streak_days": -2,
+        "drawdown_from_20d_high_pct": -7.3645
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0202,
+        "mean_reversion": 0.1534,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.3435
+      }
+    },
+    {
+      "date": "2026-03-09",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 398.68,
+      "confidence": 70,
+      "reasoning": "The market conditions remain weak with a negative drift and high volatility. The defensive_risk_off strategy continues to have the highest score at 0.32, indicating a cautious approach is warranted. Additionally, the RSI values are below neutral, and there is no positive news sentiment to support a bullish position.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0.06,
+        "mean_reversion": 0.23,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.32
+      },
+      "risk_flags": [],
+      "holding_horizon": "1-3 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "portfolio_after": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-10-28",
+        "visible_price_end_date": "2026-03-09",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-09",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": 0.4915,
+        "return_3d_pct": -1.7884,
+        "return_5d_pct": -1.1505,
+        "return_10d_pct": -0.2876,
+        "rsi_5": 41.5393,
+        "rsi_14": 42.2289,
+        "sma_5": 399.866,
+        "sma_10": 404.052,
+        "sma_20": 409.557,
+        "price_vs_sma10_pct": -1.3295,
+        "volume_ratio_20d": 1.1488,
+        "volatility_20d_pct": 29.2515,
+        "volatility_change_5d_pct": -6.8769,
+        "streak_days": 1,
+        "drawdown_from_20d_high_pct": -6.9092
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0624,
+        "mean_reversion": 0.2334,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.319
+      }
+    },
+    {
+      "date": "2026-03-10",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 399.24,
+      "confidence": 70,
+      "reasoning": "The market conditions continue to show weakness with a negative drift and high volatility. The defensive_risk_off strategy has the highest score at 0.31, indicating a cautious approach is still warranted. There is no significant news or event momentum to suggest a change in market sentiment. The RSI levels are below neutral, and the price remains below the SMA10, further supporting a defensive stance.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0.16,
+        "mean_reversion": 0.22,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.31
+      },
+      "risk_flags": [],
+      "holding_horizon": "1-3 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "portfolio_after": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-10-29",
+        "visible_price_end_date": "2026-03-10",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-10",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": 0.1392,
+        "return_3d_pct": -1.5571,
+        "return_5d_pct": 1.7341,
+        "return_10d_pct": -2.4781,
+        "rsi_5": 42.8677,
+        "rsi_14": 42.5879,
+        "sma_5": 401.227,
+        "sma_10": 403.0375,
+        "sma_20": 408.6527,
+        "price_vs_sma10_pct": -0.9435,
+        "volume_ratio_20d": 1.0116,
+        "volatility_20d_pct": 28.6239,
+        "volatility_change_5d_pct": -10.6153,
+        "streak_days": 2,
+        "drawdown_from_20d_high_pct": -6.7796
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.162,
+        "mean_reversion": 0.2191,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.3126
+      }
+    },
+    {
+      "date": "2026-03-11",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 407.82,
+      "confidence": 70,
+      "reasoning": "The market continues to show signs of weakness with a negative drift and high volatility. Despite a recent short-term price increase, the overall trend remains negative, and there is no significant news or event momentum to support a bullish position. The defensive_risk_off strategy has the highest score, indicating a cautious approach is warranted.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0.24,
+        "mean_reversion": 0.1,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.26
+      },
+      "risk_flags": [],
+      "holding_horizon": "1-3 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "portfolio_after": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-10-30",
+        "visible_price_end_date": "2026-03-11",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-11",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": 2.1504,
+        "return_3d_pct": 2.7954,
+        "return_5d_pct": 0.4631,
+        "return_10d_pct": -2.2952,
+        "rsi_5": 60.3072,
+        "rsi_14": 48.0896,
+        "sma_5": 401.603,
+        "sma_10": 402.0795,
+        "sma_20": 407.7833,
+        "price_vs_sma10_pct": 1.4277,
+        "volume_ratio_20d": 1.0697,
+        "volatility_20d_pct": 28.8841,
+        "volatility_change_5d_pct": -16.6901,
+        "streak_days": 3,
+        "drawdown_from_20d_high_pct": -4.775
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.239,
+        "mean_reversion": 0.0995,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.2638
+      }
+    },
+    {
+      "date": "2026-03-12",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 395.01,
+      "confidence": 70,
+      "reasoning": "The market conditions remain weak with a negative drift and high volatility. The defensive_risk_off strategy continues to have the highest score at 0.29, indicating a cautious approach is still warranted. Despite a recent short-term price increase, the overall trend remains negative, and there is no significant news or event momentum to suggest a change in market sentiment.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0.01,
+        "mean_reversion": 0.16,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.29
+      },
+      "risk_flags": [],
+      "holding_horizon": "1-3 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "portfolio_after": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-10-31",
+        "visible_price_end_date": "2026-03-12",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-12",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": -3.1411,
+        "return_3d_pct": -0.9205,
+        "return_5d_pct": -2.5989,
+        "return_10d_pct": -3.3213,
+        "rsi_5": 38.4284,
+        "rsi_14": 41.6679,
+        "sma_5": 399.495,
+        "sma_10": 400.7225,
+        "sma_20": 406.1202,
+        "price_vs_sma10_pct": -1.4256,
+        "volume_ratio_20d": 1.0394,
+        "volatility_20d_pct": 30.5088,
+        "volatility_change_5d_pct": -4.2466,
+        "streak_days": -1,
+        "drawdown_from_20d_high_pct": -5.3732
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0139,
+        "mean_reversion": 0.158,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.2869
+      }
+    },
+    {
+      "date": "2026-03-13",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 391.2,
+      "confidence": 70,
+      "reasoning": "The market conditions continue to show weakness with a negative drift and high volatility. The defensive_risk_off strategy has the highest score at 0.30, indicating a cautious approach is still warranted. The RSI levels are low, suggesting oversold conditions, but without any positive news or momentum signals, it is prudent to remain in cash.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0.01,
+        "mean_reversion": 0.23,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.3
+      },
+      "risk_flags": [],
+      "holding_horizon": "1-3 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "portfolio_after": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-03",
+        "visible_price_end_date": "2026-03-13",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-13",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": -0.9645,
+        "return_3d_pct": -2.0126,
+        "return_5d_pct": -1.3939,
+        "return_10d_pct": -2.8099,
+        "rsi_5": 33.8613,
+        "rsi_14": 39.9354,
+        "sma_5": 398.389,
+        "sma_10": 399.5915,
+        "sma_20": 404.8268,
+        "price_vs_sma10_pct": -2.1,
+        "volume_ratio_20d": 1.0002,
+        "volatility_20d_pct": 29.4322,
+        "volatility_change_5d_pct": -7.6455,
+        "streak_days": -2,
+        "drawdown_from_20d_high_pct": -6.2859
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.01,
+        "mean_reversion": 0.2316,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.3043
+      }
+    },
+    {
+      "date": "2026-03-16",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 395.56,
+      "confidence": 70,
+      "reasoning": "The market conditions remain weak with a negative drift and high volatility. The defensive_risk_off strategy continues to have the highest score at 0.29, indicating a cautious approach is warranted. Despite a slight increase in price today, the overall trend is still negative, and there are no positive news signals to support a bullish position.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0.05,
+        "mean_reversion": 0.26,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.29
+      },
+      "risk_flags": [],
+      "holding_horizon": "3-7 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "portfolio_after": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-04",
+        "visible_price_end_date": "2026-03-16",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-16",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": 1.1145,
+        "return_3d_pct": -3.0062,
+        "return_5d_pct": -0.7826,
+        "return_10d_pct": -1.924,
+        "rsi_5": 43.4714,
+        "rsi_14": 42.8453,
+        "sma_5": 397.765,
+        "sma_10": 398.8155,
+        "sma_20": 403.7328,
+        "price_vs_sma10_pct": -0.8163,
+        "volume_ratio_20d": 0.9872,
+        "volatility_20d_pct": 29.8398,
+        "volatility_change_5d_pct": 2.0112,
+        "streak_days": 1,
+        "drawdown_from_20d_high_pct": -5.2324
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0462,
+        "mean_reversion": 0.2593,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.2926
+      }
+    },
+    {
+      "date": "2026-03-17",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 399.27,
+      "confidence": 80,
+      "reasoning": "The market conditions continue to show weakness with a negative drift and high volatility. The defensive_risk_off strategy has the highest score at 0.28, indicating a cautious approach is still warranted. There is no significant news or event momentum to suggest a change in market sentiment.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0.08,
+        "mean_reversion": 0.09,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.28
+      },
+      "risk_flags": [],
+      "holding_horizon": "3-7 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "portfolio_after": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-05",
+        "visible_price_end_date": "2026-03-17",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-17",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": 0.9379,
+        "return_3d_pct": 1.0785,
+        "return_5d_pct": 0.0088,
+        "return_10d_pct": 1.743,
+        "rsi_5": 51.0385,
+        "rsi_14": 45.2032,
+        "sma_5": 397.772,
+        "sma_10": 399.4995,
+        "sma_20": 403.1647,
+        "price_vs_sma10_pct": -0.0574,
+        "volume_ratio_20d": 0.8059,
+        "volatility_20d_pct": 29.6664,
+        "volatility_change_5d_pct": 3.6418,
+        "streak_days": 2,
+        "drawdown_from_20d_high_pct": -4.3436
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0754,
+        "mean_reversion": 0.0905,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.2797
+      }
+    },
+    {
+      "date": "2026-03-18",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 392.78,
+      "confidence": 70,
+      "reasoning": "The market conditions remain weak with a negative drift and high volatility. The defensive_risk_off strategy continues to have the highest score at 0.32, indicating a cautious approach is warranted. Additionally, the RSI values are below neutral, suggesting a lack of buying momentum. There are no significant news events to drive a change in sentiment.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0,
+        "mean_reversion": 0.12,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.32
+      },
+      "risk_flags": [],
+      "holding_horizon": "1-3 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "portfolio_after": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-06",
+        "visible_price_end_date": "2026-03-18",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-18",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": -1.6255,
+        "return_3d_pct": 0.4039,
+        "return_5d_pct": -3.6879,
+        "return_10d_pct": -3.2419,
+        "rsi_5": 39.4817,
+        "rsi_14": 41.9125,
+        "sma_5": 394.764,
+        "sma_10": 398.1835,
+        "sma_20": 402.2378,
+        "price_vs_sma10_pct": -1.357,
+        "volume_ratio_20d": 0.8703,
+        "volatility_20d_pct": 30.1074,
+        "volatility_change_5d_pct": 4.2351,
+        "streak_days": -1,
+        "drawdown_from_20d_high_pct": -5.8984
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0,
+        "mean_reversion": 0.1229,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.3245
+      }
+    },
+    {
+      "date": "2026-03-19",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 380.3,
+      "confidence": 70,
+      "reasoning": "The market conditions continue to show weakness with a negative drift and high volatility. The defensive_risk_off strategy has the highest score at 0.41, indicating a preference for maintaining a cash position. Additionally, the RSI values are low, suggesting oversold conditions, but without any positive news or momentum signals, it is prudent to remain cautious.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0.02,
+        "mean_reversion": 0.38,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.41
+      },
+      "risk_flags": [],
+      "holding_horizon": "1-3 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "portfolio_after": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-07",
+        "visible_price_end_date": "2026-03-19",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-19",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": -3.1774,
+        "return_3d_pct": -3.8578,
+        "return_5d_pct": -3.724,
+        "return_10d_pct": -6.2261,
+        "rsi_5": 25.5665,
+        "rsi_14": 36.4089,
+        "sma_5": 391.822,
+        "sma_10": 395.6585,
+        "sma_20": 400.6672,
+        "price_vs_sma10_pct": -3.8818,
+        "volume_ratio_20d": 1.1324,
+        "volatility_20d_pct": 31.8898,
+        "volatility_change_5d_pct": 4.5265,
+        "streak_days": -2,
+        "drawdown_from_20d_high_pct": -8.8884
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0232,
+        "mean_reversion": 0.3781,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.4099
+      }
+    },
+    {
+      "date": "2026-03-20",
+      "action": "BUY",
+      "shares": 13,
+      "executed_shares": 13,
+      "price": 367.96,
+      "confidence": 70,
+      "reasoning": "The mean_reversion strategy has the highest score at 0.62, indicating a potential opportunity for a rebound given the oversold conditions. The RSI(5) is at 17.8, suggesting the stock is significantly oversold. Additionally, the price is 6.32% below the SMA10, which often signals a potential for mean reversion. Despite the recent downtrend, the lack of negative news and the high volume suggest a possible reversal.",
+      "selected_strategy": "mean_reversion",
+      "target_position_pct": 50,
+      "signal_scores": {
+        "trend_following": 0.04,
+        "mean_reversion": 0.62,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.5
+      },
+      "risk_flags": [],
+      "holding_horizon": "3-7 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10088.98,
+        "shares": 0,
+        "equity": 10088.98
+      },
+      "portfolio_after": {
+        "cash": 5300.72,
+        "shares": 13,
+        "equity": 10084.2
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-10",
+        "visible_price_end_date": "2026-03-20",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-20",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": -3.2448,
+        "return_3d_pct": -7.8418,
+        "return_5d_pct": -5.9407,
+        "return_10d_pct": -7.2518,
+        "rsi_5": 17.8087,
+        "rsi_14": 31.8876,
+        "sma_5": 387.174,
+        "sma_10": 392.7815,
+        "sma_20": 398.4742,
+        "price_vs_sma10_pct": -6.3194,
+        "volume_ratio_20d": 1.3046,
+        "volatility_20d_pct": 33.4504,
+        "volatility_change_5d_pct": 13.6523,
+        "streak_days": -3,
+        "drawdown_from_20d_high_pct": -11.8448
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0405,
+        "mean_reversion": 0.6168,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.5026
+      }
+    },
+    {
+      "date": "2026-03-23",
+      "action": "SELL",
+      "shares": 13,
+      "executed_shares": 13,
+      "price": 380.85,
+      "confidence": 70,
+      "reasoning": "The market conditions remain challenging with a negative drift and high volatility. Despite a recent price increase, the overall trend is still downward, and the RSI values indicate the stock is not yet oversold. The defensive_risk_off strategy has the highest score, suggesting a cautious approach is warranted.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0.07,
+        "mean_reversion": 0.33,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.5
+      },
+      "risk_flags": [
+        "high_volatility",
+        "negative_drift"
+      ],
+      "holding_horizon": "3-7 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 5300.72,
+        "shares": 13,
+        "equity": 10251.77
+      },
+      "portfolio_after": {
+        "cash": 10246.82,
+        "shares": 0,
+        "equity": 10246.82
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-11",
+        "visible_price_end_date": "2026-03-23",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-23",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": 3.5031,
+        "return_3d_pct": -3.0373,
+        "return_5d_pct": -3.7188,
+        "return_10d_pct": -4.4723,
+        "rsi_5": 41.1321,
+        "rsi_14": 40.191,
+        "sma_5": 384.232,
+        "sma_10": 390.9985,
+        "sma_20": 397.5252,
+        "price_vs_sma10_pct": -2.5955,
+        "volume_ratio_20d": 1.2328,
+        "volatility_20d_pct": 35.0541,
+        "volatility_change_5d_pct": 17.4742,
+        "streak_days": 1,
+        "drawdown_from_20d_high_pct": -8.7566
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0708,
+        "mean_reversion": 0.3343,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.5034
+      }
+    },
+    {
+      "date": "2026-03-24",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 383.03,
+      "confidence": 70,
+      "reasoning": "The market conditions continue to show weakness with a negative drift and high volatility. The defensive_risk_off strategy has the highest score at 0.46, indicating a cautious approach is warranted. Despite a slight price increase today, the overall trend remains downward, and there is no significant news or event momentum to suggest a reversal.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0.08,
+        "mean_reversion": 0.17,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.46
+      },
+      "risk_flags": [],
+      "holding_horizon": "1-3 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10246.82,
+        "shares": 0,
+        "equity": 10246.82
+      },
+      "portfolio_after": {
+        "cash": 10246.82,
+        "shares": 0,
+        "equity": 10246.82
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-12",
+        "visible_price_end_date": "2026-03-24",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-24",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": 0.5724,
+        "return_3d_pct": 0.7179,
+        "return_5d_pct": -4.0674,
+        "return_10d_pct": -4.059,
+        "rsi_5": 44.4638,
+        "rsi_14": 41.504,
+        "sma_5": 380.984,
+        "sma_10": 389.378,
+        "sma_20": 396.2077,
+        "price_vs_sma10_pct": -1.6303,
+        "volume_ratio_20d": 0.9904,
+        "volatility_20d_pct": 33.8459,
+        "volatility_change_5d_pct": 14.0884,
+        "streak_days": 2,
+        "drawdown_from_20d_high_pct": -8.2343
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.084,
+        "mean_reversion": 0.1715,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.4631
+      }
+    },
+    {
+      "date": "2026-03-25",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 385.95,
+      "confidence": 70,
+      "reasoning": "The defensive_risk_off strategy continues to have the highest score at 0.36, indicating a cautious approach is warranted. The market conditions remain challenging with a negative drift and high volatility. Despite a recent price increase, the overall trend is still downward, and there is no significant news or event momentum to suggest a change in market sentiment.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0.11,
+        "mean_reversion": 0.12,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.36
+      },
+      "risk_flags": [],
+      "holding_horizon": "3-7 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10246.82,
+        "shares": 0,
+        "equity": 10246.82
+      },
+      "portfolio_after": {
+        "cash": 10246.82,
+        "shares": 0,
+        "equity": 10246.82
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-13",
+        "visible_price_end_date": "2026-03-25",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-25",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": 0.7623,
+        "return_3d_pct": 4.8891,
+        "return_5d_pct": -1.7389,
+        "return_10d_pct": -5.3627,
+        "rsi_5": 49.2707,
+        "rsi_14": 43.3335,
+        "sma_5": 379.618,
+        "sma_10": 387.191,
+        "sma_20": 394.6352,
+        "price_vs_sma10_pct": -0.3205,
+        "volume_ratio_20d": 0.9101,
+        "volatility_20d_pct": 33.0443,
+        "volatility_change_5d_pct": 9.755,
+        "streak_days": 3,
+        "drawdown_from_20d_high_pct": -5.5387
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.1135,
+        "mean_reversion": 0.1154,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.3647
+      }
+    },
+    {
+      "date": "2026-03-26",
+      "action": "HOLD",
+      "shares": 0,
+      "executed_shares": 0,
+      "price": 372.11,
+      "confidence": 70,
+      "reasoning": "The market conditions remain challenging with a negative drift and high volatility. The defensive_risk_off strategy continues to have the highest score at 0.44, indicating a cautious approach is warranted. There is no positive news or sentiment to support a change in strategy, and the RSI levels suggest the stock is not yet oversold enough to warrant a mean reversion strategy.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0,
+        "mean_reversion": 0.3,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.44
+      },
+      "risk_flags": [],
+      "holding_horizon": "1-3 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10246.82,
+        "shares": 0,
+        "equity": 10246.82
+      },
+      "portfolio_after": {
+        "cash": 10246.82,
+        "shares": 0,
+        "equity": 10246.82
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-14",
+        "visible_price_end_date": "2026-03-26",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-26",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": -3.586,
+        "return_3d_pct": -2.2949,
+        "return_5d_pct": -2.1536,
+        "return_10d_pct": -5.7973,
+        "rsi_5": 32.5689,
+        "rsi_14": 37.5219,
+        "sma_5": 377.98,
+        "sma_10": 384.901,
+        "sma_20": 392.8118,
+        "price_vs_sma10_pct": -3.3232,
+        "volume_ratio_20d": 0.9147,
+        "volatility_20d_pct": 34.5113,
+        "volatility_change_5d_pct": 8.2206,
+        "streak_days": -1,
+        "drawdown_from_20d_high_pct": -8.7563
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0015,
+        "mean_reversion": 0.2972,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.4428
+      }
+    },
+    {
+      "date": "2026-03-27",
+      "action": "BUY",
+      "shares": 14,
+      "executed_shares": 14,
+      "price": 361.83,
+      "confidence": 60,
+      "reasoning": "The mean_reversion strategy has the highest score at 0.54, indicating potential for a rebound given the oversold conditions. The RSI(5) is at 24.8, suggesting the stock is oversold, and the price is significantly below the SMA10. Despite the recent downtrend, the lack of negative news and the potential for mean reversion suggest a moderate entry point.",
+      "selected_strategy": "mean_reversion",
+      "target_position_pct": 50,
+      "signal_scores": {
+        "trend_following": 0.01,
+        "mean_reversion": 0.54,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.46
+      },
+      "risk_flags": [],
+      "holding_horizon": "3-7 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 10246.82,
+        "shares": 0,
+        "equity": 10246.82
+      },
+      "portfolio_after": {
+        "cash": 5176.13,
+        "shares": 14,
+        "equity": 10241.75
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-17",
+        "visible_price_end_date": "2026-03-27",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-27",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": -2.7626,
+        "return_3d_pct": -5.5348,
+        "return_5d_pct": -1.6659,
+        "return_10d_pct": -7.5077,
+        "rsi_5": 24.7723,
+        "rsi_14": 33.884,
+        "sma_5": 376.754,
+        "sma_10": 381.964,
+        "sma_20": 390.7777,
+        "price_vs_sma10_pct": -5.2712,
+        "volume_ratio_20d": 1.0182,
+        "volatility_20d_pct": 35.3285,
+        "volatility_change_5d_pct": 5.6145,
+        "streak_days": -2,
+        "drawdown_from_20d_high_pct": -11.277
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0118,
+        "mean_reversion": 0.5368,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.4617
+      }
+    },
+    {
+      "date": "2026-03-30",
+      "action": "BUY",
+      "shares": 5,
+      "executed_shares": 5,
+      "price": 355.28,
+      "confidence": 70,
+      "reasoning": "The mean_reversion strategy continues to have the highest score at 0.62, indicating a strong potential for a rebound given the oversold conditions. The RSI(5) is at 20.8, which is significantly below the typical oversold threshold, suggesting that the stock may be due for a bounce. Additionally, the price is 5.99% below the SMA10, further supporting a mean reversion opportunity.",
+      "selected_strategy": "mean_reversion",
+      "target_position_pct": 70,
+      "signal_scores": {
+        "trend_following": 0.02,
+        "mean_reversion": 0.62,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.44
+      },
+      "risk_flags": [],
+      "holding_horizon": "3-7 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 5176.13,
+        "shares": 14,
+        "equity": 10150.05
+      },
+      "portfolio_after": {
+        "cash": 3397.95,
+        "shares": 19,
+        "equity": 10148.27
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-18",
+        "visible_price_end_date": "2026-03-30",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-30",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": -1.8102,
+        "return_3d_pct": -7.9466,
+        "return_5d_pct": -6.7139,
+        "return_10d_pct": -10.183,
+        "rsi_5": 20.8055,
+        "rsi_14": 31.7887,
+        "sma_5": 371.64,
+        "sma_10": 377.936,
+        "sma_20": 388.3757,
+        "price_vs_sma10_pct": -5.9947,
+        "volume_ratio_20d": 1.1031,
+        "volatility_20d_pct": 35.5028,
+        "volatility_change_5d_pct": 1.2799,
+        "streak_days": -3,
+        "drawdown_from_20d_high_pct": -12.8831
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0203,
+        "mean_reversion": 0.6223,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.4355
+      }
+    },
+    {
+      "date": "2026-03-31",
+      "action": "SELL",
+      "shares": 5,
+      "executed_shares": 5,
+      "price": 371.75,
+      "confidence": 70,
+      "reasoning": "The defensive_risk_off strategy has the highest score at 0.51, indicating a cautious approach is warranted given the current market conditions. The market has experienced a significant drawdown from its 20-day high, and volatility remains elevated at 39%. Despite a positive 1-day return, the overall trend is negative with a GBM drift of -0.2355 annualized. Reducing exposure to 50% aligns with a more defensive posture while maintaining some market participation.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 50,
+      "signal_scores": {
+        "trend_following": 0.07,
+        "mean_reversion": 0.19,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.51
+      },
+      "risk_flags": [],
+      "holding_horizon": "3-7 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 3397.95,
+        "shares": 19,
+        "equity": 10461.2
+      },
+      "portfolio_after": {
+        "cash": 5254.85,
+        "shares": 14,
+        "equity": 10459.35
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-19",
+        "visible_price_end_date": "2026-03-31",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-03-31",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": 4.6358,
+        "return_3d_pct": -0.0967,
+        "return_5d_pct": -2.9449,
+        "return_10d_pct": -6.8926,
+        "rsi_5": 47.3199,
+        "rsi_14": 41.646,
+        "sma_5": 369.384,
+        "sma_10": 375.184,
+        "sma_20": 387.3417,
+        "price_vs_sma10_pct": -0.9153,
+        "volume_ratio_20d": 1.2134,
+        "volatility_20d_pct": 38.9956,
+        "volatility_change_5d_pct": 15.2153,
+        "streak_days": 1,
+        "drawdown_from_20d_high_pct": -8.8446
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0688,
+        "mean_reversion": 0.1891,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.5112
+      }
+    },
+    {
+      "date": "2026-04-01",
+      "action": "SELL",
+      "shares": 1,
+      "executed_shares": 1,
+      "price": 381.26,
+      "confidence": 60,
+      "reasoning": "The defensive_risk_off strategy has the highest score at 0.45, suggesting a cautious approach is still warranted. Despite a recent price increase, the market remains volatile with a 20-day annualized volatility of 38.04%. Additionally, there is no significant news or event momentum to drive a strong bullish case, and the GBM drift remains negative.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 50,
+      "signal_scores": {
+        "trend_following": 0.2,
+        "mean_reversion": 0.14,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.45
+      },
+      "risk_flags": [],
+      "holding_horizon": "3-7 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 5254.85,
+        "shares": 14,
+        "equity": 10592.49
+      },
+      "portfolio_after": {
+        "cash": 5635.72,
+        "shares": 13,
+        "equity": 10592.1
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-20",
+        "visible_price_end_date": "2026-04-01",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-04-01",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": 2.5582,
+        "return_3d_pct": 5.3699,
+        "return_5d_pct": -1.2152,
+        "return_10d_pct": -2.9329,
+        "rsi_5": 57.5725,
+        "rsi_14": 46.4759,
+        "sma_5": 368.446,
+        "sma_10": 374.032,
+        "sma_20": 386.1078,
+        "price_vs_sma10_pct": 1.9325,
+        "volume_ratio_20d": 0.9501,
+        "volatility_20d_pct": 38.0353,
+        "volatility_change_5d_pct": 15.1039,
+        "streak_days": 2,
+        "drawdown_from_20d_high_pct": -6.5127
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.2008,
+        "mean_reversion": 0.1357,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.4474
+      }
+    },
+    {
+      "date": "2026-04-02",
+      "action": "SELL",
+      "shares": 2,
+      "executed_shares": 2,
+      "price": 360.59,
+      "confidence": 70,
+      "reasoning": "The defensive_risk_off strategy continues to have the highest score at 0.60, indicating a cautious approach is warranted. The market has experienced a significant drop of 5.42% in the last day, and the RSI values are below 40, suggesting oversold conditions but also potential for further downside. Additionally, the volume is significantly higher than the 20-day average, indicating increased selling pressure.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 40,
+      "signal_scores": {
+        "trend_following": 0.04,
+        "mean_reversion": 0.24,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.6
+      },
+      "risk_flags": [
+        "high_volatility",
+        "oversold_conditions"
+      ],
+      "holding_horizon": "3-7 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 5635.72,
+        "shares": 13,
+        "equity": 10323.39
+      },
+      "portfolio_after": {
+        "cash": 6356.18,
+        "shares": 11,
+        "equity": 10322.67
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-21",
+        "visible_price_end_date": "2026-04-02",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-04-02",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": -5.4215,
+        "return_3d_pct": 1.4946,
+        "return_5d_pct": -3.0959,
+        "return_10d_pct": -5.1828,
+        "rsi_5": 37.6597,
+        "rsi_14": 38.9721,
+        "sma_5": 366.142,
+        "sma_10": 372.061,
+        "sma_20": 383.8598,
+        "price_vs_sma10_pct": -3.0831,
+        "volume_ratio_20d": 1.3112,
+        "volatility_20d_pct": 42.3459,
+        "volatility_change_5d_pct": 22.7014,
+        "streak_days": -1,
+        "drawdown_from_20d_high_pct": -11.5811
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0411,
+        "mean_reversion": 0.2413,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.6036
+      }
+    },
+    {
+      "date": "2026-04-06",
+      "action": "SELL",
+      "shares": 3,
+      "executed_shares": 3,
+      "price": 352.82,
+      "confidence": 60,
+      "reasoning": "The defensive_risk_off strategy continues to have the highest score at 0.59, indicating a cautious approach is warranted. The market has experienced a significant decline with a 30-day drop of 11.76% and increased volatility. Additionally, the RSI levels are below 40, suggesting the stock is nearing oversold conditions, but not yet indicating a strong reversal signal.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 30,
+      "signal_scores": {
+        "trend_following": 0.03,
+        "mean_reversion": 0.5,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.59
+      },
+      "risk_flags": [],
+      "holding_horizon": "3-7 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 6356.18,
+        "shares": 11,
+        "equity": 10237.2
+      },
+      "portfolio_after": {
+        "cash": 7413.59,
+        "shares": 8,
+        "equity": 10236.15
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-24",
+        "visible_price_end_date": "2026-04-06",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-04-06",
+        "visible_news_count": 0,
+        "visible_news_max_time": null
+      },
+      "short_signals": {
+        "return_1d_pct": -2.1548,
+        "return_3d_pct": -5.0921,
+        "return_5d_pct": -2.4901,
+        "return_10d_pct": -4.1146,
+        "rsi_5": 32.3949,
+        "rsi_14": 36.5364,
+        "sma_5": 364.34,
+        "sma_10": 370.547,
+        "sma_20": 381.6642,
+        "price_vs_sma10_pct": -4.784,
+        "volume_ratio_20d": 1.2139,
+        "volatility_20d_pct": 42.3356,
+        "volatility_change_5d_pct": 19.8341,
+        "streak_days": -2,
+        "drawdown_from_20d_high_pct": -13.4863
+      },
+      "news_signals": {
+        "article_count": 0,
+        "company_article_count": 0,
+        "macro_article_count": 0,
+        "sentiment_today": 0,
+        "sentiment_prev": 0,
+        "sentiment_change": 0,
+        "event_impact_score": 0,
+        "high_impact_event_count": 0,
+        "macro_risk_score": 0,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0314,
+        "mean_reversion": 0.5046,
+        "event_momentum": 0,
+        "defensive_risk_off": 0.5856
+      }
+    },
+    {
+      "date": "2026-04-07",
+      "action": "SELL",
+      "shares": 3,
+      "executed_shares": 3,
+      "price": 346.65,
+      "confidence": 70,
+      "reasoning": "The defensive_risk_off strategy continues to have the highest score at 0.62, indicating a cautious approach is warranted. The market has experienced a significant decline with a 15.32% drop over the last 30 days and a high volatility of 42.33%. Despite some positive news sentiment and potential upside, the overall market conditions suggest maintaining a defensive stance.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 20,
+      "signal_scores": {
+        "trend_following": 0.03,
+        "mean_reversion": 0.56,
+        "event_momentum": 0.33,
+        "defensive_risk_off": 0.62
+      },
+      "risk_flags": [
+        "high_volatility",
+        "recent_drawdown"
+      ],
+      "holding_horizon": "3-7 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 7413.59,
+        "shares": 8,
+        "equity": 10186.79
+      },
+      "portfolio_after": {
+        "cash": 8452.5,
+        "shares": 5,
+        "equity": 10185.75
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-25",
+        "visible_price_end_date": "2026-04-07",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-04-07",
+        "visible_news_count": 8,
+        "visible_news_max_time": "2026-04-07 23:31:20"
+      },
+      "short_signals": {
+        "return_1d_pct": -1.7488,
+        "return_3d_pct": -9.0778,
+        "return_5d_pct": -2.4291,
+        "return_10d_pct": -8.9799,
+        "rsi_5": 28.4474,
+        "rsi_14": 34.7179,
+        "sma_5": 362.614,
+        "sma_10": 367.127,
+        "sma_20": 379.0627,
+        "price_vs_sma10_pct": -5.5776,
+        "volume_ratio_20d": 1.1574,
+        "volatility_20d_pct": 42.3314,
+        "volatility_change_5d_pct": 19.2342,
+        "streak_days": -3,
+        "drawdown_from_20d_high_pct": -14.9993
+      },
+      "news_signals": {
+        "article_count": 8,
+        "company_article_count": 8,
+        "macro_article_count": 0,
+        "sentiment_today": 0.125,
+        "sentiment_prev": 0,
+        "sentiment_change": 0.125,
+        "event_impact_score": 1,
+        "high_impact_event_count": 2,
+        "macro_risk_score": 0.5,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0257,
+        "mean_reversion": 0.5563,
+        "event_momentum": 0.3313,
+        "defensive_risk_off": 0.6152
+      }
+    },
+    {
+      "date": "2026-04-08",
+      "action": "SELL",
+      "shares": 3,
+      "executed_shares": 3,
+      "price": 343.25,
+      "confidence": 70,
+      "reasoning": "The defensive_risk_off strategy continues to have the highest score at 0.60, indicating a cautious approach is warranted. The market has experienced a significant drawdown with a 30-day decline of 17.76% and a bearish sentiment in recent news. Additionally, the RSI levels are indicating oversold conditions, but the overall market sentiment and high volatility suggest maintaining a defensive stance.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 10,
+      "signal_scores": {
+        "trend_following": 0.03,
+        "mean_reversion": 0.52,
+        "event_momentum": 0.49,
+        "defensive_risk_off": 0.6
+      },
+      "risk_flags": [
+        "high_volatility",
+        "bearish_sentiment",
+        "drawdown"
+      ],
+      "holding_horizon": "3-7 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 8452.5,
+        "shares": 5,
+        "equity": 10168.75
+      },
+      "portfolio_after": {
+        "cash": 9481.22,
+        "shares": 2,
+        "equity": 10167.72
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-26",
+        "visible_price_end_date": "2026-04-08",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-04-08",
+        "visible_news_count": 8,
+        "visible_news_max_time": "2026-04-08 21:33:00"
+      },
+      "short_signals": {
+        "return_1d_pct": -0.9808,
+        "return_3d_pct": -4.8088,
+        "return_5d_pct": -7.6664,
+        "return_10d_pct": -10.3856,
+        "rsi_5": 26.2445,
+        "rsi_14": 33.7155,
+        "sma_5": 356.914,
+        "sma_10": 363.149,
+        "sma_20": 376.2635,
+        "price_vs_sma10_pct": -5.4796,
+        "volume_ratio_20d": 1.2062,
+        "volatility_20d_pct": 42.2241,
+        "volatility_change_5d_pct": 8.2791,
+        "streak_days": -4,
+        "drawdown_from_20d_high_pct": -15.833
+      },
+      "news_signals": {
+        "article_count": 8,
+        "company_article_count": 8,
+        "macro_article_count": 0,
+        "sentiment_today": -0.714,
+        "sentiment_prev": 0,
+        "sentiment_change": -0.714,
+        "event_impact_score": 1.125,
+        "high_impact_event_count": 3,
+        "macro_risk_score": 1.375,
+        "dominant_event_direction": "bearish"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0306,
+        "mean_reversion": 0.5193,
+        "event_momentum": 0.491,
+        "defensive_risk_off": 0.6045
+      }
+    },
+    {
+      "date": "2026-04-09",
+      "action": "SELL",
+      "shares": 1,
+      "executed_shares": 1,
+      "price": 345.62,
+      "confidence": 60,
+      "reasoning": "The defensive_risk_off strategy continues to have the highest score at 0.56, indicating a cautious approach is warranted. Despite a slight improvement in sentiment, the market remains volatile with a high macro risk score of 0.79 and a significant drawdown from the 20-day high. Recent news highlights potential challenges for Tesla, including questions about its future plans and performance concerns.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 5,
+      "signal_scores": {
+        "trend_following": 0.04,
+        "mean_reversion": 0.35,
+        "event_momentum": 0.45,
+        "defensive_risk_off": 0.56
+      },
+      "risk_flags": [
+        "high_volatility",
+        "macro_risk",
+        "performance_concerns"
+      ],
+      "holding_horizon": "3-7 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 9481.22,
+        "shares": 2,
+        "equity": 10172.46
+      },
+      "portfolio_after": {
+        "cash": 9826.49,
+        "shares": 1,
+        "equity": 10172.11
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-11-28",
+        "visible_price_end_date": "2026-04-09",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-04-09",
+        "visible_news_count": 14,
+        "visible_news_max_time": "2026-04-09 22:42:47"
+      },
+      "short_signals": {
+        "return_1d_pct": 0.6905,
+        "return_3d_pct": -2.0407,
+        "return_5d_pct": -9.348,
+        "return_10d_pct": -10.4495,
+        "rsi_5": 30.9064,
+        "rsi_14": 35.1191,
+        "sma_5": 349.786,
+        "sma_10": 359.116,
+        "sma_20": 373.1535,
+        "price_vs_sma10_pct": -3.7581,
+        "volume_ratio_20d": 0.9514,
+        "volatility_20d_pct": 41.2177,
+        "volatility_change_5d_pct": 8.367,
+        "streak_days": 1,
+        "drawdown_from_20d_high_pct": -13.437
+      },
+      "news_signals": {
+        "article_count": 14,
+        "company_article_count": 8,
+        "macro_article_count": 6,
+        "sentiment_today": 0.083,
+        "sentiment_prev": -1,
+        "sentiment_change": 1.083,
+        "event_impact_score": 0.5,
+        "high_impact_event_count": 2,
+        "macro_risk_score": 0.786,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.0426,
+        "mean_reversion": 0.352,
+        "event_momentum": 0.4457,
+        "defensive_risk_off": 0.5608
+      }
+    },
+    {
+      "date": "2026-04-10",
+      "action": "SELL",
+      "shares": 1,
+      "executed_shares": 1,
+      "price": 348.95,
+      "confidence": 85,
+      "reasoning": "The defensive_risk_off strategy continues to have the highest score at 0.50, indicating a cautious approach is warranted. The market has experienced significant volatility with a 30-day decline of 13.31% and a high macro risk score of 0.71. Additionally, sentiment has turned negative, and the stock is in a drawdown of 12.60% from its 20-day high. These factors suggest maintaining a defensive stance.",
+      "selected_strategy": "defensive_risk_off",
+      "target_position_pct": 0,
+      "signal_scores": {
+        "trend_following": 0.07,
+        "mean_reversion": 0.25,
+        "event_momentum": 0.28,
+        "defensive_risk_off": 0.5
+      },
+      "risk_flags": [
+        "high_volatility",
+        "negative_sentiment",
+        "macro_risk"
+      ],
+      "holding_horizon": "3-7 trading days",
+      "parse_ok": true,
+      "portfolio_before": {
+        "cash": 9826.49,
+        "shares": 1,
+        "equity": 10175.44
+      },
+      "portfolio_after": {
+        "cash": 10175.09,
+        "shares": 0,
+        "equity": 10175.09
+      },
+      "mask_audit": {
+        "visible_price_start_date": "2025-12-01",
+        "visible_price_end_date": "2026-04-10",
+        "visible_price_rows": 90,
+        "model_input_end_date": "2026-04-10",
+        "visible_news_count": 14,
+        "visible_news_max_time": "2026-04-10 22:57:10"
+      },
+      "short_signals": {
+        "return_1d_pct": 0.9635,
+        "return_3d_pct": 0.6635,
+        "return_5d_pct": -3.228,
+        "return_10d_pct": -6.224,
+        "rsi_5": 37.8103,
+        "rsi_14": 37.1422,
+        "sma_5": 347.458,
+        "sma_10": 356.8,
+        "sma_20": 370.8505,
+        "price_vs_sma10_pct": -2.2001,
+        "volume_ratio_20d": 0.7915,
+        "volatility_20d_pct": 40.69,
+        "volatility_change_5d_pct": -3.9104,
+        "streak_days": 2,
+        "drawdown_from_20d_high_pct": -12.603
+      },
+      "news_signals": {
+        "article_count": 14,
+        "company_article_count": 8,
+        "macro_article_count": 6,
+        "sentiment_today": -0.1,
+        "sentiment_prev": 0,
+        "sentiment_change": -0.1,
+        "event_impact_score": 0.571,
+        "high_impact_event_count": 2,
+        "macro_risk_score": 0.714,
+        "dominant_event_direction": "neutral"
+      },
+      "strategy_scores": {
+        "trend_following": 0.075,
+        "mean_reversion": 0.25,
+        "event_momentum": 0.2821,
+        "defensive_risk_off": 0.501
+      }
+    }
+  ],
+  "equity_curve": [
+    {
+      "date": "2026-02-26",
+      "equity": 10000
+    },
+    {
+      "date": "2026-02-26",
+      "equity": 10000
+    },
+    {
+      "date": "2026-02-27",
+      "equity": 10000
+    },
+    {
+      "date": "2026-03-02",
+      "equity": 10000
+    },
+    {
+      "date": "2026-03-03",
+      "equity": 9997.25
+    },
+    {
+      "date": "2026-03-04",
+      "equity": 10088.98
+    },
+    {
+      "date": "2026-03-05",
+      "equity": 10088.98
+    },
+    {
+      "date": "2026-03-06",
+      "equity": 10088.98
+    },
+    {
+      "date": "2026-03-09",
+      "equity": 10088.98
+    },
+    {
+      "date": "2026-03-10",
+      "equity": 10088.98
+    },
+    {
+      "date": "2026-03-11",
+      "equity": 10088.98
+    },
+    {
+      "date": "2026-03-12",
+      "equity": 10088.98
+    },
+    {
+      "date": "2026-03-13",
+      "equity": 10088.98
+    },
+    {
+      "date": "2026-03-16",
+      "equity": 10088.98
+    },
+    {
+      "date": "2026-03-17",
+      "equity": 10088.98
+    },
+    {
+      "date": "2026-03-18",
+      "equity": 10088.98
+    },
+    {
+      "date": "2026-03-19",
+      "equity": 10088.98
+    },
+    {
+      "date": "2026-03-20",
+      "equity": 10084.2
+    },
+    {
+      "date": "2026-03-23",
+      "equity": 10246.82
+    },
+    {
+      "date": "2026-03-24",
+      "equity": 10246.82
+    },
+    {
+      "date": "2026-03-25",
+      "equity": 10246.82
+    },
+    {
+      "date": "2026-03-26",
+      "equity": 10246.82
+    },
+    {
+      "date": "2026-03-27",
+      "equity": 10241.75
+    },
+    {
+      "date": "2026-03-30",
+      "equity": 10148.27
+    },
+    {
+      "date": "2026-03-31",
+      "equity": 10459.35
+    },
+    {
+      "date": "2026-04-01",
+      "equity": 10592.1
+    },
+    {
+      "date": "2026-04-02",
+      "equity": 10322.67
+    },
+    {
+      "date": "2026-04-06",
+      "equity": 10236.15
+    },
+    {
+      "date": "2026-04-07",
+      "equity": 10185.75
+    },
+    {
+      "date": "2026-04-08",
+      "equity": 10167.72
+    },
+    {
+      "date": "2026-04-09",
+      "equity": 10172.11
+    },
+    {
+      "date": "2026-04-10",
+      "equity": 10175.09
+    }
+  ],
+  "baseline_curve": [
+    {
+      "date": "2026-02-26",
+      "equity": 10000
+    },
+    {
+      "date": "2026-02-26",
+      "equity": 9990.19
+    },
+    {
+      "date": "2026-02-27",
+      "equity": 9844.51
+    },
+    {
+      "date": "2026-03-02",
+      "equity": 9863.95
+    },
+    {
+      "date": "2026-03-03",
+      "equity": 9602.59
+    },
+    {
+      "date": "2026-03-04",
+      "equity": 9926.83
+    },
+    {
+      "date": "2026-03-05",
+      "equity": 9917.47
+    },
+    {
+      "date": "2026-03-06",
+      "equity": 9705.79
+    },
+    {
+      "date": "2026-03-09",
+      "equity": 9752.59
+    },
+    {
+      "date": "2026-03-10",
+      "equity": 9765.91
+    },
+    {
+      "date": "2026-03-11",
+      "equity": 9971.95
+    },
+    {
+      "date": "2026-03-12",
+      "equity": 9664.51
+    },
+    {
+      "date": "2026-03-13",
+      "equity": 9573.07
+    },
+    {
+      "date": "2026-03-16",
+      "equity": 9677.71
+    },
+    {
+      "date": "2026-03-17",
+      "equity": 9766.75
+    },
+    {
+      "date": "2026-03-18",
+      "equity": 9610.99
+    },
+    {
+      "date": "2026-03-19",
+      "equity": 9311.47
+    },
+    {
+      "date": "2026-03-20",
+      "equity": 9015.31
+    },
+    {
+      "date": "2026-03-23",
+      "equity": 9324.67
+    },
+    {
+      "date": "2026-03-24",
+      "equity": 9376.99
+    },
+    {
+      "date": "2026-03-25",
+      "equity": 9447.07
+    },
+    {
+      "date": "2026-03-26",
+      "equity": 9114.91
+    },
+    {
+      "date": "2026-03-27",
+      "equity": 8868.19
+    },
+    {
+      "date": "2026-03-30",
+      "equity": 8710.99
+    },
+    {
+      "date": "2026-03-31",
+      "equity": 9106.27
+    },
+    {
+      "date": "2026-04-01",
+      "equity": 9334.51
+    },
+    {
+      "date": "2026-04-02",
+      "equity": 8838.43
+    },
+    {
+      "date": "2026-04-06",
+      "equity": 8651.95
+    },
+    {
+      "date": "2026-04-07",
+      "equity": 8503.87
+    },
+    {
+      "date": "2026-04-08",
+      "equity": 8422.27
+    },
+    {
+      "date": "2026-04-09",
+      "equity": 8479.15
+    },
+    {
+      "date": "2026-04-10",
+      "equity": 8559.07
+    }
+  ],
+  "metrics": {
+    "total_return_pct": 1.75,
+    "sharpe_ratio": 1.09,
+    "max_drawdown_pct": -4.01,
+    "win_rate": 0.19,
+    "buy_hold_return_pct": -14.41,
+    "alpha_vs_buy_hold_pct": 16.16,
+    "trade_count": 14,
+    "active_decision_ratio": 0.45,
+    "strategy_diversity": 2,
+    "max_hold_streak": 11,
+    "avg_target_position_pct": 13.1,
+    "dominant_strategy": "defensive_risk_off"
+  },
+  "generated_at": "2026-04-12T01:15:01Z",
+  "quality_matrix": [
+    {
+      "dimension": "No Look-Ahead Bias",
+      "status": "PASS",
+      "detail": "All decision contexts were time-safe."
+    },
+    {
+      "dimension": "Decision Schema Parse Rate",
+      "status": "PASS",
+      "detail": "Parse success 100.0% (31/31)"
+    },
+    {
+      "dimension": "Equity Curve Length",
+      "status": "PASS",
+      "detail": "Equity curve has 32 points; expected 32."
+    },
+    {
+      "dimension": "Trade Constraints",
+      "status": "PASS",
+      "detail": "Cash and share constraints held for every decision."
+    },
+    {
+      "dimension": "Trade Activity",
+      "status": "PASS",
+      "detail": "Executed 14 trades across 31 decision days; active decision ratio 45%."
+    },
+    {
+      "dimension": "Strategy Diversity",
+      "status": "PASS",
+      "detail": "Observed 2 strategy types; dominant strategy defensive_risk_off."
+    },
+    {
+      "dimension": "Performance vs Buy & Hold",
+      "status": "PASS",
+      "detail": "Strategy 1.75% vs buy-and-hold -14.41% (alpha 16.16%)."
+    }
+  ],
+  "llm_explanation": {
+    "summary_title": "TSLA Trading Strategy Backtest Review",
+    "executive_summary": "The backtest of the TSLA trading strategy using the gpt-4o model over a 31-day period resulted in a strategy return of 1.75%, outperforming the buy-and-hold approach which saw a decline of 14.41%. The strategy demonstrated a cautious trading approach, primarily driven by defensive risk-off signals, resulting in a total of 14 trades. The strategy's alpha was 16.16%, with a Sharpe ratio of 1.09, indicating a favorable risk-adjusted return.",
+    "decision_basis": ["The strategy primarily relied on defensive risk-off signals due to persistent market weakness and high volatility.", "Mean reversion signals were occasionally acted upon when the stock appeared oversold, as indicated by low RSI values.", "The strategy maintained a cautious stance, frequently opting to hold positions or reduce exposure in response to negative market trends.", "The model's confidence in defensive risk-off signals was consistently high, reinforcing the cautious trading approach.", "The strategy's performance was evaluated against a declining market, achieving positive returns through selective trading."],
+    "sparsity_explanation": "The strategy traded relatively sparsely, executing 14 trades over 31 days, due to the predominance of defensive risk-off signals. The market conditions were characterized by negative drift and high volatility, leading the model to prioritize capital preservation over aggressive trading. Mean reversion opportunities were limited and only acted upon when the stock was significantly oversold, as indicated by RSI values.",
+    "model_role": "The model's role was to identify trading opportunities based on mean reversion and defensive risk-off strategies, adjusting exposure according to market conditions and volatility levels. It aimed to outperform the buy-and-hold strategy by selectively engaging in trades that aligned with its risk management criteria.",
+    "improvement_ideas": ["Incorporate additional indicators to enhance the detection of mean reversion opportunities, potentially increasing trade frequency.", "Refine the defensive risk-off strategy to better differentiate between temporary market dips and sustained downtrends, allowing for more dynamic trading decisions.", "Explore the integration of sentiment analysis to capture market sentiment shifts that could signal potential reversals or trend continuations."]
+  }
+}

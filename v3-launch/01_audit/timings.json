@@ -1,0 +1,7 @@
+{
+  "initial_load_s": 1.68,
+  "data_tab_render_s": 0.91,
+  "news_refresh_s": 4.32,
+  "backtest_run_s": 0.02,
+  "reporting_run_s": 74.45
+}

@@ -196,6 +196,55 @@ app_css <- HTML("
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* ---- Hero band + stepper ---- */
+  .hero-band {
+    padding: 12px 18px 6px;
+    max-width: 1320px;
+    margin: 0 auto;
+    border-bottom: 1px solid rgba(99,102,241,0.15);
+  }
+  .hero-sub {
+    color: #cbd5e1; margin: 0; font-size: 14px; line-height: 1.5;
+  }
+  .hero-sub-2 {
+    color: #94a3b8; font-size: 12px; margin: 4px 0 12px;
+  }
+  .stepper { display:flex; gap:8px; flex-wrap:wrap; color:#cbd5e1; font-size:12px; font-weight:500; align-items:center; }
+  .stepper .step { padding:5px 12px; border-radius:999px; background:rgba(99,102,241,0.10); border:1px solid rgba(99,102,241,0.18); }
+  .stepper .arrow { color:#475569; font-weight:700; }
+
+  /* ---- Status dot footer ---- */
+  .status-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+  .status-dot.ok { background:#22c55e; box-shadow:0 0 6px rgba(34,197,94,0.6); }
+  .status-dot.warn { background:#f59e0b; box-shadow:0 0 6px rgba(245,158,11,0.5); }
+  .data-status-pill {
+    display:inline-flex; align-items:center; gap:8px; padding:6px 14px;
+    background:rgba(15,23,42,0.6); border:1px solid rgba(99,102,241,0.15);
+    border-radius:999px; font-size:12px; color:#cbd5e1;
+  }
+
+  /* ---- Prompt version badge ---- */
+  .badge-prompt {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:4px 10px; border-radius:999px; font-size:11px; font-weight:600;
+    background:linear-gradient(135deg, rgba(99,102,241,0.18), rgba(167,139,250,0.18));
+    color:#c7d2fe; border:1px solid rgba(99,102,241,0.30); letter-spacing:.3px;
+  }
+
+  /* ---- Quality Check grid ---- */
+  .qc-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px; margin-top:8px; }
+  .qc-tile {
+    padding:12px 14px; border-radius:10px; background:rgba(17,24,39,0.55);
+    border:1px solid rgba(51,65,85,0.55);
+  }
+  .qc-tile .qc-head { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .qc-tile .qc-name { color:#e2e8f0; font-size:12.5px; font-weight:600; }
+  .qc-tile .qc-status { font-size:10.5px; font-weight:700; letter-spacing:.4px; padding:2px 8px; border-radius:999px; }
+  .qc-tile .qc-detail { color:#94a3b8; font-size:11.5px; line-height:1.55; margin-top:6px; }
+
+  /* ---- Spinner color override ---- */
+  .load-container .loader { color:#6366f1 !important; }
+
   /* ---- Alert overrides ---- */
   .alert-danger { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; border-radius: 10px; }
   .alert-warning { background: rgba(234,179,8,0.12); border: 1px solid rgba(234,179,8,0.25); color: #fde68a; border-radius: 10px; }
@@ -221,9 +270,12 @@ ui <- navbarPage(
   inverse = TRUE,
   collapsible = TRUE,
   position = "fixed-top",
-  header = tags$head(
-    tags$style(app_css),
-    tags$link(rel = "stylesheet", href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css")
+  header = tagList(
+    tags$head(
+      tags$style(app_css),
+      tags$link(rel = "stylesheet", href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css")
+    ),
+    shinyjs::useShinyjs()
   ),
 
   # ---- Tab 1: Data ----
@@ -263,8 +315,23 @@ ui <- navbarPage(
   tabPanel(
     tags$span(icon("chart-area", style = "margin-right:4px;"), "Backtest"),
     fluidPage(
+      tags$div(class = "hero-band",
+        tags$p(class = "hero-sub",
+          "Algorithmic backtesting + AI-analyst rationale for retail equity traders."),
+        tags$p(class = "hero-sub-2",
+          "$10K mask-safe simulations · 7-validator quality control · transparent decision logs."),
+        tags$div(class = "stepper",
+          tags$span(class = "step", "1. Pick a stock"),
+          tags$span(class = "arrow", "→"),
+          tags$span(class = "step", "2. Choose strategy mode"),
+          tags$span(class = "arrow", "→"),
+          tags$span(class = "step", "3. Run Agent Backtest"),
+          tags$span(class = "arrow", "→"),
+          tags$span(class = "step", "4. Read Quality Check + Rationale")
+        )
+      ),
       tags$div(
-        class = "panel-card", style = "margin-top:4px; padding:16px 20px;",
+        class = "panel-card", style = "margin-top:8px; padding:16px 20px;",
         fluidRow(
           column(3, selectInput("backtest_ticker", "Select Stock",
                                 choices = setNames(TICKERS, paste0(TICKERS, " - ", TICKER_LABELS[TICKERS])),
@@ -272,31 +339,46 @@ ui <- navbarPage(
           column(3, selectInput("backtest_model", "Decision Model",
                                 choices = BACKTEST_MODEL_CHOICES,
                                 selected = unname(BACKTEST_MODEL_CHOICES[[1]]))),
-          column(3, selectInput("backtest_strategy_mode", "Strategy Mode",
-                                choices = BACKTEST_STRATEGY_MODES,
-                                selected = unname(BACKTEST_STRATEGY_MODES[[1]]))),
+          column(3,
+            selectInput("backtest_strategy_mode", "Strategy Mode",
+                        choices = BACKTEST_STRATEGY_MODES,
+                        selected = unname(BACKTEST_STRATEGY_MODES[[1]])),
+            tags$div(style = "color:#64748b; font-size:11px; line-height:1.45; margin-top:-8px;",
+              tags$b("Auto"), ": agent picks. ",
+              tags$b("Trend"), ": ride momentum. ",
+              tags$b("Mean Rev."), ": bet on bouncebacks. ",
+              tags$b("Event"), ": react to news. ",
+              tags$b("Defensive"), ": cash-heavy.")
+          ),
           column(3, dateRangeInput("backtest_custom_range", "Custom Range",
                                    start = Sys.Date() - 7, end = Sys.Date(),
                                    startview = "month", separator = "to"))
         ),
         fluidRow(
-          column(6, tags$div(style = "padding-top:24px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;",
+          column(8, tags$div(style = "padding-top:8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;",
             actionButton("run_backtest_action", tags$span(icon("play"), " Run Agent Backtest"), class = "btn-success"),
-            actionButton("load_latest_backtest_action", tags$span(icon("folder-open"), " Load Latest"), class = "btn-info")
+            actionButton("load_latest_backtest_action", tags$span(icon("folder-open"), " Load Latest"), class = "btn-info"),
+            tags$span(class = "data-status-pill", style = "margin-left:6px;",
+              icon("shield-halved"),
+              tags$span("Mask-safe · 90D lookback · $10K sim"))
           )),
-          column(6, tags$div(style = "padding-top:28px; color:#64748b; font-size:12px; text-align:right;",
-            icon("shield-halved", style = "margin-right:4px;"),
-            "$10,000 borrowed capital simulation. Fixed masked lookback: 90 trading days. Each decision is mask-safe: no future data."))
+          column(4, tags$div(style = "padding-top:14px; color:#64748b; font-size:11.5px; text-align:right;",
+            "Each decision sees only data available on that date. No future prices. No look-ahead."))
         )
       ),
       uiOutput("backtest_error_ui"),
       uiOutput("backtest_header_ui"),
       uiOutput("backtest_metrics_ui"),
-      tags$div(class = "panel-card", plotlyOutput("backtest_equity_chart", height = "520px")),
+      tags$div(class = "panel-card",
+        shinycssloaders::withSpinner(
+          plotlyOutput("backtest_equity_chart", height = "520px"),
+          type = 8, color = "#6366f1", size = 0.8)),
       fluidRow(
         column(8, tags$div(class = "panel-card",
           h3("LLM Decision Rationale", class = "section-title"),
-          uiOutput("backtest_explanation_ui"))),
+          shinycssloaders::withSpinner(uiOutput("backtest_explanation_ui"),
+                                       type = 8, color = "#6366f1", size = 0.6,
+                                       proxy.height = "120px"))),
         column(4, tags$div(class = "panel-card",
           h3("Run Setup", class = "section-title"),
           uiOutput("backtest_setup_ui")))
@@ -305,9 +387,15 @@ ui <- navbarPage(
         h3("Executed Trades", class = "section-title"),
         DTOutput("backtest_trades_table")),
       fluidRow(
-        column(4, tags$div(class = "panel-card",
-          h3("Quality Check", class = "section-title"),
-          uiOutput("backtest_quality_card_ui")))
+        column(12, tags$div(class = "panel-card",
+          tags$div(style = "display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:6px;",
+            h3("Quality Check", class = "section-title", style = "margin:0;"),
+            tags$span(class = "badge-prompt",
+              icon("shield-halved"),
+              tags$span("Prompt v2.3 · 7 validators · mask-safe ✓"))),
+          shinycssloaders::withSpinner(uiOutput("backtest_quality_card_ui"),
+                                       type = 8, color = "#6366f1", size = 0.6,
+                                       proxy.height = "120px")))
       )
     )
   ),
@@ -337,8 +425,15 @@ ui <- navbarPage(
         )
       ),
       fluidRow(column(12, uiOutput("ai_error"))),
-      tags$div(class = "panel-card", plotlyOutput("combined_forecast_chart", height = "540px")),
-      fluidRow(column(12, uiOutput("report_content")))
+      tags$div(class = "panel-card",
+        shinycssloaders::withSpinner(
+          plotlyOutput("combined_forecast_chart", height = "540px"),
+          type = 8, color = "#6366f1", size = 0.8)),
+      fluidRow(column(12,
+        shinycssloaders::withSpinner(uiOutput("report_content"),
+                                     type = 8, color = "#6366f1", size = 0.8,
+                                     proxy.height = "300px",
+                                     caption = HTML("<span style='color:#cbd5e1;'>Drafting institutional analyst report — Industry → Thesis → Risks → Catalysts… (~30–60s on first run, &lt;1s when cached)</span>"))))
     )
   )
 )

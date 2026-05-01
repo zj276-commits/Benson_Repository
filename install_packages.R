@@ -2,6 +2,7 @@
 # Required: shiny, httr2, DT, dplyr, plotly, jsonlite
 
 install.packages(
-  c("shiny", "httr2", "DT", "dplyr", "plotly", "jsonlite", "quantmod", "digest"),
+  c("shiny", "httr2", "DT", "dplyr", "plotly", "jsonlite", "quantmod", "digest",
+    "shinycssloaders", "shinyjs"),
   repos = "https://cloud.r-project.org/"
 )

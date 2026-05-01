@@ -1,0 +1,69 @@
+Live Stock Price
+AAPL
+Apple
+$280.34
+ +8.99 (+3.31%)
+TSLA
+Tesla
+$392.50
+ +10.87 (+2.85%)
+META
+Meta
+$611.52
+ -0.39 (-0.06%)
+NVDA
+NVIDIA
+$199.84
+ +0.27 (+0.14%)
+GOOGL
+Google
+$385.38
+ +0.58 (+0.15%)
+AMZN
+Amazon
+$268.66
+ +3.60 (+1.36%)
+MSFT
+Microsoft
+$416.91
+ +9.13 (+2.24%)
+Live | 19:42:16 | Auto-refresh 15s
+Market Data Status: Stale
+Expected latest trading date: 2026-04-30 | Current historical_prices.csv: 2026-04-10
+Latest news timestamp: 2026-04-28T20:28:17Z | News age: 71.2 hours
+Preferred price source: finnhub
+Price source mix on last refresh: No recent source summary
+Last refresh status: snapshot
+Ended: 2026-04-12T01:13:33Z
+SELECT STOCK
+AAPL - Apple
+TIME RANGE
+7D 
+1M 
+1Y
+CHART
+Line 
+Candle
+ Refresh Data
+ 2026-04-28 20:40:08
+Price Trend
+2026-03-15
+2026-03-22
+2026-03-29
+2026-04-05
+$246
+$248
+$250
+$252
+$254
+$256
+$258
+$260
+Close
+Start
+End
+Apple - 1M
+Price (USD)
+ View Analytics & Download CSV
+
+Model parameters, RAG-ready CSV exports, and full historical price data

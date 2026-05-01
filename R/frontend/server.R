@@ -241,44 +241,42 @@ server <- function(input, output, session) {
   output$data_refresh_status_ui <- renderUI({
     status <- market_data_status()
     latest <- refresh_status()
-    source_counts <- latest$price_source_counts %||% list()
-    source_text <- if (length(source_counts) == 0) {
-      "No recent source summary"
-    } else {
-      paste(vapply(names(source_counts), function(nm) {
-        paste0(nm, ": ", source_counts[[nm]])
-      }, character(1)), collapse = "  •  ")
+    is_stale <- isTRUE(status$stale)
+    dot_class <- if (is_stale) "warn" else "ok"
+    label <- if (is_stale) "Demo dataset" else "Live"
+    last_ts <- status$latest_price_date %||% latest$ended_at %||% "-"
+    show_debug <- isTRUE(getOption("philover.debug_status", default = FALSE))
+
+    pill <- tags$div(class = "data-status-pill",
+      tags$span(class = paste("status-dot", dot_class)),
+      tags$span(style = "font-weight:600; color:#f1f5f9;", label),
+      tags$span(style = "color:#94a3b8;", sprintf(" · Last update %s", last_ts)),
+      tags$span(style = "color:#64748b;", " · Source: Finnhub")
+    )
+
+    if (!show_debug) {
+      return(tags$div(style = "margin: 4px 0 12px;", pill))
     }
 
-    badge_color <- if (isTRUE(status$stale)) "#f59e0b" else "#22c55e"
-    badge_text <- if (isTRUE(status$stale)) "Stale" else "Fresh"
-
-    tags$div(
-      class = "panel-card",
-      style = "margin-top:0; margin-bottom:12px; padding:14px 18px;",
-      tags$div(style = "display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap;",
-        tags$div(
-          tags$div(style = "display:flex; align-items:center; gap:8px; margin-bottom:6px;",
-            tags$span(style = sprintf("display:inline-block; width:10px; height:10px; border-radius:50%%; background:%s;", badge_color)),
-            tags$span(style = "font-size:14px; font-weight:700; color:#f8fafc;", paste("Market Data Status:", badge_text))
-          ),
-          tags$div(style = "color:#94a3b8; font-size:12px; line-height:1.6;",
-            sprintf("Expected latest trading date: %s | Current historical_prices.csv: %s",
-                    status$expected_price_date %||% "-", status$latest_price_date %||% "-"),
-            tags$br(),
-            sprintf("Latest news timestamp: %s | News age: %s hours",
-                    status$latest_news_time %||% "-", fmt_num(as.numeric(status$news_age_hours %||% NA_real_), 1)),
-            tags$br(),
-            paste("Preferred price source:", status$preferred_price_source %||% "auto"),
-            tags$br(),
-            paste("Price source mix on last refresh:", source_text)
-          )
-        ),
-        tags$div(style = "color:#64748b; font-size:12px; text-align:right;",
-          tags$div(paste("Last refresh status:", latest$status %||% "unknown")),
-          tags$div(paste("Ended:", latest$ended_at %||% "-"))
-        )
-      )
+    source_counts <- latest$price_source_counts %||% list()
+    source_text <- if (length(source_counts) == 0) "No recent source summary" else {
+      paste(vapply(names(source_counts), function(nm) paste0(nm, ": ", source_counts[[nm]]), character(1)),
+            collapse = "  •  ")
+    }
+    tagList(
+      tags$div(style = "margin: 4px 0 8px;", pill),
+      tags$details(style = "margin-bottom:12px; color:#64748b; font-size:11.5px;",
+        tags$summary(style = "cursor:pointer; color:#94a3b8;", "Diagnostics (debug mode)"),
+        tags$div(style = "padding:8px 12px; line-height:1.6;",
+          sprintf("Expected: %s · Latest CSV: %s · News age: %sh",
+                  status$expected_price_date %||% "-",
+                  status$latest_price_date %||% "-",
+                  fmt_num(as.numeric(status$news_age_hours %||% NA_real_), 1)),
+          tags$br(),
+          sprintf("Source: %s · Mix: %s · Last status: %s",
+                  status$preferred_price_source %||% "auto",
+                  source_text,
+                  latest$status %||% "unknown")))
     )
   })
 
@@ -481,6 +479,15 @@ server <- function(input, output, session) {
   # ----------------------------
 
   observeEvent(input$run_prediction, {
+    shinyjs::disable("run_prediction")
+    shinyjs::html("run_prediction",
+      as.character(tags$span(icon("spinner", class = "fa-spin"), " Drafting report…")))
+    on.exit({
+      shinyjs::enable("run_prediction")
+      shinyjs::html("run_prediction",
+        as.character(tags$span(icon("wand-magic-sparkles"), " Generate Report")))
+    }, add = TRUE)
+
     d <- stock_data()
     if (is.null(d) || is.null(d$daily) || nrow(d$daily) < 5) {
       output$ai_error <- renderUI(div(class = "alert alert-danger", "No market data is loaded yet. Click Refresh Data first."))
@@ -635,6 +642,17 @@ server <- function(input, output, session) {
   }, ignoreInit = TRUE)
 
   observeEvent(input$run_backtest_action, {
+    shinyjs::disable("run_backtest_action")
+    shinyjs::disable("load_latest_backtest_action")
+    shinyjs::html("run_backtest_action",
+      as.character(tags$span(icon("spinner", class = "fa-spin"), " Running…")))
+    on.exit({
+      shinyjs::enable("run_backtest_action")
+      shinyjs::enable("load_latest_backtest_action")
+      shinyjs::html("run_backtest_action",
+        as.character(tags$span(icon("play"), " Run Agent Backtest")))
+    }, add = TRUE)
+
     dates <- resolve_backtest_dates()
     if (any(is.na(unlist(dates))) || dates$start > dates$end) {
       backtest_error(list(type = "danger", message = "Invalid backtest date range."))
@@ -907,30 +925,44 @@ server <- function(input, output, session) {
     if (is.null(quality_df) || nrow(quality_df) == 0) return(NULL)
 
     pass_count <- sum(quality_df$status == "PASS", na.rm = TRUE)
+    warn_count <- sum(quality_df$status == "WARN", na.rm = TRUE)
+    fail_count <- sum(quality_df$status == "FAIL", na.rm = TRUE)
     total_count <- nrow(quality_df)
+    headline_color <- if (fail_count > 0) "#ef4444" else if (warn_count > 0) "#f59e0b" else "#22c55e"
+
+    summary_row <- tags$div(style = "display:flex; gap:16px; align-items:baseline; flex-wrap:wrap; margin-bottom:8px;",
+      tags$span(style = sprintf("color:%s; font-size:26px; font-weight:800; letter-spacing:.3px;", headline_color),
+        sprintf("%s / %s checks passed", pass_count, total_count)),
+      tags$span(style = "color:#94a3b8; font-size:12px;",
+        sprintf("PASS %s · WARN %s · FAIL %s", pass_count, warn_count, fail_count))
+    )
+
+    tiles <- lapply(seq_len(nrow(quality_df)), function(i) {
+      row <- quality_df[i, , drop = FALSE]
+      status_txt <- row$status[[1]]
+      bg_color <- switch(status_txt,
+        PASS = "rgba(34,197,94,0.15)",
+        WARN = "rgba(245,158,11,0.15)",
+        FAIL = "rgba(239,68,68,0.18)",
+        "rgba(148,163,184,0.15)")
+      fg_color <- switch(status_txt,
+        PASS = "#86efac",
+        WARN = "#fcd34d",
+        FAIL = "#fca5a5",
+        "#cbd5e1")
+      tags$div(class = "qc-tile",
+        tags$div(class = "qc-head",
+          tags$div(class = "qc-name", row$dimension[[1]]),
+          tags$span(class = "qc-status",
+            style = sprintf("background:%s; color:%s;", bg_color, fg_color),
+            status_txt)),
+        tags$div(class = "qc-detail", row$detail[[1]])
+      )
+    })
 
     tagList(
-      tags$div(style = "color:#f8fafc; font-size:24px; font-weight:800; margin-bottom:12px;",
-        sprintf("%s/%s checks passed", pass_count, total_count)),
-      lapply(seq_len(nrow(quality_df)), function(i) {
-        row <- quality_df[i, , drop = FALSE]
-        status_color <- switch(
-          row$status[[1]],
-          PASS = "#22c55e",
-          WARN = "#f59e0b",
-          FAIL = "#ef4444",
-          "#94a3b8"
-        )
-        tags$div(style = "padding:10px 0; border-top:1px solid rgba(51,65,85,0.45);",
-          tags$div(style = "display:flex; justify-content:space-between; align-items:center; gap:10px;",
-            tags$div(style = "color:#e2e8f0; font-size:13px; font-weight:600;", row$dimension[[1]]),
-            tags$span(style = sprintf("color:%s; font-size:11px; font-weight:700; letter-spacing:.4px;", status_color),
-              row$status[[1]])
-          ),
-          tags$div(style = "color:#94a3b8; font-size:12px; line-height:1.6; margin-top:4px;",
-            row$detail[[1]])
-        )
-      })
+      summary_row,
+      tags$div(class = "qc-grid", tiles)
     )
   })
 

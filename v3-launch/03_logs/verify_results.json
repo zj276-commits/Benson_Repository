@@ -1,0 +1,13 @@
+{
+  "initial_load_s": 0.81,
+  "fix_stale_block_hidden": true,
+  "fix_status_pill_present": true,
+  "fix_hero_band": true,
+  "fix_stepper": true,
+  "fix_prompt_badge": true,
+  "load_latest_s": 0.04,
+  "fix_qc_grid": true,
+  "qc_tiles_count": 7,
+  "fix_button_disabled_on_click": false,
+  "fix_report_spinner_wrapper": true
+}
