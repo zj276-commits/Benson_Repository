@@ -199,22 +199,22 @@ server <- function(input, output, session) {
 
   output$live_quotes_ui <- renderUI({
     qs <- live_quotes()
-    if (length(qs) == 0) return(tags$div(style = "color:#475569; text-align:center; padding:24px; font-size:14px;",
+    if (length(qs) == 0) return(tags$div(style = "color:#6c6a64; text-align:center; padding:24px; font-size:14px;",
       icon("circle-notch", class = "fa-spin", style = "margin-right:6px;"), "Loading live quotes..."))
     cards <- lapply(names(qs), function(sym) {
       q <- qs[[sym]]
       is_up <- q$change >= 0
-      chg_col <- if (is_up) "#34d399" else "#f87171"
+      chg_col <- if (is_up) "#5db872" else "#c64545"
       chg_sign <- if (is_up) "+" else ""
       arrow_icon <- if (is_up) "caret-up" else "caret-down"
-      border_accent <- if (is_up) "rgba(34,197,94,0.2)" else "rgba(248,113,113,0.2)"
+      border_accent <- if (is_up) "rgba(93,184,114,0.35)" else "rgba(198,69,69,0.35)"
       tags$div(
-        style = sprintf("flex:1 1 140px; border:1px solid %s; background:linear-gradient(160deg,rgba(30,41,59,.6),rgba(15,23,42,.8)); border-radius:14px; padding:14px 16px; text-align:center; transition:transform .2s, box-shadow .2s; cursor:default;", border_accent),
+        style = sprintf("flex:1 1 140px; border:1px solid %s; background:#faf9f5; border-radius:12px; padding:14px 16px; text-align:center; transition:border-color .2s; cursor:default;", border_accent),
         class = "metric-card",
-        tags$div(style = "font-weight:700; color:#94a3b8; font-size:11px; text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;",
+        tags$div(style = "font-weight:500; color:#6c6a64; font-size:11px; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px;",
           paste0(sym)),
-        tags$div(style = "color:#cbd5e1; font-size:12px; margin-bottom:6px;", TICKER_LABELS[[sym]]),
-        tags$div(style = "font-size:24px; font-weight:800; color:#f8fafc; margin:4px 0; font-variant-numeric:tabular-nums;", fmt_price(q$price)),
+        tags$div(style = "color:#6c6a64; font-size:12px; margin-bottom:6px;", TICKER_LABELS[[sym]]),
+        tags$div(style = "font-size:24px; font-weight:600; color:#141413; margin:4px 0; font-variant-numeric:tabular-nums;", fmt_price(q$price)),
         tags$div(style = paste0("color:", chg_col, "; font-size:13px; font-weight:600;"),
           icon(arrow_icon, style = sprintf("margin-right:2px; color:%s;", chg_col)),
           sprintf("%s%s (%s%s%%)", chg_sign, fmt_num(q$change), chg_sign, fmt_num(q$change_pct)))
@@ -226,8 +226,8 @@ server <- function(input, output, session) {
   output$quote_timestamp <- renderUI({
     qt <- quote_time()
     if (!nzchar(qt)) return(NULL)
-    tags$div(style = "color:#475569; font-size:11px; text-align:right; display:flex; align-items:center; justify-content:flex-end; gap:6px;",
-      tags$span(style = "display:inline-block; width:6px; height:6px; border-radius:50%; background:#22c55e; animation:pulse-dot 2s infinite;"),
+    tags$div(style = "color:#6c6a64; font-size:11px; text-align:right; display:flex; align-items:center; justify-content:flex-end; gap:6px;",
+      tags$span(style = "display:inline-block; width:6px; height:6px; border-radius:50%; background:#5db872; animation:pulse-dot 2s infinite;"),
       tags$span(paste("Live |", qt, "| Auto-refresh 15s")),
       tags$style(HTML("@keyframes pulse-dot { 0%,100% { opacity:1; } 50% { opacity:0.3; } }"))
     )
@@ -249,9 +249,9 @@ server <- function(input, output, session) {
 
     pill <- tags$div(class = "data-status-pill",
       tags$span(class = paste("status-dot", dot_class)),
-      tags$span(style = "font-weight:600; color:#f1f5f9;", label),
-      tags$span(style = "color:#94a3b8;", sprintf(" · Last update %s", last_ts)),
-      tags$span(style = "color:#64748b;", " · Source: Finnhub")
+      tags$span(style = "font-weight:500; color:#141413;", label),
+      tags$span(style = "color:#6c6a64;", sprintf(" · Last update %s", last_ts)),
+      tags$span(style = "color:#8e8b82;", " · Source: Finnhub")
     )
 
     if (!show_debug) {
@@ -265,8 +265,8 @@ server <- function(input, output, session) {
     }
     tagList(
       tags$div(style = "margin: 4px 0 8px;", pill),
-      tags$details(style = "margin-bottom:12px; color:#64748b; font-size:11.5px;",
-        tags$summary(style = "cursor:pointer; color:#94a3b8;", "Diagnostics (debug mode)"),
+      tags$details(style = "margin-bottom:12px; color:#6c6a64; font-size:11.5px;",
+        tags$summary(style = "cursor:pointer; color:#6c6a64;", "Diagnostics (debug mode)"),
         tags$div(style = "padding:8px 12px; line-height:1.6;",
           sprintf("Expected: %s · Latest CSV: %s · News age: %sh",
                   status$expected_price_date %||% "-",
@@ -313,7 +313,7 @@ server <- function(input, output, session) {
             column(2, radioButtons("chart_type", "Chart", choices = c("Line" = "line", "Candle" = "candle"), selected = "line", inline = TRUE)),
             column(3, tags$div(style = "padding-top:24px;",
               actionButton("refresh_data", tags$span(icon("sync"), " Refresh Data"), class = "btn-primary"))),
-            column(2, tags$div(style = "padding-top:28px; color:#64748b; font-size:12px;",
+            column(2, tags$div(style = "padding-top:28px; color:#6c6a64; font-size:12px;",
               icon("clock", style = "margin-right:4px;"), textOutput("last_updated", inline = TRUE)))
           )
         ),
@@ -324,7 +324,7 @@ server <- function(input, output, session) {
         tags$div(style = "margin-top:16px;",
           actionButton("goto_analytics", tags$span(icon("table-columns"), " View Analytics & Download CSV"),
                        class = "btn-info", style = "padding:10px 24px; font-size:14px;"),
-          tags$p(style = "color:#475569; margin-top:8px; font-size:12px;",
+          tags$p(style = "color:#6c6a64; margin-top:8px; font-size:12px;",
             "Model parameters, RAG-ready CSV exports, and full historical price data")
         )
       )
@@ -353,17 +353,17 @@ server <- function(input, output, session) {
     chart_mode <- input$chart_type %||% "line"
     common_layout <- list(
       title = list(text = paste(TICKER_LABELS[[input$data_ticker]], "-", input$data_window),
-                   font = list(color = "#e5e7eb", size = 16, family = "Inter, sans-serif")),
+                   font = list(color = "#141413", size = 16, family = "Inter, sans-serif")),
       paper_bgcolor = "rgba(0,0,0,0)", plot_bgcolor = "rgba(0,0,0,0)",
-      xaxis = list(title = "", gridcolor = "rgba(51,65,85,0.5)", color = "#94a3b8",
+      xaxis = list(title = "", gridcolor = "#ebe6df", color = "#6c6a64",
                    tickformat = "%Y-%m-%d", tickfont = list(size = 11),
                    zeroline = FALSE, showline = FALSE, rangeslider = list(visible = FALSE)),
-      yaxis = list(title = "Price (USD)", gridcolor = "rgba(51,65,85,0.5)", color = "#94a3b8",
+      yaxis = list(title = "Price (USD)", gridcolor = "#ebe6df", color = "#6c6a64",
                    tickprefix = "$", tickfont = list(size = 11),
                    zeroline = FALSE, showline = FALSE),
-      font = list(color = "#e2e8f0", family = "Inter, sans-serif"),
+      font = list(color = "#3d3d3a", family = "Inter, sans-serif"),
       legend = list(orientation = "h", y = -0.12,
-                    font = list(color = "#94a3b8", size = 12, family = "Inter, sans-serif")),
+                    font = list(color = "#6c6a64", size = 12, family = "Inter, sans-serif")),
       margin = list(t = 50, b = 60),
       hovermode = "x unified"
     )
@@ -371,20 +371,20 @@ server <- function(input, output, session) {
     if (chart_mode == "candle") {
       p <- plot_ly(sub, x = ~Date, open = ~Open, high = ~High, low = ~Low, close = ~Close,
                    type = "candlestick", name = "OHLC",
-                   increasing = list(line = list(color = "#22c55e"), fillcolor = "rgba(34,197,94,0.35)"),
-                   decreasing = list(line = list(color = "#ef4444"), fillcolor = "rgba(239,68,68,0.35)"))
+                   increasing = list(line = list(color = "#5db872"), fillcolor = "rgba(93,184,114,0.25)"),
+                   decreasing = list(line = list(color = "#c64545"), fillcolor = "rgba(198,69,69,0.22)"))
       do.call(layout, c(list(p), common_layout))
     } else {
       x <- sub$Date; y <- sub$Close
       first <- head(y, 1); last <- tail(y, 1)
       p <- plot_ly(sub, x = x, y = y, type = "scatter", mode = "lines",
-                   name = "Close", line = list(color = "#60a5fa", width = 3)) |>
+                   name = "Close", line = list(color = "#cc785c", width = 3)) |>
         add_trace(x = x, y = y, type = "scatter", mode = "markers",
-                  marker = list(color = "#93c5fd", size = 4), showlegend = FALSE, name = "Points") |>
+                  marker = list(color = "#cc785c", size = 4), showlegend = FALSE, name = "Points") |>
         add_trace(x = x[1], y = first, type = "scatter", mode = "markers",
-                  marker = list(color = "#34d399", size = 8), name = "Start") |>
+                  marker = list(color = "#5db8a6", size = 8), name = "Start") |>
         add_trace(x = x[length(x)], y = last, type = "scatter", mode = "markers",
-                  marker = list(color = "#f97316", size = 8), name = "End")
+                  marker = list(color = "#e8a55a", size = 8), name = "End")
       do.call(layout, c(list(p), common_layout))
     }
   })
@@ -411,7 +411,7 @@ server <- function(input, output, session) {
     short_title <- substr(shown$Title, 1, 80)
     q <- utils::URLencode(paste0(short_title, " ", shown$Source), reserved = TRUE)
     url[needs_search] <- paste0("https://www.google.com/search?q=", q[needs_search])
-    shown$Link <- sprintf('<a href="%s" target="_blank" rel="noopener noreferrer" style="color:#38bdf8">Open</a>', url)
+    shown$Link <- sprintf('<a href="%s" target="_blank" rel="noopener noreferrer" style="color:#cc785c">Open</a>', url)
 
     datatable(
       shown[, c("Symbol", "Published", "Title", "Source", "Link")],
@@ -429,7 +429,7 @@ server <- function(input, output, session) {
       ),
       selection = "none"
     ) |>
-      formatStyle("Symbol", `font-weight` = "bold", color = "#e2e8f0") |>
+      formatStyle("Symbol", `font-weight` = "500", color = "#141413") |>
       formatStyle("Title", `white-space` = "normal", `word-wrap` = "break-word", `line-height` = "1.4")
   })
 
@@ -446,14 +446,14 @@ server <- function(input, output, session) {
       headlines <- group$headlines %||% list()
       if (length(headlines) == 0) return(NULL)
       tags$div(
-        style = "min-width:220px; flex:1 1 220px; border:1px solid rgba(99,102,241,0.12); border-radius:12px; padding:14px; background:rgba(15,23,42,0.45);",
-        tags$div(style = "font-size:12px; color:#a5b4fc; font-weight:700; text-transform:uppercase; letter-spacing:.4px; margin-bottom:8px;",
+        style = "min-width:220px; flex:1 1 220px; border:1px solid #e6dfd8; border-radius:12px; padding:14px; background:#faf9f5;",
+        tags$div(style = "font-size:12px; color:#cc785c; font-weight:500; text-transform:uppercase; letter-spacing:.06em; margin-bottom:8px;",
                  group$symbol %||% "-"),
         lapply(headlines, function(item) {
           tags$div(
             style = "margin-bottom:10px;",
-            tags$div(style = "color:#e2e8f0; font-size:13px; line-height:1.45;", item$title %||% "-"),
-            tags$div(style = "color:#64748b; font-size:11px; margin-top:2px;",
+            tags$div(style = "color:#252523; font-size:14px; line-height:1.45;", item$title %||% "-"),
+            tags$div(style = "color:#6c6a64; font-size:12px; margin-top:2px;",
                      paste(item$source %||% "-", item$published %||% "", sep = " | "))
           )
         })
@@ -464,11 +464,11 @@ server <- function(input, output, session) {
       class = "panel-card", style = "margin-bottom:16px;",
       tags$div(style = "display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap; margin-bottom:12px;",
         tags$div(
-          tags$div(style = "color:#f1f5f9; font-size:16px; font-weight:700; margin-bottom:4px;", "Latest Persisted News Summary"),
-          tags$div(style = "color:#94a3b8; font-size:12px;",
+          tags$div(style = "color:#141413; font-size:18px; font-weight:500; font-family:'Cormorant Garamond',serif; margin-bottom:4px; letter-spacing:-0.02em;", "Latest Persisted News Summary"),
+          tags$div(style = "color:#6c6a64; font-size:13px;",
                    sprintf("Generated %s | %s articles", summary$generated_at %||% "-", summary$total_articles %||% 0))
         ),
-        tags$div(style = "color:#cbd5e1; font-size:12px;", paste(count_text, collapse = "  •  "))
+        tags$div(style = "color:#3d3d3a; font-size:13px;", paste(count_text, collapse = "  •  "))
       ),
       tags$div(style = "display:flex; flex-wrap:wrap; gap:12px;", top_sections)
     )
@@ -577,44 +577,44 @@ server <- function(input, output, session) {
     p <- plot_ly()
     if (!is.null(hist) && nrow(hist) > 1) {
       p <- p |> add_trace(data = hist, x = ~Date, y = ~Close, type = "scatter", mode = "lines",
-                           name = "History", line = list(color = "rgba(148,163,184,0.75)", width = 2))
+                           name = "History", line = list(color = "rgba(108,106,100,0.65)", width = 2))
     }
 
     if (!is.null(gbm_path)) {
       p <- p |>
         add_trace(data = gbm_path, x = ~Date, y = ~Lo, type = "scatter", mode = "lines",
-                  name = "GBM 5-95%", line = list(color = "rgba(96,165,250,0)"), showlegend = FALSE) |>
+                  name = "GBM 5-95%", line = list(color = "rgba(204,120,92,0)"), showlegend = FALSE) |>
         add_trace(data = gbm_path, x = ~Date, y = ~Hi, type = "scatter", mode = "lines",
-                  name = "GBM 5-95%", fill = "tonexty", fillcolor = "rgba(96,165,250,0.15)",
-                  line = list(color = "rgba(96,165,250,0)"), hoverinfo = "skip") |>
+                  name = "GBM 5-95%", fill = "tonexty", fillcolor = "rgba(204,120,92,0.12)",
+                  line = list(color = "rgba(204,120,92,0)"), hoverinfo = "skip") |>
         add_trace(data = gbm_path, x = ~Date, y = ~Expected, type = "scatter", mode = "lines",
-                  name = "GBM E[S]", line = list(color = "#60a5fa", width = 3))
+                  name = "GBM E[S]", line = list(color = "#cc785c", width = 3))
     }
 
     if (!is.null(lattice_path)) {
       p <- p |>
         add_trace(data = lattice_path, x = ~Date, y = ~Lo, type = "scatter", mode = "lines",
-                  name = "Lattice 5-95%", line = list(color = "rgba(251,191,36,0)"), showlegend = FALSE) |>
+                  name = "Lattice 5-95%", line = list(color = "rgba(232,165,90,0)"), showlegend = FALSE) |>
         add_trace(data = lattice_path, x = ~Date, y = ~Hi, type = "scatter", mode = "lines",
-                  name = "Lattice 5-95%", fill = "tonexty", fillcolor = "rgba(251,191,36,0.12)",
-                  line = list(color = "rgba(251,191,36,0)"), hoverinfo = "skip") |>
+                  name = "Lattice 5-95%", fill = "tonexty", fillcolor = "rgba(232,165,90,0.12)",
+                  line = list(color = "rgba(232,165,90,0)"), hoverinfo = "skip") |>
         add_trace(data = lattice_path, x = ~Date, y = ~Expected, type = "scatter", mode = "lines",
-                  name = "Lattice E[S]", line = list(color = "#fbbf24", width = 3))
+                  name = "Lattice E[S]", line = list(color = "#e8a55a", width = 3))
     }
 
     p |> layout(
       title = list(text = paste("GBM & Binomial Lattice Prediction -", sym),
-                   font = list(color = "#e5e7eb", size = 16, family = "Inter, sans-serif")),
+                   font = list(color = "#141413", size = 16, family = "Inter, sans-serif")),
       paper_bgcolor = "rgba(0,0,0,0)", plot_bgcolor = "rgba(0,0,0,0)",
-      xaxis = list(title = "", gridcolor = "rgba(51,65,85,0.5)", color = "#94a3b8",
+      xaxis = list(title = "", gridcolor = "#ebe6df", color = "#6c6a64",
                    tickformat = "%Y-%m-%d", tickfont = list(size = 11),
                    zeroline = FALSE, showline = FALSE),
-      yaxis = list(title = "Price (USD)", gridcolor = "rgba(51,65,85,0.5)", color = "#94a3b8",
+      yaxis = list(title = "Price (USD)", gridcolor = "#ebe6df", color = "#6c6a64",
                    tickprefix = "$", tickfont = list(size = 11),
                    zeroline = FALSE, showline = FALSE),
       legend = list(orientation = "h", y = -0.12,
-                    font = list(color = "#94a3b8", size = 12, family = "Inter, sans-serif")),
-      font = list(color = "#e2e8f0", family = "Inter, sans-serif"),
+                    font = list(color = "#6c6a64", size = 12, family = "Inter, sans-serif")),
+      font = list(color = "#3d3d3a", family = "Inter, sans-serif"),
       margin = list(t = 50, b = 60),
       hovermode = "x unified"
     )
@@ -716,9 +716,9 @@ server <- function(input, output, session) {
       class = "panel-card", style = "margin-bottom:16px;",
       tags$div(style = "display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;",
         tags$div(
-          tags$div(style = "color:#f8fafc; font-size:20px; font-weight:800; margin-bottom:6px;",
+          tags$div(style = "color:#141413; font-size:22px; font-weight:500; font-family:'Cormorant Garamond',serif; letter-spacing:-0.02em; margin-bottom:6px;",
                    paste(result$ticker %||% "-", "Agent Backtest")),
-          tags$div(style = "color:#94a3b8; font-size:13px;",
+          tags$div(style = "color:#6c6a64; font-size:14px;",
                    sprintf("Range %s to %s | Model %s | Strategy mode %s | Borrowed capital $%s | %s trading days",
                            result$start_date %||% "-", result$end_date %||% "-",
                            result$llm_model %||% "gpt-4o-mini",
@@ -726,7 +726,7 @@ server <- function(input, output, session) {
                            fmt_num(as.numeric(result$borrowed_capital %||% result$initial_capital %||% 0), 0),
                            result$trading_days %||% 0))
         ),
-        tags$div(style = "color:#64748b; font-size:12px;",
+        tags$div(style = "color:#8e8b82; font-size:12px;",
                  paste("Generated", result$generated_at %||% "-"))
       )
     )
@@ -737,14 +737,14 @@ server <- function(input, output, session) {
     if (is.null(result) || is.null(result$metrics)) return(NULL)
     metrics <- result$metrics
     cards <- list(
-      list("Strategy Return", paste0(fmt_num(as.numeric(metrics$total_return_pct %||% 0), 2), "%"), "#38bdf8"),
-      list("Buy & Hold", paste0(fmt_num(as.numeric(metrics$buy_hold_return_pct %||% 0), 2), "%"), "#94a3b8"),
-      list("Alpha", paste0(fmt_num(as.numeric(metrics$alpha_vs_buy_hold_pct %||% 0), 2), "%"), "#22c55e"),
-      list("Sharpe", fmt_num(as.numeric(metrics$sharpe_ratio %||% 0), 2), "#f59e0b"),
-      list("Max Drawdown", paste0(fmt_num(as.numeric(metrics$max_drawdown_pct %||% 0), 2), "%"), "#f87171"),
-      list("Win Rate", paste0(fmt_num(as.numeric(metrics$win_rate %||% 0) * 100, 0), "%"), "#a78bfa"),
-      list("Trade Count", as.character(metrics$trade_count %||% 0L), "#14b8a6"),
-      list("Strategy Diversity", as.character(metrics$strategy_diversity %||% 0L), "#fb7185")
+      list("Strategy Return", paste0(fmt_num(as.numeric(metrics$total_return_pct %||% 0), 2), "%"), "#cc785c"),
+      list("Buy & Hold", paste0(fmt_num(as.numeric(metrics$buy_hold_return_pct %||% 0), 2), "%"), "#6c6a64"),
+      list("Alpha", paste0(fmt_num(as.numeric(metrics$alpha_vs_buy_hold_pct %||% 0), 2), "%"), "#5db872"),
+      list("Sharpe", fmt_num(as.numeric(metrics$sharpe_ratio %||% 0), 2), "#e8a55a"),
+      list("Max Drawdown", paste0(fmt_num(as.numeric(metrics$max_drawdown_pct %||% 0), 2), "%"), "#c64545"),
+      list("Win Rate", paste0(fmt_num(as.numeric(metrics$win_rate %||% 0) * 100, 0), "%"), "#5db8a6"),
+      list("Trade Count", as.character(metrics$trade_count %||% 0L), "#252523"),
+      list("Strategy Diversity", as.character(metrics$strategy_diversity %||% 0L), "#cc785c")
     )
 
     tags$div(
@@ -753,9 +753,9 @@ server <- function(input, output, session) {
         tags$div(
           class = "panel-card",
           style = "flex:1 1 180px; margin-top:0; padding:16px;",
-          tags$div(style = "color:#94a3b8; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.4px;",
+          tags$div(style = "color:#6c6a64; font-size:11px; font-weight:500; text-transform:uppercase; letter-spacing:.06em;",
                    card[[1]]),
-          tags$div(style = sprintf("color:%s; font-size:24px; font-weight:800; margin-top:6px;", card[[3]]),
+          tags$div(style = sprintf("color:%s; font-size:24px; font-weight:600; margin-top:6px;", card[[3]]),
                    card[[2]])
         )
       })
@@ -783,12 +783,12 @@ server <- function(input, output, session) {
     }
 
     p <- plot_ly(eq_df, x = ~date, y = ~equity, type = "scatter", mode = "lines+markers",
-                 name = "Agent Equity", line = list(color = "#38bdf8", width = 3),
-                 marker = list(size = 5, color = "#7dd3fc"))
+                 name = "Agent Equity", line = list(color = "#cc785c", width = 3),
+                 marker = list(size = 5, color = "#cc785c"))
 
     if (!is.null(baseline_df) && nrow(baseline_df) > 0) {
       p <- p |> add_trace(data = baseline_df, x = ~date, y = ~equity, type = "scatter", mode = "lines",
-                          name = "Buy & Hold", line = list(color = "#94a3b8", width = 2, dash = "dash"))
+                          name = "Buy & Hold", line = list(color = "#8e8b82", width = 2, dash = "dash"))
     }
 
     if (!is.null(trades_df) && nrow(trades_df) > 0) {
@@ -800,8 +800,8 @@ server <- function(input, output, session) {
         p <- p |> add_trace(
           data = trades_plot, x = ~date, y = ~equity_after, type = "scatter", mode = "markers",
           name = "Executed Trades",
-          marker = list(size = 10, color = ifelse(trades_plot$action == "BUY", "#22c55e", "#ef4444"),
-                        line = list(color = "#0f172a", width = 1)),
+          marker = list(size = 10, color = ifelse(trades_plot$action == "BUY", "#5db872", "#c64545"),
+                        line = list(color = "#faf9f5", width = 1)),
           text = ~paste(action, shares, "shares @", fmt_price(price)),
           hovertemplate = "%{text}<extra></extra>"
         )
@@ -835,13 +835,13 @@ server <- function(input, output, session) {
                           showlegend = FALSE, hoverinfo = "skip", name = "fcst_lo")
       # Upper bound + fill to lower → forms the 90% cone
       p <- p |> add_trace(x = fp$Date, y = eq_hi, type = "scatter", mode = "lines",
-                          fill = "tonexty", fillcolor = "rgba(167,139,250,0.18)",
+                          fill = "tonexty", fillcolor = "rgba(204,120,92,0.15)",
                           line = list(color = "rgba(0,0,0,0)"),
                           name = "Forecast 90% Cone",
                           hovertemplate = "%{x}: 90%% upper $%{y:.2f}<extra></extra>")
       # Median forecast line
       p <- p |> add_trace(x = fp$Date, y = eq_med, type = "scatter", mode = "lines",
-                          line = list(color = "#a78bfa", width = 2.5, dash = "dot"),
+                          line = list(color = "#cc785c", width = 2.5, dash = "dot"),
                           name = "Forecast Median (GBM)",
                           hovertemplate = "%{x}: median $%{y:.2f}<extra></extra>")
 
@@ -849,7 +849,7 @@ server <- function(input, output, session) {
       if (is.finite(last_bh)) {
         bh_proj <- last_bh * ratio_med
         p <- p |> add_trace(x = fp$Date, y = bh_proj, type = "scatter", mode = "lines",
-                            line = list(color = "#64748b", width = 1.5, dash = "dot"),
+                            line = list(color = "#6c6a64", width = 1.5, dash = "dot"),
                             name = "Buy & Hold (projected)",
                             hovertemplate = "%{x}: B&H $%{y:.2f}<extra></extra>")
       }
@@ -860,7 +860,7 @@ server <- function(input, output, session) {
         y = c(min(c(eq_df$equity, eq_lo), na.rm = TRUE),
               max(c(eq_df$equity, eq_hi), na.rm = TRUE)),
         type = "scatter", mode = "lines",
-        line = list(color = "rgba(167,139,250,0.45)", width = 1, dash = "dash"),
+        line = list(color = "rgba(204,120,92,0.45)", width = 1, dash = "dash"),
         name = "Backtest end",
         hoverinfo = "skip", showlegend = FALSE
       )
@@ -868,12 +868,12 @@ server <- function(input, output, session) {
 
     p |> layout(
       title = list(text = paste("Masked Backtest Equity Curve -", result$ticker %||% ""),
-                   font = list(color = "#e5e7eb", size = 16, family = "Inter, sans-serif")),
+                   font = list(color = "#141413", size = 16, family = "Inter, sans-serif")),
       paper_bgcolor = "rgba(0,0,0,0)", plot_bgcolor = "rgba(0,0,0,0)",
-      xaxis = list(title = "", gridcolor = "rgba(51,65,85,0.5)", color = "#94a3b8"),
-      yaxis = list(title = "Equity (USD)", tickprefix = "$", gridcolor = "rgba(51,65,85,0.5)", color = "#94a3b8"),
-      legend = list(orientation = "h", y = -0.15, font = list(color = "#94a3b8")),
-      font = list(color = "#e2e8f0", family = "Inter, sans-serif"),
+      xaxis = list(title = "", gridcolor = "#ebe6df", color = "#6c6a64"),
+      yaxis = list(title = "Equity (USD)", tickprefix = "$", gridcolor = "#ebe6df", color = "#6c6a64"),
+      legend = list(orientation = "h", y = -0.15, font = list(color = "#6c6a64")),
+      font = list(color = "#3d3d3a", family = "Inter, sans-serif"),
       margin = list(t = 50, b = 70),
       hovermode = "x unified"
     )
@@ -904,12 +904,12 @@ server <- function(input, output, session) {
     tags$div(
       style = "display:flex; flex-direction:column; gap:12px;",
       tags$div(
-        tags$div(style = "color:#94a3b8; font-size:11px; text-transform:uppercase; font-weight:700; letter-spacing:.4px;", "Decision Model"),
-        tags$div(style = "color:#f8fafc; font-size:20px; font-weight:800; margin-top:4px;", result$llm_model %||% "gpt-4o-mini")
+        tags$div(style = "color:#6c6a64; font-size:11px; text-transform:uppercase; font-weight:500; letter-spacing:.06em;", "Decision Model"),
+        tags$div(style = "color:#141413; font-size:20px; font-weight:500; font-family:'Cormorant Garamond',serif; margin-top:4px; letter-spacing:-0.02em;", result$llm_model %||% "gpt-4o-mini")
       ),
       tags$div(
-        tags$div(style = "color:#94a3b8; font-size:11px; text-transform:uppercase; font-weight:700; letter-spacing:.4px;", "Masked Setup"),
-        tags$div(style = "color:#cbd5e1; font-size:14px; line-height:1.7;",
+        tags$div(style = "color:#6c6a64; font-size:11px; text-transform:uppercase; font-weight:500; letter-spacing:.06em;", "Masked Setup"),
+        tags$div(style = "color:#3d3d3a; font-size:14px; line-height:1.7;",
           sprintf("Range: %s to %s", result$start_date %||% "-", result$end_date %||% "-"),
           tags$br(),
           sprintf("Lookback: %s trading days", result$lookback_days %||% BACKTEST_LOOKBACK_DAYS),
@@ -923,7 +923,7 @@ server <- function(input, output, session) {
           sprintf("Dominant strategy: %s", result$metrics$dominant_strategy %||% "none")
         )
       ),
-      tags$div(style = "padding:12px 14px; border-radius:12px; background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.18); color:#bbf7d0; font-size:13px; line-height:1.7;",
+      tags$div(style = "padding:12px 14px; border-radius:12px; background:rgba(93,184,114,0.1); border:1px solid rgba(93,184,114,0.25); color:#252523; font-size:13px; line-height:1.7;",
         "The agent only sees information available on each decision date.",
         tags$br(),
         "No future prices, no future news, no look-ahead leakage."
@@ -963,34 +963,34 @@ server <- function(input, output, session) {
 
     tagList(
       if (nzchar(explanation$summary_title %||% "")) {
-        tags$div(style = "color:#f8fafc; font-size:20px; font-weight:800; margin-bottom:10px;",
+        tags$div(style = "color:#141413; font-size:22px; font-weight:500; font-family:'Cormorant Garamond',serif; letter-spacing:-0.02em; margin-bottom:10px;",
           explanation$summary_title)
       },
-      tags$p(style = "color:#d1d5db; font-size:14px; line-height:1.85; margin-bottom:16px;",
+      tags$p(style = "color:#3d3d3a; font-size:14px; line-height:1.85; margin-bottom:16px;",
         explanation$executive_summary %||% ""),
-      tags$div(style = "padding:14px 16px; border-radius:14px; background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.22); margin-bottom:16px;",
-        tags$div(style = "color:#93c5fd; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; margin-bottom:6px;",
+      tags$div(style = "padding:14px 16px; border-radius:12px; background:rgba(204,120,92,0.08); border:1px solid rgba(204,120,92,0.22); margin-bottom:16px;",
+        tags$div(style = "color:#cc785c; font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px;",
           if (trade_count <= 1) "Why Only One Trade?" else "Trade Frequency Interpretation"),
-        tags$div(style = "color:#dbeafe; font-size:14px; line-height:1.8;",
+        tags$div(style = "color:#252523; font-size:14px; line-height:1.8;",
           explanation$sparsity_explanation %||% "")
       ),
       if (length(basis) > 0) {
         tagList(
-          tags$div(style = "color:#94a3b8; font-size:11px; text-transform:uppercase; font-weight:700; letter-spacing:.4px; margin-bottom:8px;",
+          tags$div(style = "color:#6c6a64; font-size:11px; text-transform:uppercase; font-weight:500; letter-spacing:.06em; margin-bottom:8px;",
             "Decision Basis"),
-          tags$ul(style = "color:#d1d5db; padding-left:18px; line-height:1.8; margin-bottom:16px;",
+          tags$ul(style = "color:#3d3d3a; padding-left:18px; line-height:1.8; margin-bottom:16px;",
             lapply(basis, tags$li))
         )
       },
-      tags$div(style = "color:#94a3b8; font-size:11px; text-transform:uppercase; font-weight:700; letter-spacing:.4px; margin-bottom:8px;",
+      tags$div(style = "color:#6c6a64; font-size:11px; text-transform:uppercase; font-weight:500; letter-spacing:.06em; margin-bottom:8px;",
         "Model Role"),
-      tags$p(style = "color:#d1d5db; font-size:14px; line-height:1.85; margin-bottom:16px;",
+      tags$p(style = "color:#3d3d3a; font-size:14px; line-height:1.85; margin-bottom:16px;",
         explanation$model_role %||% ""),
       if (length(improvements) > 0) {
         tagList(
-          tags$div(style = "color:#94a3b8; font-size:11px; text-transform:uppercase; font-weight:700; letter-spacing:.4px; margin-bottom:8px;",
+          tags$div(style = "color:#6c6a64; font-size:11px; text-transform:uppercase; font-weight:500; letter-spacing:.06em; margin-bottom:8px;",
             "What To Improve Next"),
-          tags$ul(style = "color:#d1d5db; padding-left:18px; line-height:1.8; margin-bottom:16px;",
+          tags$ul(style = "color:#3d3d3a; padding-left:18px; line-height:1.8; margin-bottom:16px;",
             lapply(improvements, tags$li))
         )
       },
@@ -1007,40 +1007,40 @@ server <- function(input, output, session) {
         accent_bg, accent_border),
         tags$div(style = sprintf("color:%s; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; margin-bottom:6px;", accent_text),
           scn$label),
-        tags$div(style = "color:#e5e7eb; font-size:14px; line-height:1.7; margin-bottom:6px;",
+        tags$div(style = "color:#252523; font-size:14px; line-height:1.7; margin-bottom:6px;",
           scn$forecast),
         if (!is.null(scn$return_band))
-          tags$div(style = "color:#cbd5e1; font-size:13px; margin-bottom:8px;", scn$return_band),
-        tags$div(style = "color:#94a3b8; font-size:11px; text-transform:uppercase; font-weight:600; letter-spacing:.3px; margin-bottom:4px;",
+          tags$div(style = "color:#6c6a64; font-size:13px; margin-bottom:8px;", scn$return_band),
+        tags$div(style = "color:#6c6a64; font-size:11px; text-transform:uppercase; font-weight:500; letter-spacing:.06em; margin-bottom:4px;",
           "Triggers to Watch"),
-        tags$ul(style = "color:#d1d5db; padding-left:18px; line-height:1.7; font-size:13px; margin:0 0 8px;",
+        tags$ul(style = "color:#3d3d3a; padding-left:18px; line-height:1.7; font-size:13px; margin:0 0 8px;",
           lapply(scn$triggers, tags$li)),
-        tags$div(style = "color:#94a3b8; font-size:11px; text-transform:uppercase; font-weight:600; letter-spacing:.3px; margin-bottom:4px;",
+        tags$div(style = "color:#6c6a64; font-size:11px; text-transform:uppercase; font-weight:500; letter-spacing:.06em; margin-bottom:4px;",
           "Recommended Actions"),
-        tags$ul(style = "color:#d1d5db; padding-left:18px; line-height:1.7; font-size:13px; margin:0;",
+        tags$ul(style = "color:#3d3d3a; padding-left:18px; line-height:1.7; font-size:13px; margin:0;",
           lapply(scn$actions, tags$li))
       )
     }
 
     tagList(
-      tags$div(style = "border-top:1px dashed rgba(99,102,241,0.25); margin:18px 0 14px;"),
+      tags$div(style = "border-top:1px dashed #e6dfd8; margin:18px 0 14px;"),
       tags$div(style = "display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;",
-        tags$div(style = "color:#a78bfa; font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.5px;",
+        tags$div(style = "color:#cc785c; font-size:14px; font-weight:500; font-family:'Cormorant Garamond',serif; text-transform:uppercase; letter-spacing:.06em;",
           "Forward-Looking Outlook"),
-        tags$span(style = "background:rgba(167,139,250,0.15); color:#c4b5fd; border:1px solid rgba(167,139,250,0.3); padding:3px 10px; border-radius:999px; font-size:11px; font-weight:600;",
+        tags$span(style = "background:#efe9de; color:#141413; border:1px solid #e6dfd8; padding:3px 10px; border-radius:999px; font-size:11px; font-weight:500;",
           outlook$horizon_label)
       ),
-      tags$p(style = "color:#94a3b8; font-size:12px; line-height:1.6; margin:0 0 12px;",
+      tags$p(style = "color:#6c6a64; font-size:13px; line-height:1.6; margin:0 0 12px;",
         outlook$method),
       scenario_card(outlook$base_case,
-                    "rgba(99,102,241,0.10)", "rgba(99,102,241,0.30)", "#c7d2fe"),
+                    "rgba(204,120,92,0.08)", "rgba(204,120,92,0.28)", "#cc785c"),
       scenario_card(outlook$bull_case,
-                    "rgba(34,197,94,0.10)", "rgba(34,197,94,0.30)", "#86efac"),
+                    "rgba(93,184,114,0.10)", "rgba(93,184,114,0.28)", "#3d7a4e"),
       scenario_card(outlook$bear_case,
-                    "rgba(239,68,68,0.10)", "rgba(239,68,68,0.30)", "#fca5a5"),
-      tags$div(style = "color:#94a3b8; font-size:11px; text-transform:uppercase; font-weight:700; letter-spacing:.4px; margin:14px 0 6px;",
+                    "rgba(198,69,69,0.08)", "rgba(198,69,69,0.28)", "#c64545"),
+      tags$div(style = "color:#6c6a64; font-size:11px; text-transform:uppercase; font-weight:500; letter-spacing:.06em; margin:14px 0 6px;",
         "Watch Signals"),
-      tags$ul(style = "color:#d1d5db; padding-left:18px; line-height:1.7; font-size:13px; margin:0;",
+      tags$ul(style = "color:#3d3d3a; padding-left:18px; line-height:1.7; font-size:13px; margin:0;",
         lapply(outlook$watch_signals, tags$li))
     )
   }
@@ -1055,12 +1055,12 @@ server <- function(input, output, session) {
     warn_count <- sum(quality_df$status == "WARN", na.rm = TRUE)
     fail_count <- sum(quality_df$status == "FAIL", na.rm = TRUE)
     total_count <- nrow(quality_df)
-    headline_color <- if (fail_count > 0) "#ef4444" else if (warn_count > 0) "#f59e0b" else "#22c55e"
+    headline_color <- if (fail_count > 0) "#c64545" else if (warn_count > 0) "#d4a017" else "#5db872"
 
     summary_row <- tags$div(style = "display:flex; gap:16px; align-items:baseline; flex-wrap:wrap; margin-bottom:8px;",
       tags$span(style = sprintf("color:%s; font-size:26px; font-weight:800; letter-spacing:.3px;", headline_color),
         sprintf("%s / %s checks passed", pass_count, total_count)),
-      tags$span(style = "color:#94a3b8; font-size:12px;",
+      tags$span(style = "color:#6c6a64; font-size:12px;",
         sprintf("PASS %s · WARN %s · FAIL %s", pass_count, warn_count, fail_count))
     )
 
@@ -1068,15 +1068,15 @@ server <- function(input, output, session) {
       row <- quality_df[i, , drop = FALSE]
       status_txt <- row$status[[1]]
       bg_color <- switch(status_txt,
-        PASS = "rgba(34,197,94,0.15)",
-        WARN = "rgba(245,158,11,0.15)",
-        FAIL = "rgba(239,68,68,0.18)",
-        "rgba(148,163,184,0.15)")
+        PASS = "rgba(93,184,114,0.18)",
+        WARN = "rgba(212,160,23,0.18)",
+        FAIL = "rgba(198,69,69,0.15)",
+        "rgba(230,223,216,0.6)")
       fg_color <- switch(status_txt,
-        PASS = "#86efac",
-        WARN = "#fcd34d",
-        FAIL = "#fca5a5",
-        "#cbd5e1")
+        PASS = "#2d5c38",
+        WARN = "#7a5a06",
+        FAIL = "#8b2e2e",
+        "#252523")
       tags$div(class = "qc-tile",
         tags$div(class = "qc-head",
           tags$div(class = "qc-name", row$dimension[[1]]),

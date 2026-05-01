@@ -5,3 +5,5 @@ data/
 .DS_Store
 logs/
 .shiny_app_*.pid
+# Generated data (re-run export_finnhub_news.py to regenerate)
+finnhub_company_news.csv

@@ -268,19 +268,19 @@ generate_stock_report <- function(symbol, stock_data_val, news_data_df, on_progr
 
 rating_color <- function(rating) {
   switch(toupper(rating),
-    "STRONG BUY" = list(bg = "rgba(34,197,94,0.25)", border = "#22c55e", text = "#bbf7d0"),
-    "BUY" = list(bg = "rgba(74,222,128,0.2)", border = "#4ade80", text = "#dcfce7"),
-    "HOLD" = list(bg = "rgba(250,204,21,0.2)", border = "#facc15", text = "#fef9c3"),
-    "SELL" = list(bg = "rgba(248,113,113,0.2)", border = "#f87171", text = "#fecaca"),
-    "FULLY VALUED" = list(bg = "rgba(239,68,68,0.25)", border = "#ef4444", text = "#fca5a5"),
-    list(bg = "rgba(148,163,184,0.2)", border = "#94a3b8", text = "#cbd5e1")
+    "STRONG BUY" = list(bg = "rgba(93,184,114,0.2)", border = "#5db872", text = "#141413"),
+    "BUY" = list(bg = "rgba(93,184,114,0.12)", border = "#5db872", text = "#252523"),
+    "HOLD" = list(bg = "rgba(232,165,90,0.2)", border = "#e8a55a", text = "#252523"),
+    "SELL" = list(bg = "rgba(198,69,69,0.12)", border = "#c64545", text = "#252523"),
+    "FULLY VALUED" = list(bg = "rgba(198,69,69,0.18)", border = "#c64545", text = "#141413"),
+    list(bg = "rgba(230,223,216,0.5)", border = "#8e8b82", text = "#141413")
   )
 }
 
 risk_color <- function(level) {
   switch(toupper(level %||% "MEDIUM"),
-    "LOW" = "#4ade80", "MEDIUM" = "#facc15",
-    "HIGH" = "#f87171", "VERY HIGH" = "#ef4444", "#94a3b8")
+    "LOW" = "#5db872", "MEDIUM" = "#d4a017",
+    "HIGH" = "#c64545", "VERY HIGH" = "#c64545", "#6c6a64")
 }
 
 # ----------------------------
@@ -298,31 +298,31 @@ fi <- function(x) {
 }
 
 render_kv_table <- function(rows_list, title) {
-  if (length(rows_list) == 0) return(tags$p(style="color:#94a3b8;", paste(title, "- unavailable")))
-  td_l <- "padding:10px 18px; font-weight:600; color:#e2e8f0; font-size:13px; border-bottom:1px solid rgba(51,65,85,0.5);"
-  td_r <- "padding:10px 18px; color:#f1f5f9; text-align:right; font-size:13px; border-bottom:1px solid rgba(51,65,85,0.5); font-variant-numeric:tabular-nums;"
+  if (length(rows_list) == 0) return(tags$p(style="color:#6c6a64;", paste(title, "- unavailable")))
+  td_l <- "padding:10px 18px; font-weight:500; color:#252523; font-size:14px; border-bottom:1px solid #ebe6df;"
+  td_r <- "padding:10px 18px; color:#3d3d3a; text-align:right; font-size:14px; border-bottom:1px solid #ebe6df; font-variant-numeric:tabular-nums;"
   trs <- lapply(seq_along(rows_list), function(i) {
     r <- rows_list[[i]]
-    bg <- if (i %% 2 == 0) "background:rgba(30,41,59,0.25);" else ""
+    bg <- if (i %% 2 == 0) "background:rgba(245,240,232,0.6);" else ""
     tags$tr(style=bg, tags$td(style=td_l, r[[1]]), tags$td(style=td_r, r[[2]]))
   })
   tags$div(class="panel-card", style="margin-bottom:16px;",
-    tags$h4(style="color:#f1f5f9; margin-bottom:12px; font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;",
-      tags$span(style="width:3px;height:18px;background:linear-gradient(180deg,#6366f1,#818cf8);border-radius:2px;display:inline-block;"),
+    tags$h4(style="color:#141413; margin-bottom:12px; font-size:18px; font-weight:500; font-family:'Cormorant Garamond',serif; letter-spacing:-0.02em; display:flex; align-items:center; gap:8px;",
+      tags$span(style="width:3px;height:18px;background:#cc785c;border-radius:2px;display:inline-block;"),
       title),
-    tags$table(style="width:100%; border-collapse:collapse; background:rgba(17,24,39,0.5); border-radius:10px; overflow:hidden;",
+    tags$table(style="width:100%; border-collapse:collapse; background:#faf9f5; border-radius:12px; overflow:hidden; border:1px solid #e6dfd8;",
       tags$tbody(trs)))
 }
 
 render_multi_year_table <- function(metric_rows, fy_labels, title) {
   if (length(metric_rows) == 0 || length(fy_labels) == 0)
-    return(tags$p(style="color:#94a3b8;", paste(title, "- unavailable")))
-  hd_css <- "padding:10px 14px; background:rgba(30,41,59,0.8); color:#a5b4fc; font-size:12px; text-align:right; font-weight:600; letter-spacing:.3px; text-transform:uppercase; border-bottom:2px solid rgba(99,102,241,0.2);"
-  hd_l   <- "padding:10px 14px; background:rgba(30,41,59,0.8); color:#a5b4fc; font-size:12px; text-align:left; font-weight:600; letter-spacing:.3px; text-transform:uppercase; border-bottom:2px solid rgba(99,102,241,0.2);"
-  td_l   <- "padding:8px 14px; font-weight:600; color:#e2e8f0; border-bottom:1px solid rgba(51,65,85,0.4); white-space:nowrap; font-size:13px;"
-  td_r   <- "padding:8px 14px; color:#f1f5f9; text-align:right; border-bottom:1px solid rgba(51,65,85,0.4); font-variant-numeric:tabular-nums; font-size:13px;"
-  td_sub <- "padding:5px 14px 5px 30px; color:#818cf8; font-style:italic; font-size:12px; border-bottom:1px solid rgba(51,65,85,0.3);"
-  td_sub_r <- "padding:5px 14px; color:#818cf8; font-style:italic; font-size:12px; text-align:right; border-bottom:1px solid rgba(51,65,85,0.3); font-variant-numeric:tabular-nums;"
+    return(tags$p(style="color:#6c6a64;", paste(title, "- unavailable")))
+  hd_css <- "padding:10px 14px; background:#f5f0e8; color:#252523; font-size:12px; text-align:right; font-weight:500; letter-spacing:.06em; text-transform:uppercase; border-bottom:2px solid #e6dfd8;"
+  hd_l   <- "padding:10px 14px; background:#f5f0e8; color:#252523; font-size:12px; text-align:left; font-weight:500; letter-spacing:.06em; text-transform:uppercase; border-bottom:2px solid #e6dfd8;"
+  td_l   <- "padding:8px 14px; font-weight:500; color:#252523; border-bottom:1px solid #ebe6df; white-space:nowrap; font-size:14px;"
+  td_r   <- "padding:8px 14px; color:#3d3d3a; text-align:right; border-bottom:1px solid #ebe6df; font-variant-numeric:tabular-nums; font-size:14px;"
+  td_sub <- "padding:5px 14px 5px 30px; color:#6c6a64; font-style:italic; font-size:13px; border-bottom:1px solid #ebe6df;"
+  td_sub_r <- "padding:5px 14px; color:#6c6a64; font-style:italic; font-size:13px; text-align:right; border-bottom:1px solid #ebe6df; font-variant-numeric:tabular-nums;"
 
   header <- tags$tr(tags$th(style=hd_l, title),
                     lapply(fy_labels, function(fy) tags$th(style=hd_css, fy)))
@@ -331,18 +331,18 @@ render_multi_year_table <- function(metric_rows, fy_labels, title) {
   for (mr in metric_rows) {
     is_sub <- isTRUE(mr$sub)
     if (!is_sub) row_idx <- row_idx + 1L
-    bg <- if (!is_sub && row_idx %% 2 == 0) "background:rgba(30,41,59,0.2);" else ""
+    bg <- if (!is_sub && row_idx %% 2 == 0) "background:rgba(245,240,232,0.5);" else ""
     body_rows[[length(body_rows)+1]] <- tags$tr(style=bg,
       tags$td(style=if(is_sub) td_sub else td_l, mr$label),
       lapply(mr$values, function(v) tags$td(style=if(is_sub) td_sub_r else td_r, v)))
   }
   tags$div(class="panel-card", style="margin-bottom:16px;",
-    tags$table(style="width:100%; border-collapse:collapse; background:rgba(17,24,39,0.5); border-radius:10px; overflow:hidden;",
+    tags$table(style="width:100%; border-collapse:collapse; background:#faf9f5; border-radius:12px; overflow:hidden; border:1px solid #e6dfd8;",
       tags$thead(header), tags$tbody(body_rows)))
 }
 
 build_key_financial_html <- function(kf, rating) {
-  if (is.null(kf) || nrow(kf) == 0) return(tags$p(style="color:#94a3b8;","Key Financial Data unavailable."))
+  if (is.null(kf) || nrow(kf) == 0) return(tags$p(style="color:#6c6a64;","Key Financial Data unavailable."))
   k <- kf[1,]
   render_kv_table(list(
     list("Ticker",                  k$ticker),
@@ -362,7 +362,7 @@ build_key_financial_html <- function(kf, rating) {
 }
 
 build_pnl_html <- function(cf) {
-  if (is.null(cf) || nrow(cf) == 0) return(tags$p(style="color:#94a3b8;","P&L data unavailable."))
+  if (is.null(cf) || nrow(cf) == 0) return(tags$p(style="color:#6c6a64;","P&L data unavailable."))
   cf <- cf[order(cf$fiscal_year_end), ]
   fy <- paste0(cf$fiscal_year, "(A)")
   mr <- function(label, vals, sub=FALSE) list(label=label, values=vals, sub=sub)
@@ -389,7 +389,7 @@ build_pnl_html <- function(cf) {
 }
 
 build_credit_html <- function(cf) {
-  if (is.null(cf) || nrow(cf) == 0) return(tags$p(style="color:#94a3b8;","Credit & Cashflow data unavailable."))
+  if (is.null(cf) || nrow(cf) == 0) return(tags$p(style="color:#6c6a64;","Credit & Cashflow data unavailable."))
   cf <- cf[order(cf$fiscal_year_end), ]
   fy <- paste0(cf$fiscal_year, "(A)")
   mr <- function(label, vals) list(label=label, values=vals, sub=FALSE)
@@ -410,7 +410,7 @@ build_credit_html <- function(cf) {
 }
 
 build_valuation_html <- function(vm) {
-  if (is.null(vm) || nrow(vm) == 0) return(tags$p(style="color:#94a3b8;","Valuation data unavailable."))
+  if (is.null(vm) || nrow(vm) == 0) return(tags$p(style="color:#6c6a64;","Valuation data unavailable."))
   vm <- vm[order(vm$fiscal_year), ]
   fy <- paste0(vm$fiscal_year, "(A)")
   mr <- function(label, vals) list(label=label, values=vals, sub=FALSE)
@@ -444,35 +444,35 @@ render_report_ui <- function(result) {
 
   tbl <- result$tables
 
-  conf_bar_color <- if (conf >= 70) "#22c55e" else if (conf >= 40) "#facc15" else "#f87171"
+  conf_bar_color <- if (conf >= 70) "#5db872" else if (conf >= 40) "#e8a55a" else "#c64545"
 
   tagList(
     # ---- Purchase Rating Hero Card ----
     tags$div(
       class = "panel-card",
-      style = "margin-bottom:20px; padding:24px 28px; border:1px solid rgba(99,102,241,0.25); border-radius:16px; background:linear-gradient(135deg,rgba(15,23,42,0.8),rgba(30,41,59,0.4));",
+      style = "margin-bottom:20px; padding:24px 28px; border:1px solid #e6dfd8; border-radius:12px; background:#faf9f5;",
       tags$div(style = "display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;",
         tags$div(style = "display:flex; align-items:center; gap:20px; flex-wrap:wrap;",
           tags$div(
             style = sprintf(
-              "display:inline-block; padding:14px 36px; border-radius:14px; background:%s; border:2px solid %s; font-size:30px; font-weight:800; color:%s; letter-spacing:1.5px; text-shadow:0 1px 8px rgba(0,0,0,0.3);",
+              "display:inline-block; padding:14px 36px; border-radius:12px; background:%s; border:2px solid %s; font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:500; color:%s; letter-spacing:-0.02em;",
               rc$bg, rc$border, rc$text),
             rating
           ),
           tags$div(style = "display:flex; flex-direction:column; gap:6px;",
             tags$div(style = "display:flex; align-items:center; gap:10px;",
-              tags$span(style = "color:#94a3b8; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.5px;", "Confidence"),
-              tags$div(style = "width:120px; height:6px; background:rgba(51,65,85,0.5); border-radius:3px; overflow:hidden;",
+              tags$span(style = "color:#6c6a64; font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:.06em;", "Confidence"),
+              tags$div(style = "width:120px; height:6px; background:#e6dfd8; border-radius:3px; overflow:hidden;",
                 tags$div(style = sprintf("width:%d%%; height:100%%; background:%s; border-radius:3px; transition:width .6s;", conf, conf_bar_color))
               ),
-              tags$span(style = "font-size:16px; color:#f1f5f9; font-weight:700;", sprintf("%d%%", conf))
+              tags$span(style = "font-size:16px; color:#141413; font-weight:500;", sprintf("%d%%", conf))
             ),
             tags$div(style = "display:flex; align-items:center; gap:16px;",
-              tags$span(style = sprintf("font-size:13px; color:%s; font-weight:600;", risk_color(rlevel)),
+              tags$span(style = sprintf("font-size:13px; color:%s; font-weight:500;", risk_color(rlevel)),
                 tags$span(style = sprintf("display:inline-block; width:8px; height:8px; border-radius:50%%; margin-right:4px; background:%s;", risk_color(rlevel))),
                 sprintf("Risk: %s", rlevel)),
               if (!is.null(target) && !is.na(target)) {
-                tags$span(style = "font-size:13px; color:#38bdf8; font-weight:600;",
+                tags$span(style = "font-size:13px; color:#cc785c; font-weight:500;",
                   icon("bullseye", style = "margin-right:4px; font-size:11px;"),
                   sprintf("3M Target: $%.0f", target))
               }
@@ -482,7 +482,7 @@ render_report_ui <- function(result) {
         tags$div(
           actionButton("report_info_btn", NULL, icon = icon("circle-info"),
                         class = "btn-sm btn-default",
-                        style = "border-radius:50%; width:38px; height:38px; padding:0; font-size:16px; background:rgba(99,102,241,0.2); border:1px solid rgba(99,102,241,0.4); color:#a5b4fc; transition:background .2s;",
+                        style = "border-radius:50%; width:38px; height:38px; padding:0; font-size:16px; background:#efe9de; border:1px solid #e6dfd8; color:#141413; transition:background .2s;",
                         title = "Rating definitions")
         )
       )
@@ -491,9 +491,9 @@ render_report_ui <- function(result) {
     # ---- Key Reason ----
     tags$div(
       class = "panel-card", style = "margin-bottom:18px;",
-      tags$h4(style = "color:#f1f5f9; margin-bottom:10px; font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;",
-        icon("lightbulb", style = "color:#fbbf24; font-size:16px;"), "Key Reason"),
-      tags$p(style = "color:#e2e8f0; font-size:14px; line-height:1.8; margin:0;", safe_text(r$key_reason))
+      tags$h4(style = "color:#141413; margin-bottom:10px; font-size:18px; font-weight:500; font-family:'Cormorant Garamond',serif; letter-spacing:-0.02em; display:flex; align-items:center; gap:8px;",
+        icon("lightbulb", style = "color:#e8a55a; font-size:16px;"), "Key Reason"),
+      tags$p(style = "color:#3d3d3a; font-size:16px; line-height:1.55; margin:0;", safe_text(r$key_reason))
     ),
 
     # ---- Four Financial Tables (stacked, DBS report style) ----
@@ -505,25 +505,25 @@ render_report_ui <- function(result) {
     # ---- Industry Analysis ----
     tags$div(
       class = "panel-card", style = "margin-bottom:18px;",
-      tags$h4(style = "color:#f1f5f9; margin-bottom:10px; font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;",
-        icon("industry", style = "color:#60a5fa; font-size:15px;"), "Industry Analysis"),
-      tags$p(style = "color:#d1d5db; font-size:14px; line-height:1.85; margin:0;", safe_text(r$industry_analysis))
+      tags$h4(style = "color:#141413; margin-bottom:10px; font-size:18px; font-weight:500; font-family:'Cormorant Garamond',serif; letter-spacing:-0.02em; display:flex; align-items:center; gap:8px;",
+        icon("industry", style = "color:#5db8a6; font-size:15px;"), "Industry Analysis"),
+      tags$p(style = "color:#3d3d3a; font-size:16px; line-height:1.55; margin:0;", safe_text(r$industry_analysis))
     ),
 
     # ---- Investment Overview ----
     tags$div(
       class = "panel-card", style = "margin-bottom:18px;",
-      tags$h4(style = "color:#f1f5f9; margin-bottom:10px; font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;",
-        icon("chart-pie", style = "color:#a78bfa; font-size:15px;"), "Investment Overview"),
-      tags$p(style = "color:#d1d5db; font-size:14px; line-height:1.85; margin:0;", safe_text(r$investment_overview))
+      tags$h4(style = "color:#141413; margin-bottom:10px; font-size:18px; font-weight:500; font-family:'Cormorant Garamond',serif; letter-spacing:-0.02em; display:flex; align-items:center; gap:8px;",
+        icon("chart-pie", style = "color:#cc785c; font-size:15px;"), "Investment Overview"),
+      tags$p(style = "color:#3d3d3a; font-size:16px; line-height:1.55; margin:0;", safe_text(r$investment_overview))
     ),
 
     # ---- Macro Environment ----
     tags$div(
       class = "panel-card", style = "margin-bottom:18px;",
-      tags$h4(style = "color:#f1f5f9; margin-bottom:10px; font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;",
-        icon("globe", style = "color:#38bdf8; font-size:15px;"), "Macro Environment"),
-      tags$p(style = "color:#d1d5db; font-size:14px; line-height:1.85; margin:0;",
+      tags$h4(style = "color:#141413; margin-bottom:10px; font-size:18px; font-weight:500; font-family:'Cormorant Garamond',serif; letter-spacing:-0.02em; display:flex; align-items:center; gap:8px;",
+        icon("globe", style = "color:#5db8a6; font-size:15px;"), "Macro Environment"),
+      tags$p(style = "color:#3d3d3a; font-size:16px; line-height:1.55; margin:0;",
              safe_text(r$macro_environment, "No macro environment analysis available."))
     ),
 
@@ -533,19 +533,19 @@ render_report_ui <- function(result) {
         column(6,
           tags$div(
             class = "panel-card",
-            style = "border-left:4px solid #22c55e; min-height:200px; background:linear-gradient(135deg,rgba(34,197,94,0.04),rgba(15,23,42,0.6));",
-            tags$h5(style = "color:#4ade80; font-weight:700; font-size:15px; margin-bottom:10px; display:flex; align-items:center; gap:6px;",
+            style = "border-left:4px solid #5db872; min-height:200px; background:rgba(93,184,114,0.06);",
+            tags$h5(style = "color:#2d5c38; font-weight:500; font-size:16px; margin-bottom:10px; display:flex; align-items:center; gap:6px;",
               icon("arrow-trend-up"), "Bull Case"),
-            tags$p(style = "color:#d1d5db; font-size:13px; line-height:1.8; margin:0;", safe_text(r$bull_case))
+            tags$p(style = "color:#3d3d3a; font-size:14px; line-height:1.55; margin:0;", safe_text(r$bull_case))
           )
         ),
         column(6,
           tags$div(
             class = "panel-card",
-            style = "border-left:4px solid #ef4444; min-height:200px; background:linear-gradient(135deg,rgba(239,68,68,0.04),rgba(15,23,42,0.6));",
-            tags$h5(style = "color:#f87171; font-weight:700; font-size:15px; margin-bottom:10px; display:flex; align-items:center; gap:6px;",
+            style = "border-left:4px solid #c64545; min-height:200px; background:rgba(198,69,69,0.06);",
+            tags$h5(style = "color:#8b2e2e; font-weight:500; font-size:16px; margin-bottom:10px; display:flex; align-items:center; gap:6px;",
               icon("arrow-trend-down"), "Bear Case"),
-            tags$p(style = "color:#d1d5db; font-size:13px; line-height:1.8; margin:0;", safe_text(r$bear_case))
+            tags$p(style = "color:#3d3d3a; font-size:14px; line-height:1.55; margin:0;", safe_text(r$bear_case))
           )
         )
       )
@@ -554,8 +554,8 @@ render_report_ui <- function(result) {
     # ---- Risk Analysis ----
     tags$div(
       class = "panel-card", style = "margin-bottom:18px;",
-      tags$h4(style = "color:#f1f5f9; margin-bottom:12px; font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;",
-        icon("shield-halved", style = "color:#f87171; font-size:15px;"), "Risk Analysis"),
+      tags$h4(style = "color:#141413; margin-bottom:12px; font-size:18px; font-weight:500; font-family:'Cormorant Garamond',serif; letter-spacing:-0.02em; display:flex; align-items:center; gap:8px;",
+        icon("shield-halved", style = "color:#c64545; font-size:15px;"), "Risk Analysis"),
       {
         risks <- r$risk_analysis
         if (is.null(risks) || length(risks) == 0) {
@@ -577,9 +577,9 @@ render_report_ui <- function(result) {
         }
         tags$div(
           lapply(seq_along(risks), function(i) {
-            tags$div(style = "display:flex; gap:10px; padding:8px 0; border-bottom:1px solid rgba(51,65,85,0.3);",
-              tags$span(style = "flex-shrink:0; width:24px; height:24px; border-radius:6px; background:rgba(239,68,68,0.15); color:#f87171; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;", as.character(i)),
-              tags$span(style = "color:#d1d5db; font-size:13px; line-height:1.7;", safe_text(risks[[i]]))
+            tags$div(style = "display:flex; gap:10px; padding:8px 0; border-bottom:1px solid #ebe6df;",
+              tags$span(style = "flex-shrink:0; width:24px; height:24px; border-radius:8px; background:rgba(198,69,69,0.12); color:#c64545; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:500;", as.character(i)),
+              tags$span(style = "color:#3d3d3a; font-size:14px; line-height:1.55;", safe_text(risks[[i]]))
             )
           })
         )
@@ -591,9 +591,9 @@ render_report_ui <- function(result) {
 
     # ---- End of Report ----
     tags$div(
-      style = "margin:24px 0 16px; text-align:center; padding:12px; border-top:1px solid rgba(99,102,241,0.1);",
-      tags$p(style = "color:#475569; font-size:12px; font-style:italic; margin:0; letter-spacing:.3px;",
-             icon("circle-check", style = "margin-right:4px; color:#475569;"),
+      style = "margin:24px 0 16px; text-align:center; padding:12px; border-top:1px solid #e6dfd8;",
+      tags$p(style = "color:#8e8b82; font-size:12px; font-style:italic; margin:0; letter-spacing:.02em;",
+             icon("circle-check", style = "margin-right:4px; color:#5db872;"),
              sprintf("End of Report  |  %s (%s)  |  Generated %s  |  AI Multi-Analyst Team",
                      sym, company, format(Sys.time(), "%Y-%m-%d %H:%M ET", tz = "America/New_York")))
     )
@@ -607,12 +607,12 @@ render_report_ui <- function(result) {
 build_agent_panel <- function(agent_outputs) {
   if (is.null(agent_outputs)) return(NULL)
   agent_meta <- list(
-    fundamentals = list(icon = "calculator", color = "#60a5fa", title = "Fundamentals Analyst"),
-    news         = list(icon = "newspaper",  color = "#fbbf24", title = "News & Macro Analyst"),
-    technical    = list(icon = "chart-line",  color = "#a78bfa", title = "Technical Analyst"),
-    bull         = list(icon = "arrow-trend-up",   color = "#4ade80", title = "Bull Researcher"),
-    bear         = list(icon = "arrow-trend-down", color = "#f87171", title = "Bear Researcher"),
-    risk         = list(icon = "shield-halved",    color = "#fb923c", title = "Risk Manager")
+    fundamentals = list(icon = "calculator", color = "#5db8a6", title = "Fundamentals Analyst"),
+    news         = list(icon = "newspaper",  color = "#e8a55a", title = "News & Macro Analyst"),
+    technical    = list(icon = "chart-line",  color = "#cc785c", title = "Technical Analyst"),
+    bull         = list(icon = "arrow-trend-up",   color = "#5db872", title = "Bull Researcher"),
+    bear         = list(icon = "arrow-trend-down", color = "#c64545", title = "Bear Researcher"),
+    risk         = list(icon = "shield-halved",    color = "#d4a017", title = "Risk Manager")
   )
   panels <- lapply(names(agent_outputs), function(atype) {
     out <- agent_outputs[[atype]]
@@ -633,21 +633,21 @@ build_agent_panel <- function(agent_outputs) {
         paste(as.character(val), collapse = " ")
       }
       tags$div(style = "margin-bottom:10px;",
-        tags$span(style = "color:#a5b4fc; font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.5px;",
+        tags$span(style = "color:#cc785c; font-weight:500; font-size:11px; text-transform:uppercase; letter-spacing:.06em;",
                   gsub("_", " ", key)),
-        tags$p(style = "color:#d1d5db; font-size:13px; line-height:1.7; margin:4px 0 0; white-space:pre-line;", val_text))
+        tags$p(style = "color:#3d3d3a; font-size:14px; line-height:1.55; margin:4px 0 0; white-space:pre-line;", val_text))
     })
-    tags$details(style = "margin-bottom:6px; border:1px solid rgba(99,102,241,0.12); border-radius:10px; overflow:hidden;",
-      tags$summary(style = "padding:10px 16px; cursor:pointer; display:flex; align-items:center; gap:8px; background:rgba(30,41,59,0.3); color:#f1f5f9; font-weight:600; font-size:13px;",
+    tags$details(style = "margin-bottom:6px; border:1px solid #e6dfd8; border-radius:12px; overflow:hidden;",
+      tags$summary(style = "padding:10px 16px; cursor:pointer; display:flex; align-items:center; gap:8px; background:#f5f0e8; color:#141413; font-weight:500; font-size:14px;",
         icon(meta$icon, style = sprintf("color:%s;", meta$color)), meta$title),
-      tags$div(style = "padding:14px 16px; background:rgba(15,23,42,0.3);", content_items))
+      tags$div(style = "padding:14px 16px; background:#faf9f5;", content_items))
   })
   panels <- Filter(Negate(is.null), panels)
   if (length(panels) == 0) return(NULL)
   tags$div(class = "panel-card", style = "margin-bottom:18px;",
-    tags$h4(style = "color:#f1f5f9; margin-bottom:12px; font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px;",
-      icon("users", style = "color:#818cf8; font-size:15px;"), "Analyst Panel",
-      tags$span(style = "font-size:12px; color:#64748b; font-weight:400; margin-left:4px;", "(click to expand)")),
+    tags$h4(style = "color:#141413; margin-bottom:12px; font-size:18px; font-weight:500; font-family:'Cormorant Garamond',serif; letter-spacing:-0.02em; display:flex; align-items:center; gap:8px;",
+      icon("users", style = "color:#cc785c; font-size:15px;"), "Analyst Panel",
+      tags$span(style = "font-size:12px; color:#6c6a64; font-weight:400; margin-left:4px;", "(click to expand)")),
     tags$div(panels))
 }
 
@@ -691,17 +691,17 @@ build_report_download_html <- function(result) {
     '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n',
     '<title>Equity Research Report - ', sym, ' (', esc(company), ')</title>\n',
     '<style>\n',
-    'body{font-family:"Segoe UI",Arial,sans-serif;max-width:820px;margin:0 auto;padding:28px;color:#1e293b;line-height:1.75;}\n',
-    'h1,h2{color:#0f172a;} h1{border-bottom:3px solid #6366f1;padding-bottom:8px;}\n',
-    'h2{border-bottom:1px solid #cbd5e1;padding-bottom:4px;margin-top:28px;}\n',
-    '.badge{display:inline-block;padding:8px 24px;border-radius:8px;font-size:22px;font-weight:800;background:#e0e7ff;color:#3730a3;}\n',
-    '.meta{color:#64748b;font-size:14px;margin:8px 0 16px;}\n',
-    '.bull{border-left:4px solid #16a34a;padding:12px 16px;margin:8px 0;background:#f0fdf4;}\n',
-    '.bear{border-left:4px solid #dc2626;padding:12px 16px;margin:8px 0;background:#fef2f2;}\n',
+    'body{font-family:Inter,Segoe UI,Arial,sans-serif;max-width:820px;margin:0 auto;padding:28px;background:#faf9f5;color:#3d3d3a;line-height:1.55;}\n',
+    'h1,h2{color:#141413;font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;letter-spacing:-0.02em;} h1{border-bottom:3px solid #cc785c;padding-bottom:8px;}\n',
+    'h2{border-bottom:1px solid #e6dfd8;padding-bottom:4px;margin-top:28px;}\n',
+    '.badge{display:inline-block;padding:8px 24px;border-radius:8px;font-size:22px;font-weight:500;font-family:"Cormorant Garamond",Georgia,serif;background:#efe9de;color:#141413;border:1px solid #e6dfd8;}\n',
+    '.meta{color:#6c6a64;font-size:14px;margin:8px 0 16px;}\n',
+    '.bull{border-left:4px solid #5db872;padding:12px 16px;margin:8px 0;background:rgba(93,184,114,0.08);}\n',
+    '.bear{border-left:4px solid #c64545;padding:12px 16px;margin:8px 0;background:rgba(198,69,69,0.06);}\n',
     'table{border-collapse:collapse;width:100%;margin:12px 0;}\n',
-    'th,td{padding:8px 12px;border:1px solid #e2e8f0;text-align:left;font-size:14px;}\n',
-    'th{background:#f8fafc;font-weight:600;}\n',
-    '.footer{margin-top:32px;padding-top:12px;border-top:1px solid #e2e8f0;color:#94a3b8;font-size:12px;text-align:center;}\n',
+    'th,td{padding:8px 12px;border:1px solid #e6dfd8;text-align:left;font-size:14px;}\n',
+    'th{background:#f5f0e8;font-weight:500;color:#252523;}\n',
+    '.footer{margin-top:32px;padding-top:12px;border-top:1px solid #e6dfd8;color:#8e8b82;font-size:12px;text-align:center;}\n',
     '</style>\n</head>\n<body>\n',
     '<h1>', esc(company), ' (', sym, ') &mdash; Equity Research Report</h1>\n',
     '<div class="meta">Sector: ', esc(sector), ' | Generated: ', generated_at, '</div>\n',
@@ -713,9 +713,9 @@ build_report_download_html <- function(result) {
     '<h2>Investment Overview</h2>\n<p>', esc(safe_text(r$investment_overview)), '</p>\n',
     '<h2>Macro Environment</h2>\n<p>', esc(safe_text(r$macro_environment, "No macro analysis available.")), '</p>\n',
     '<div style="display:flex;gap:16px;margin:16px 0;">\n',
-    '<div class="bull" style="flex:1;"><h3 style="color:#16a34a;margin-top:0;">Bull Case</h3><p>',
+    '<div class="bull" style="flex:1;"><h3 style="color:#2d5c38;margin-top:0;">Bull Case</h3><p>',
     esc(safe_text(r$bull_case)), '</p></div>\n',
-    '<div class="bear" style="flex:1;"><h3 style="color:#dc2626;margin-top:0;">Bear Case</h3><p>',
+    '<div class="bear" style="flex:1;"><h3 style="color:#8b2e2e;margin-top:0;">Bear Case</h3><p>',
     esc(safe_text(r$bear_case)), '</p></div>\n</div>\n',
     '<h2>Risk Analysis</h2>\n', risks_html, '\n',
     '<div class="footer">End of Report | ', sym, ' (', esc(company), ') | ', generated_at,
@@ -729,30 +729,30 @@ render_rating_info_modal <- function() {
     tags$tr(
       tags$td(style = "padding:10px 14px;",
         tags$span(style = sprintf("display:inline-block; padding:4px 14px; border-radius:8px; background:%s; color:#fff; font-weight:700; font-size:13px;", color), rating)),
-      tags$td(style = "padding:10px 14px; color:#334155; font-size:13px; line-height:1.6;", desc)
+      tags$td(style = "padding:10px 14px; color:#3d3d3a; font-size:14px; line-height:1.55;", desc)
     )
   }
   modalDialog(
-    title = tags$span(style = "font-weight:700; font-size:18px;", icon("circle-info", style = "margin-right:6px; color:#6366f1;"), "Rating Definitions"),
+    title = tags$span(style = "font-weight:500; font-size:18px; font-family:'Cormorant Garamond',serif;", icon("circle-info", style = "margin-right:6px; color:#cc785c;"), "Rating Definitions"),
     size = "m", easyClose = TRUE,
-    tags$div(style = "color:#1e293b;",
+    tags$div(style = "color:#3d3d3a;",
       tags$table(class = "table", style = "font-size:14px; border-collapse:separate; border-spacing:0 4px;",
         tags$thead(tags$tr(
-          tags$th(style = "color:#64748b; font-size:12px; text-transform:uppercase; letter-spacing:.5px; border:none;", "Rating"),
-          tags$th(style = "color:#64748b; font-size:12px; text-transform:uppercase; letter-spacing:.5px; border:none;", "Description"))),
+          tags$th(style = "color:#6c6a64; font-size:12px; text-transform:uppercase; letter-spacing:.06em; border:none;", "Rating"),
+          tags$th(style = "color:#6c6a64; font-size:12px; text-transform:uppercase; letter-spacing:.06em; border:none;", "Description"))),
         tags$tbody(
-          rating_row("Strong Buy", "#16a34a", "Exceptional upside potential with strong catalysts. High conviction recommendation."),
-          rating_row("Buy", "#22c55e", "Above-average return expected. Positive fundamentals and technical signals."),
-          rating_row("Hold", "#ca8a04", "Fair-valued. No compelling reason to buy or sell at current levels."),
-          rating_row("Sell", "#f87171", "Downside risk exceeds upside. Deteriorating fundamentals or overvaluation."),
-          rating_row("Fully Valued", "#dc2626", "Stock price fully reflects intrinsic value. Limited upside, consider taking profits.")
+          rating_row("Strong Buy", "#5db872", "Exceptional upside potential with strong catalysts. High conviction recommendation."),
+          rating_row("Buy", "#5db872", "Above-average return expected. Positive fundamentals and technical signals."),
+          rating_row("Hold", "#d4a017", "Fair-valued. No compelling reason to buy or sell at current levels."),
+          rating_row("Sell", "#c64545", "Downside risk exceeds upside. Deteriorating fundamentals or overvaluation."),
+          rating_row("Fully Valued", "#c64545", "Stock price fully reflects intrinsic value. Limited upside, consider taking profits.")
         )
       ),
-      tags$hr(style = "border-color:#e2e8f0;"),
+      tags$hr(style = "border-color:#e6dfd8;"),
       tags$div(style = "display:flex; gap:20px; flex-wrap:wrap;",
-        tags$div(style = "flex:1; min-width:180px; padding:12px; background:#f8fafc; border-radius:10px;",
+        tags$div(style = "flex:1; min-width:180px; padding:12px; background:#efe9de; border-radius:12px; border:1px solid #e6dfd8;",
           tags$p(style = "margin:0; font-size:13px;", tags$strong("Confidence"), " (0-100%): Analyst team's conviction level in the rating.")),
-        tags$div(style = "flex:1; min-width:180px; padding:12px; background:#f8fafc; border-radius:10px;",
+        tags$div(style = "flex:1; min-width:180px; padding:12px; background:#efe9de; border-radius:12px; border:1px solid #e6dfd8;",
           tags$p(style = "margin:0; font-size:13px;", tags$strong("Risk Level"), ": Low / Medium / High / Very High - based on volatility, liquidity, and macro exposure."))
       )
     )
